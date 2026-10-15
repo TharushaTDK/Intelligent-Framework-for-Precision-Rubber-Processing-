@@ -1,0 +1,10 @@
+kind,task,model,cv_primary_metric,cv_primary_mean,best_params
+regression,drc_prediction,tuned_random_forest,RMSE,0.9510504326267574,"{'model__max_depth': 8, 'model__min_samples_leaf': 2, 'model__n_estimators': 100}"
+regression,drc_prediction,tuned_gradient_boosting,RMSE,0.8480759229299946,"{'model__learning_rate': 0.06, 'model__max_depth': 2, 'model__n_estimators': 200}"
+regression,drc_prediction,tuned_xgboost,RMSE,0.8831806866989554,"{'model__learning_rate': 0.06, 'model__max_depth': 3, 'model__n_estimators': 100}"
+regression,price_estimation,tuned_random_forest,RMSE,7.485478222429592,"{'model__max_depth': None, 'model__min_samples_leaf': 4, 'model__n_estimators': 100}"
+regression,price_estimation,tuned_gradient_boosting,RMSE,7.580106264436175,"{'model__learning_rate': 0.06, 'model__max_depth': 2, 'model__n_estimators': 100}"
+regression,price_estimation,tuned_xgboost,RMSE,7.527270260519994,"{'model__learning_rate': 0.06, 'model__max_depth': 2, 'model__n_estimators': 100}"
+classification,tapping_advisory,tuned_random_forest,f1_macro,0.6433514875513235,"{'model__max_depth': 8, 'model__min_samples_leaf': 4, 'model__n_estimators': 100}"
+classification,tapping_advisory,tuned_gradient_boosting,f1_macro,0.6610312235260597,"{'model__learning_rate': 0.03, 'model__max_depth': 2, 'model__n_estimators': 100}"
+classification,tapping_advisory,tuned_xgboost,f1_macro,0.6543225533480835,"{'model__learning_rate': 0.03, 'model__max_depth': 3, 'model__n_estimators': 100}"

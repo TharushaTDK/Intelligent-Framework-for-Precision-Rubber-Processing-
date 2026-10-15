@@ -1,0 +1,75 @@
+{
+  "stage": "17_gradient_boosting_regression",
+  "task": "price_estimation",
+  "target": "price_lkr_per_kg",
+  "model_family": "gradient_boosting",
+  "model_class": "GradientBoostingRegressor",
+  "role": "candidates",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "alpha": 0.9,
+    "ccp_alpha": 0.0,
+    "criterion": "friedman_mse",
+    "init": null,
+    "learning_rate": 0.1,
+    "loss": "squared_error",
+    "max_depth": 3,
+    "max_features": null,
+    "max_leaf_nodes": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "n_estimators": 100,
+    "n_iter_no_change": null,
+    "random_state": 340,
+    "subsample": 1.0,
+    "tol": 0.0001,
+    "validation_fraction": 0.1,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "cv": {
+    "folds": 5,
+    "primary_metric": "RMSE",
+    "MAE": {
+      "mean": 6.162802466022617,
+      "std": 0.23164935384532678
+    },
+    "RMSE": {
+      "mean": 7.798784091811259,
+      "std": 0.32036007868802063
+    },
+    "R2": {
+      "mean": 0.6704644564782514,
+      "std": 0.03785315117810488
+    },
+    "within_tolerance_pct": {
+      "mean": 74.375,
+      "std": 2.916666666666662
+    }
+  },
+  "tolerance": 9.0,
+  "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
+  "train_rows": 480,
+  "n_features": 10,
+  "feature_names": [
+    "latex_drc_pct",
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "soil_moisture_pct",
+    "soil_ph",
+    "tree_count",
+    "tapping_system",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "x_train_sha256": "b2595e8b13fae026cd2bf8d8f6c8a3ce1d8e448f67b6aac218535f445fe33acc",
+  "y_train_sha256": "19b380b45a29becfe7dd62a0aa2d305c3c7e2e4f0a17e4d6ea4170d57fca91cc",
+  "model_sha256": "44e8faaf266e158bf2d98f3c2b68c4a2b5f85df0d4ecba21d2cbb4bfeb4d9ae4"
+}

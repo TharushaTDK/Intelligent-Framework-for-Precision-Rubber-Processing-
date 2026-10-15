@@ -1,0 +1,62 @@
+{
+  "stage": "17_dummy_mean_regression",
+  "task": "drc_prediction",
+  "target": "latex_drc_pct",
+  "model_family": "dummy_mean",
+  "model_class": "DummyRegressor",
+  "role": "baseline",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "constant": null,
+    "quantile": null,
+    "strategy": "mean"
+  },
+  "cv": {
+    "folds": 5,
+    "primary_metric": "RMSE",
+    "MAE": {
+      "mean": 1.525626210217315,
+      "std": 0.025403118832049355
+    },
+    "RMSE": {
+      "mean": 1.9118006994779513,
+      "std": 0.051309838148554235
+    },
+    "R2": {
+      "mean": -0.01654287800863874,
+      "std": 0.01945217640062383
+    },
+    "within_tolerance_pct": {
+      "mean": 41.26315789473684,
+      "std": 2.8557178876316893
+    }
+  },
+  "tolerance": 1.0,
+  "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
+  "train_rows": 475,
+  "n_features": 15,
+  "feature_names": [
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "forecast_rain_next_6h_mm",
+    "rainfall_last_3days_mm",
+    "wind_speed_kmh",
+    "soil_moisture_pct",
+    "soil_ph",
+    "estate_id",
+    "tree_count",
+    "tapping_system",
+    "days_since_last_tap",
+    "previous_collection_yield_litres",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "x_train_sha256": "04125dc4e5ffda6e02a3549ce136e0ce0e0ba9a6056b46e8f79d6e0f65a5f980",
+  "y_train_sha256": "81d3f1a9366b61dcacdb2d4447fcc93deead96674864b6197ee3892162f47e96",
+  "model_sha256": "5273bce48a7979c2d961c2da0b5d2cceb6be0080c8ea413ffb80be6ebf63091a"
+}

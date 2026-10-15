@@ -1,0 +1,20 @@
+{
+  "project": "RubberSense Component 1",
+  "stage": "29_classification_final_selection",
+  "selection_scope": "DEVELOPMENT_ONLY (stratified CV on the training partition)",
+  "selection_rule": {
+    "primary": "cv_macro_f1_mean descending",
+    "tie_breaker_1": "cv_macro_recall_mean descending",
+    "tie_breaker_2": "cv_accuracy_mean descending"
+  },
+  "candidates_considered": 9,
+  "tapping_advisory": {
+    "selected_model": "tuned_gradient_boosting",
+    "selected_role": "tuned",
+    "cv_macro_f1_mean": 0.6610312235260597,
+    "cv_accuracy_mean": 0.6666666666666667
+  },
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "test_loaded": false,
+  "test_evaluated": false
+}

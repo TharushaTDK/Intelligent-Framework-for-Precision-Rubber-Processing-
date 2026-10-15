@@ -1,0 +1,14 @@
+,correlation_with_target
+relative_humidity_pct,-0.803487148867436
+price_lkr_per_kg,0.47732808974453667
+rainfall_last_3days_mm,-0.3407258082118275
+soil_moisture_pct,-0.3292570823362048
+rainfall_last_6h_mm,-0.2463923369083802
+days_since_last_tap,0.22705100251034735
+previous_collection_yield_litres,0.11521999857950578
+soil_ph,0.0564149044315457
+actual_collection_yield_litres,0.04413940586019178
+tree_count,-0.032305143096654464
+temperature_c,0.03026997032664306
+forecast_rain_next_6h_mm,-0.026583635495986035
+wind_speed_kmh,-0.018748061554482557

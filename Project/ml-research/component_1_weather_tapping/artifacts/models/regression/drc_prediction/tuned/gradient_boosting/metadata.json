@@ -1,0 +1,104 @@
+{
+  "stage": "18_regression_tuning",
+  "task": "drc_prediction",
+  "target": "latex_drc_pct",
+  "model_family": "gradient_boosting",
+  "model_name": "tuned_gradient_boosting",
+  "role": "tuned",
+  "model_class": "GradientBoostingRegressor",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": true,
+  "search": {
+    "method": "GridSearchCV",
+    "cv_folds": 3,
+    "scoring": "neg_root_mean_squared_error",
+    "grid": {
+      "model__n_estimators": [
+        100,
+        200
+      ],
+      "model__learning_rate": [
+        0.03,
+        0.06
+      ],
+      "model__max_depth": [
+        2,
+        3
+      ]
+    }
+  },
+  "best_params": {
+    "model__learning_rate": 0.06,
+    "model__max_depth": 2,
+    "model__n_estimators": 200
+  },
+  "best_search_score_cv_rmse": 0.8383726152174024,
+  "cv": {
+    "folds": 5,
+    "primary_metric": "RMSE",
+    "MAE": {
+      "mean": 0.6733332620463139,
+      "std": 0.05882264464686849
+    },
+    "RMSE": {
+      "mean": 0.8480759229299946,
+      "std": 0.07216784119857578
+    },
+    "R2": {
+      "mean": 0.7983481581936641,
+      "std": 0.0365722018995182
+    },
+    "within_tolerance_pct": {
+      "mean": 75.15789473684211,
+      "std": 4.293911169341294
+    }
+  },
+  "parameters": {
+    "alpha": 0.9,
+    "ccp_alpha": 0.0,
+    "criterion": "friedman_mse",
+    "init": null,
+    "learning_rate": 0.06,
+    "loss": "squared_error",
+    "max_depth": 2,
+    "max_features": null,
+    "max_leaf_nodes": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "n_estimators": 200,
+    "n_iter_no_change": null,
+    "random_state": 340,
+    "subsample": 1.0,
+    "tol": 0.0001,
+    "validation_fraction": 0.1,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "tolerance": 1.0,
+  "train_rows": 475,
+  "feature_names": [
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "forecast_rain_next_6h_mm",
+    "rainfall_last_3days_mm",
+    "wind_speed_kmh",
+    "soil_moisture_pct",
+    "soil_ph",
+    "estate_id",
+    "tree_count",
+    "tapping_system",
+    "days_since_last_tap",
+    "previous_collection_yield_litres",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "x_train_sha256": "0d43f447bd7b7b49194021c30d0744b0ed35785034a4a1af6492342b287c24a6",
+  "y_train_sha256": "81d3f1a9366b61dcacdb2d4447fcc93deead96674864b6197ee3892162f47e96",
+  "model_sha256": "19475009a289d9c099a352cac94409a84cfa9a265cfac3f8cf44e5dd5bcb0290"
+}

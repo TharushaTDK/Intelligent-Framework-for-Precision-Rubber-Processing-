@@ -1,0 +1,22 @@
+RAW DATA QUALITY REPORT\nShape: (600, 22)\nTotal missing cells: 31\n\nMissing values by column:\nrecord_id                           0
+timestamp_local                     0
+village_code                        0
+temperature_c                       5
+relative_humidity_pct               4
+rainfall_last_6h_mm                 0
+forecast_rain_next_6h_mm            0
+rainfall_last_3days_mm              0
+wind_speed_kmh                      0
+soil_moisture_pct                   7
+soil_ph                             5
+latex_drc_pct                       6
+tree_count                          0
+tapping_system                      0
+days_since_last_tap                 0
+planned_tapping_time                0
+previous_collection_yield_litres    0
+actual_collection_time              0
+actual_collection_yield_litres      4
+price_lkr_per_kg                    0
+price_source_status                 0
+estate_id                           0\n\nExact duplicate rows (excluding record_id): 0\nDuplicate record IDs: 0\nNegative rainfall values: 2\nSoil pH outside 0-14: 5\n\nReview source provenance before using any row as research evidence.

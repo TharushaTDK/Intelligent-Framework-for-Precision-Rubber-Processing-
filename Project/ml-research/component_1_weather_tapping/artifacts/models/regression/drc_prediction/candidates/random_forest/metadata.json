@@ -1,0 +1,77 @@
+{
+  "stage": "17_random_forest_regression",
+  "task": "drc_prediction",
+  "target": "latex_drc_pct",
+  "model_family": "random_forest",
+  "model_class": "RandomForestRegressor",
+  "role": "candidates",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "criterion": "squared_error",
+    "max_depth": null,
+    "max_features": 1.0,
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 2,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 250,
+    "n_jobs": 1,
+    "oob_score": false,
+    "random_state": 340,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "cv": {
+    "folds": 5,
+    "primary_metric": "RMSE",
+    "MAE": {
+      "mean": 0.74679902997691,
+      "std": 0.06067611671726883
+    },
+    "RMSE": {
+      "mean": 0.945890679827975,
+      "std": 0.08874498746111185
+    },
+    "R2": {
+      "mean": 0.7482531091448608,
+      "std": 0.05361351689716275
+    },
+    "within_tolerance_pct": {
+      "mean": 72.0,
+      "std": 4.919293240230705
+    }
+  },
+  "tolerance": 1.0,
+  "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
+  "train_rows": 475,
+  "n_features": 15,
+  "feature_names": [
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "forecast_rain_next_6h_mm",
+    "rainfall_last_3days_mm",
+    "wind_speed_kmh",
+    "soil_moisture_pct",
+    "soil_ph",
+    "estate_id",
+    "tree_count",
+    "tapping_system",
+    "days_since_last_tap",
+    "previous_collection_yield_litres",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "x_train_sha256": "1f9e7f90e6712b056c7a1fe514c42b5ef7ef142e751c894f03576ff96cfe7bff",
+  "y_train_sha256": "81d3f1a9366b61dcacdb2d4447fcc93deead96674864b6197ee3892162f47e96",
+  "model_sha256": "ae309e7d0f25e3da20275c8fa9b36a3c601b383b66290d1d297efe656cfbfe1d"
+}

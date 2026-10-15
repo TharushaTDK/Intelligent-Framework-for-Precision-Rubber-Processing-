@@ -1,0 +1,32 @@
+{
+  "stage": "33_export_final_models",
+  "pipelines": [
+    {
+      "kind": "regression",
+      "task": "drc_prediction",
+      "pipeline": "component1_drc_prediction_pipeline.pkl",
+      "sha256": "19475009a289d9c099a352cac94409a84cfa9a265cfac3f8cf44e5dd5bcb0290"
+    },
+    {
+      "kind": "regression",
+      "task": "price_estimation",
+      "pipeline": "component1_price_estimation_pipeline.pkl",
+      "sha256": "341df031b5fed3743311be05441e483afba909d02ad51a92dc000c05af4de0ff"
+    },
+    {
+      "kind": "classification",
+      "task": "tapping_advisory",
+      "pipeline": "component1_tapping_advisory_pipeline.pkl",
+      "sha256": "f24b149bc2638cad29bdccc111b66a376972cf7d975873f542379a0b7b54c230"
+    }
+  ],
+  "artifact_count": 71,
+  "trained_models": 29,
+  "documents": [
+    "component1_final_ml_model_summary.md",
+    "component1_final_methodology_and_limitations.md",
+    "component1_data_provenance_and_limitations.md"
+  ],
+  "deployment_note": "Exported pipelines are copies of the train-fitted, CV-selected models; not refit on the full dataset.",
+  "dataset_provenance": "synthetic; not real-world evidence"
+}

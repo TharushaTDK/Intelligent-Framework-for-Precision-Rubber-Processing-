@@ -1,0 +1,1 @@
+Feature correlations are exploratory and do not prove causation. Estate ID is categorical and may not generalize to unseen estates. Collection-time prediction is excluded because no suitable training target is available.

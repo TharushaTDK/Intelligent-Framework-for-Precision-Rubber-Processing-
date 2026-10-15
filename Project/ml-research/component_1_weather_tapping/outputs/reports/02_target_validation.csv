@@ -1,0 +1,4 @@
+target,n,missing,min,max,outside_expected_range,target_type
+latex_drc_pct,594,6,25.36324922341013,37.80425183938794,0,regression
+price_lkr_per_kg,600,0,368.0,449.0,0,regression
+tapping_suitability_proxy,600,0,,,0,classification proxy; rule-derived with simulated uncertainty
