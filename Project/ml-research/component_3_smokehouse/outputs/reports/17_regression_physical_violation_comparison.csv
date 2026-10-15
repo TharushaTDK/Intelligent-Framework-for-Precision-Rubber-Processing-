@@ -1,0 +1,9 @@
+Model,Model_Type,Negative_Predictions,Predictions_Above_126h,Total_Physical_Violations,Physical_Violation_Rate_pct
+Dummy_Mean,Baseline,0,0,0,0.0
+Extra_Trees,Candidate,0,0,0,0.0
+Random_Forest,Candidate,0,0,0,0.0
+HistGradientBoosting,Candidate,1,0,1,0.024044241404183698
+Gradient_Boosting,Candidate,12,0,12,0.2885308968502044
+XGBoost,Candidate,57,0,57,1.3705217600384707
+Full_Linear,Baseline,53,33,86,2.067804760759798
+Elapsed_Only_Linear,Baseline,174,0,174,4.1836980043279635

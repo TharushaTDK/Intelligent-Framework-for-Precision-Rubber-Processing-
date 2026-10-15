@@ -1,0 +1,52 @@
+COMPONENT 3 - STAGE 29: FINAL CLASSIFICATION SELECTION
+==============================================================================
+
+TARGET
+------
+Fire_Risk_Label: Normal / Warning / Critical
+
+SELECTION POLICY
+----------------
+Warning Recall >= 0.80
+Critical Recall >= 0.50
+Among eligible candidates: highest Validation Macro-F1.
+Tie-breaker: highest Validation Balanced Accuracy.
+
+SELECTED CONFIGURATION
+----------------------
+Model family: XGBoost
+Trial: XGB_03
+Validation Macro-F1: 0.6831
+Validation Balanced Accuracy: 0.8092
+Warning Recall: 0.8929
+Critical Recall: 0.6111
+
+GLOBAL MACRO-F1 LEADER
+----------------------
+Model family: XGBoost
+Trial: XGB_08
+Validation Macro-F1: 0.7049
+Critical Recall: 0.3333
+Also selected: False
+
+INTERPRETATION
+--------------
+The highest-Macro-F1 trial was not automatically selected because the fire-risk task also requires adequate Warning and Critical detection.
+
+MODEL ARTIFACT POLICY
+---------------------
+No classifier artifact is created or required in Stage 29.
+Stage 29 saves the selected configuration and metrics only.
+Stage 30 will instantiate the selected configuration for group-aware cross-validation.
+
+TEST PROTECTION
+---------------
+Final Test dataset exists: True
+Final Test contents loaded: False
+Final Test remains frozen until Stage 31.
+
+NEXT STEP
+---------
+Stage 30 - Group-aware cross-validation using complete Batch_ID groups.
+
+FINAL STATUS: STAGE 29 PASS

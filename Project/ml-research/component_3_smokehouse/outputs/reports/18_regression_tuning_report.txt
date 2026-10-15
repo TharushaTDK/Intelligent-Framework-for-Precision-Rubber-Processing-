@@ -1,0 +1,91 @@
+COMPONENT 3 - STAGE 18: REGRESSION HYPERPARAMETER TUNING
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 18 tunes only the two model families shortlisted by Stage 17: Gradient Boosting and XGBoost. Every configuration is fitted on Train only and evaluated on Validation only. Final Test is not loaded.
+
+SEARCH DESIGN
+-------------
+Gradient Boosting trials: 10
+XGBoost trials: 10
+Total trials: 20
+Primary metric: Validation MAE
+Tie-breakers: Validation RMSE, then Validation R²
+
+The search is intentionally bounded because only two whole batches form the development Validation set. A very large search could over-optimize that specific holdout. Stage 30 will later provide group-aware robustness evidence.
+
+BEST TUNED RESULT PER FAMILY
+----------------------------
+ Tuned_Model_Rank      Model_Family Trial_ID  Validation_MAE  Validation_RMSE  Validation_R2  Train_MAE  MAE_Generalization_Gap  Negative_Predictions  Predictions_Above_126h
+                1 Gradient_Boosting    GB_02        4.102382         5.162022       0.977146   1.315554                2.786827                    12                       0
+                2           XGBoost   XGB_02        4.274154         5.304637       0.975866   1.147950                3.126204                    33                       0
+
+UNTUNED VS TUNED
+----------------
+     Model_Family  Untuned_MAE  Tuned_MAE  MAE_Improvement_pct  Untuned_RMSE  Tuned_RMSE  RMSE_Improvement_pct  Untuned_R2  Tuned_R2  R2_Change Best_Trial_ID
+Gradient_Boosting     4.149714   4.102382             1.140619      5.204995    5.162022              0.825615    0.976764  0.977146   0.000382         GB_02
+          XGBoost     4.472320   4.274154             4.430945      5.408271    5.304637              1.916218    0.974914  0.975866   0.000952        XGB_02
+
+BEST GRADIENT BOOSTING PARAMETERS
+---------------------------------
+learning_rate: 0.03
+n_estimators: 300
+max_depth: 3
+min_samples_leaf: 1
+subsample: 1.0
+
+BEST XGBOOST PARAMETERS
+-----------------------
+learning_rate: 0.03
+n_estimators: 400
+max_depth: 3
+min_child_weight: 1.0
+subsample: 0.9
+colsample_bytree: 0.9
+reg_alpha: 0.0
+reg_lambda: 1.0
+gamma: 0.0
+
+STAGE-18 VALIDATION LEADER
+--------------------------
+Model family: Gradient_Boosting
+Trial ID: GB_02
+Validation MAE: 4.102382 h
+Validation RMSE: 5.162022 h
+Validation R²: 0.977146
+
+REPRODUCIBILITY
+---------------
+GB_01 reproduces Stage 13: True
+XGB_01 reproduces Stage 15: True
+
+METHODOLOGICAL CAUTION
+----------------------
+The Validation set has now been used for model-family comparison and bounded hyperparameter selection. Its metrics are development metrics, not an unbiased final generalization estimate. The final Test set remains untouched for Stage 31. Stage 30 will also provide group-aware cross-validation evidence.
+
+LEAKAGE PROTECTION
+------------------
+- Every tuning trial was fitted on Train only.
+- Validation was used for development tuning only.
+- Final Test rows were not loaded.
+- No Test-based model or parameter decision was made.
+
+PASS / FAIL CHECKS
+------------------
+                                             Check Status                                                       Details
+        Stage-17 shortlist matches expected models   PASS                                    Gradient_Boosting, XGBoost
+                  Expected Train/Validation shapes   PASS                      Train=(16246, 20); Validation=(4159, 20)
+                           All model inputs finite   PASS                     No missing/non-finite transformed inputs.
+                       Expected tuning trial count   PASS                                        Trials=20; expected=20
+                         All tuning metrics finite   PASS                   Train/Validation MAE, RMSE and R² verified.
+Best result retained for both shortlisted families   PASS                                    Gradient_Boosting, XGBoost
+   Gradient Boosting reference reproduces Stage 13   PASS                  Stage13 MAE=4.14971395; GB_01 MAE=4.14971395
+             XGBoost reference reproduces Stage 15   PASS                 Stage15 MAE=4.47231983; XGB_01 MAE=4.47231983
+           All configurations fitted on Train only   PASS                   Validation used for tuning evaluation only.
+                               No Test rows loaded   PASS                   Only Component3_Test.csv existence checked.
+               Final regression model not declared   PASS Stage 19 remains responsible for final development selection.
+
+STAGE 18 STATUS: PASS

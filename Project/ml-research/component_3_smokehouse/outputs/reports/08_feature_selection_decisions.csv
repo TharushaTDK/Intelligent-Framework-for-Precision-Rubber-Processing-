@@ -1,0 +1,37 @@
+Feature,Stage08_Decision,Regression_Selected,Classification_Selected,Reason,Selection_Basis
+Smokehouse_ID,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Layer_ID,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_Trend,DROP,False,False,Coarse discretized trend is redundant with richer numeric temporal rate/change features.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_Trend,DROP,False,False,Coarse discretized trend is redundant with richer numeric temporal rate/change features.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_C,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_%,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Elapsed_Drying_Hours,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Number_of_Sheets,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Layer_Area_m2,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_Change,DROP,False,False,Source adjacent-change field is superseded by timestamp-aware rates and exact 30/60-minute changes.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_Change,DROP,False,False,Source adjacent-change field is superseded by timestamp-aware rates and exact 30/60-minute changes.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Time_Since_Previous_Reading_Min,DROP,False,False,Near-constant availability/warm-up indicator; not retained as a core physical predictor.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_Rate_per_10min,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_Rate_per_10min,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_Lag_10m,DROP,False,False,Exact lag value is algebraically redundant when current value and corresponding change are available.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_Lag_10m,DROP,False,False,Exact lag value is algebraically redundant when current value and corresponding change are available.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_Change_10m,DROP,False,False,Short-term signal retained through gap-aware per-10-minute rate; exact 10-minute change is unavailable across packet-loss gaps.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_Change_10m,DROP,False,False,Short-term signal retained through gap-aware per-10-minute rate; exact 10-minute change is unavailable across packet-loss gaps.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_Lag_30m,DROP,False,False,Exact lag value is algebraically redundant when current value and corresponding change are available.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_Lag_30m,DROP,False,False,Exact lag value is algebraically redundant when current value and corresponding change are available.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_Change_30m,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_Change_30m,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_Lag_60m,DROP,False,False,Exact lag value is algebraically redundant when current value and corresponding change are available.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_Lag_60m,DROP,False,False,Exact lag value is algebraically redundant when current value and corresponding change are available.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_Change_60m,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_Change_60m,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_RollMean_30m,DROP,False,False,Rolling mean is highly redundant with the current sensor value in this smooth time series; recent history is retained through change and variability features.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_RollMean_30m,DROP,False,False,Rolling mean is highly redundant with the current sensor value in this smooth time series; recent history is retained through change and variability features.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_RollStd_30m,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_RollStd_30m,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Observation_Count_30m,DROP,False,False,Near-constant availability/warm-up indicator; not retained as a core physical predictor.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_RollMean_60m,DROP,False,False,Rolling mean is highly redundant with the current sensor value in this smooth time series; recent history is retained through change and variability features.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_RollMean_60m,DROP,False,False,Rolling mean is highly redundant with the current sensor value in this smooth time series; recent history is retained through change and variability features.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Temperature_RollStd_60m,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Humidity_RollStd_60m,KEEP,True,True,Deployment-safe physical/context or temporal feature retained by Stage-08 policy.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE
+Observation_Count_60m,DROP,False,False,Near-constant availability/warm-up indicator; not retained as a core physical predictor.,STRUCTURAL_DOMAIN_RUNTIME_ONLY_NOT_TARGET_PERFORMANCE

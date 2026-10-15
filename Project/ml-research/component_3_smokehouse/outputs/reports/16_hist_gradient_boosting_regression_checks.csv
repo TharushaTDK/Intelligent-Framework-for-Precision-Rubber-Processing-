@@ -1,0 +1,12 @@
+Check,Status,Details
+Expected Train shape,PASS,"Shape=(16246, 20)"
+Expected Validation shape,PASS,"Shape=(4159, 20)"
+No missing/non-finite model inputs,PASS,Stage-10 matrices verified.
+Previous validation results loaded,PASS,"Current previous best=Gradient_Boosting, MAE=4.149714"
+Prediction lengths preserved,PASS,"Train=16,246; Validation=4,159"
+All predictions finite,PASS,No NaN or infinite predictions.
+Configured iterations completed,PASS,n_iter_=300; configured max_iter=300
+Model fitted on Train only,PASS,Validation used only for development evaluation.
+Internal early stopping disabled,PASS,No hidden Train holdout; early_stopping=False.
+No hyperparameter tuning performed,PASS,Single fixed HistGradientBoosting configuration; Stage 18 reserved for tuning.
+Final Test not loaded,PASS,Only Test file existence checked; contents not read.

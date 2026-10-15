@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+venv/
+
+# Local environment secrets
+.env
+
+# Test/cache files
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Oversized intermediate ML research artifacts (exceed GitHub's 100MB file limit).
+# These are comparison-candidate models, not the final selected models, and are
+# regenerable by rerunning their research stage script against the frozen dataset.
+ml-research/component_3_smokehouse/artifacts/models/regression/extra_trees/extra_trees_regressor.joblib
+ml-research/component_3_smokehouse/artifacts/models/regression/random_forest/random_forest_regressor.joblib

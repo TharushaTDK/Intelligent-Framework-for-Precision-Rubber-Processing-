@@ -1,0 +1,83 @@
+COMPONENT 3 - STAGE 16: HISTGRADIENTBOOSTING REGRESSION
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 16 trains a fixed, untuned HistGradientBoostingRegressor. It discretizes numeric feature values into histogram bins before tree split search, providing an efficient gradient-boosting implementation. The model is fitted on Train only and evaluated on Validation only.
+
+FIXED CONFIGURATION
+-------------------
+loss: squared_error
+learning_rate: 0.05
+max_iter: 300
+max_leaf_nodes: 31
+max_depth: None
+min_samples_leaf: 20
+l2_regularization: 1.0
+max_bins: 255
+early_stopping: False
+random_state: 42
+
+RESULTS
+-------
+     Split      MAE     RMSE       R2  Negative_Predictions  Predictions_Above_126h  Prediction_Min  Prediction_Max
+     Train 0.538415 0.691791 0.999568                     0                       0        0.190588      125.564759
+Validation 5.262355 6.151742 0.967542                     1                       0       -0.139242      117.447128
+
+PREVIOUS VALIDATION RESULTS
+---------------------------
+            Model      MAE     RMSE       R2
+Gradient_Boosting 4.149714 5.204995 0.976764
+          XGBoost 4.472320 5.408271 0.974914
+    Random_Forest 5.066943 6.275698 0.966221
+      Extra_Trees 6.451669 7.438466 0.952545
+      Full_Linear 7.853900 8.874091 0.932459
+
+COMPARISON WITH CURRENT BEST
+----------------------------
+Previous best model: Gradient_Boosting
+Previous best Validation MAE: 4.149714 h
+HistGradientBoosting Validation MAE: 5.262355 h
+MAE improvement vs Full Linear: 32.996915%
+MAE improvement vs previous best: -26.812482%
+RMSE improvement vs previous best: -18.189213%
+R² change vs previous best: -0.009222
+Beats previous best by Validation MAE: False
+
+GENERALIZATION GAP
+------------------
+Validation MAE - Train MAE: 4.723940 h
+Validation RMSE - Train RMSE: 5.459952 h
+Train R² - Validation R²: 0.032025
+
+MODEL EXPLAINABILITY NOTE
+-------------------------
+HistGradientBoostingRegressor does not provide the same native impurity-based feature_importances_ attribute used by Random Forest, Extra Trees, Gradient Boosting, and XGBoost. No ad-hoc interpretation method is added here because final model explainability is reserved for Stage 32 using SHAP.
+
+LEAKAGE PROTECTION
+------------------
+- HistGradientBoosting fitted on Train only.
+- Validation used only for development evaluation.
+- Internal early stopping was disabled.
+- No hyperparameter search was performed.
+- Final Test rows were not loaded.
+- Final Test remains frozen until Stage 31.
+
+PASS / FAIL CHECKS
+------------------
+                             Check Status                                                                        Details
+              Expected Train shape   PASS                                                              Shape=(16246, 20)
+         Expected Validation shape   PASS                                                               Shape=(4159, 20)
+No missing/non-finite model inputs   PASS                                                    Stage-10 matrices verified.
+Previous validation results loaded   PASS                          Current previous best=Gradient_Boosting, MAE=4.149714
+      Prediction lengths preserved   PASS                                                 Train=16,246; Validation=4,159
+            All predictions finite   PASS                                                No NaN or infinite predictions.
+   Configured iterations completed   PASS                                           n_iter_=300; configured max_iter=300
+        Model fitted on Train only   PASS                               Validation used only for development evaluation.
+  Internal early stopping disabled   PASS                                 No hidden Train holdout; early_stopping=False.
+No hyperparameter tuning performed   PASS Single fixed HistGradientBoosting configuration; Stage 18 reserved for tuning.
+             Final Test not loaded   PASS                           Only Test file existence checked; contents not read.
+
+STAGE 16 STATUS: PASS

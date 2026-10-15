@@ -1,0 +1,221 @@
+{
+  "component": "Component 3 - Smart Layer-Wise Rubber Smokehouse Drying-Time & Fire-Risk Prediction System",
+  "model_version": "component3-classification-v2-ordinal",
+  "stage": "classification_v2_finalization",
+  "status": "FINAL_RESEARCH_EXPORT",
+  "promotion_history": [
+    {
+      "version": "component3-stage33-v1",
+      "classifier": "XGBoost XGB_03 (multiclass, argmax)",
+      "status": "SUPERSEDED_HISTORICAL_BASELINE",
+      "superseded_on": "classification_v2 finalization task",
+      "superseded_reason": "Ordinal XGBoost Classifier with Argmax Decision Rule passed the promotion-readiness gate with higher Critical Recall, Critical F2, Macro F1, and Balanced Accuracy on development-only GroupKFold evidence, while remaining above the 0.80 Warning Recall guardrail.",
+      "archived_artifact": "backend/app/ml/component_3_smokehouse/archive/fire_risk_xgb03_baseline_pipeline.pkl",
+      "archived_artifact_sha256": "8f375f81b16213e5bde09a6f4519e65db2bb872f4b1f076f4565ae4af6a601aa",
+      "archived_metadata": "backend/app/ml/component_3_smokehouse/archive/component3_model_metadata_xgb03_baseline.json",
+      "historical_locked_stage31_test": {
+        "Accuracy": 0.9078363725973386,
+        "Balanced_Accuracy": 0.630764826660349,
+        "Macro_F1": 0.5179549048807933,
+        "Warning_Recall": 0.9861111111111112,
+        "Critical_Recall": 0.0,
+        "note": "This Stage-31 evaluation belongs to XGB_03 only. It is preserved unmodified and must never be presented as an evaluation of the Ordinal classifier."
+      },
+      "historical_stage30_development_groupkfold": {
+        "Accuracy": 0.9558441558441558,
+        "Balanced_Accuracy": 0.7249685993484523,
+        "Macro_F1": 0.6452671121687584,
+        "Warning_Recall": 0.8564814814814815,
+        "Critical_Recall": 0.35507246376811596,
+        "Critical_Precision": 0.4336,
+        "Critical_F1": 0.3929,
+        "Critical_F2": 0.3684
+      }
+    }
+  ],
+  "training_scope": {
+    "fit_data": "Development = Train + Validation (Stage-09 batch-aware split)",
+    "development_rows": 20405,
+    "development_batches": 10,
+    "critical_containing_development_batches": 6,
+    "final_test_included_in_fit": false,
+    "note": "Component3_Test.csv (4,058 rows, 2 batches) was never loaded for fitting, threshold selection, or promotion decision-making for the Ordinal classifier. Existence-checked (SHA256) only."
+  },
+  "feature_contract": {
+    "raw_selected_feature_count": 17,
+    "selected_features": [
+      "Smokehouse_ID",
+      "Layer_ID",
+      "Temperature_C",
+      "Humidity_%",
+      "Elapsed_Drying_Hours",
+      "Number_of_Sheets",
+      "Layer_Area_m2",
+      "Temperature_Rate_per_10min",
+      "Humidity_Rate_per_10min",
+      "Temperature_Change_30m",
+      "Humidity_Change_30m",
+      "Temperature_Change_60m",
+      "Humidity_Change_60m",
+      "Temperature_RollStd_30m",
+      "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m",
+      "Humidity_RollStd_60m"
+    ],
+    "numeric_features": [
+      "Temperature_C",
+      "Humidity_%",
+      "Elapsed_Drying_Hours",
+      "Number_of_Sheets",
+      "Layer_Area_m2",
+      "Temperature_Rate_per_10min",
+      "Humidity_Rate_per_10min",
+      "Temperature_Change_30m",
+      "Humidity_Change_30m",
+      "Temperature_Change_60m",
+      "Humidity_Change_60m",
+      "Temperature_RollStd_30m",
+      "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m",
+      "Humidity_RollStd_60m"
+    ],
+    "categorical_features": [
+      "Smokehouse_ID",
+      "Layer_ID"
+    ],
+    "transformed_feature_count": 20,
+    "transformed_feature_names": [
+      "Temperature_C",
+      "Humidity_%",
+      "Elapsed_Drying_Hours",
+      "Number_of_Sheets",
+      "Layer_Area_m2",
+      "Temperature_Rate_per_10min",
+      "Humidity_Rate_per_10min",
+      "Temperature_Change_30m",
+      "Humidity_Change_30m",
+      "Temperature_Change_60m",
+      "Humidity_Change_60m",
+      "Temperature_RollStd_30m",
+      "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m",
+      "Humidity_RollStd_60m",
+      "Smokehouse_ID_SH01",
+      "Smokehouse_ID_SH02",
+      "Layer_ID_L1",
+      "Layer_ID_L2",
+      "Layer_ID_L3"
+    ],
+    "unchanged_from_xgb03": true,
+    "note": "Identical Stage-07/Stage-08 feature contract as XGB_03. No feature engineering or feature selection was modified for the Ordinal classifier."
+  },
+  "regression": {
+    "pipeline": "backend/app/ml/component_3_smokehouse/drying_time_pipeline.pkl",
+    "model_family": "Gradient_Boosting",
+    "trial": "GB_02",
+    "status": "UNCHANGED_FROZEN",
+    "locked_final_test": {
+      "MAE": 3.756103085785247,
+      "RMSE": 4.299451102402451,
+      "R2": 0.9835396249444973,
+      "negative_predictions": 0
+    },
+    "stage30_development_groupkfold": {
+      "MAE": 3.1283152553831814,
+      "RMSE": 3.955783716566967,
+      "R2": 0.9860204176075086
+    },
+    "sha256": "5bc446c3802d3d1d8f4eb997253eee1095410c4ed43edac743990dc8f928fdd6",
+    "note": "Not touched, retrained, retuned, or re-evaluated during classification finalization."
+  },
+  "classification": {
+    "pipeline": "backend/app/ml/component_3_smokehouse/fire_risk_pipeline.pkl",
+    "model_name": "Ordinal XGBoost Classifier with Argmax Decision Rule",
+    "status": "ACTIVE_PROMOTED_CLASSIFIER",
+    "architecture": {
+      "type": "Two cumulative binary XGBoost estimators + deterministic probability reconstruction",
+      "shared_preprocessing": "Median imputation + StandardScaler (numeric), OneHotEncoder handle_unknown='ignore' (categorical) - identical recipe to Stage-10/Stage-30, fitted on Development only",
+      "O1": {
+        "definition": "P(Y >= Warning)",
+        "binary_target": {"Normal": 0, "Warning": 1, "Critical": 1},
+        "objective": "binary:logistic",
+        "eval_metric": "logloss",
+        "class_weighting": "compute_sample_weight('balanced'), computed from Development O1 target distribution"
+      },
+      "O2": {
+        "definition": "P(Y >= Critical)",
+        "binary_target": {"Normal": 0, "Warning": 0, "Critical": 1},
+        "objective": "binary:logistic",
+        "eval_metric": "logloss",
+        "class_weighting": "compute_sample_weight('balanced'), computed from Development O2 target distribution"
+      },
+      "probability_reconstruction": {
+        "monotonicity_correction": "p_ge_critical_corrected = min(p_ge_critical_raw, p_ge_warning)",
+        "P_Normal": "1 - p_ge_warning",
+        "P_Warning": "p_ge_warning - p_ge_critical_corrected",
+        "P_Critical": "p_ge_critical_corrected",
+        "raw_monotonicity_violation_rate_development": "580 / 20405 rows (2.84%)"
+      },
+      "decision_rule": "argmax(P_Normal, P_Warning, P_Critical) - no hidden thresholding"
+    },
+    "class_mapping": {
+      "0": "Normal",
+      "1": "Warning",
+      "2": "Critical"
+    },
+    "development_groupkfold_evidence": {
+      "methodology": "5-fold GroupKFold by Batch_ID, Development = Train + Validation only, fold-local preprocessing and fold-local balanced weights, Test never loaded",
+      "Accuracy": 0.966135751,
+      "Balanced_Accuracy": 0.740494748,
+      "Macro_F1": 0.6747922679,
+      "Warning_Recall": 0.8117283951,
+      "Critical_Recall": 0.4347826087,
+      "Critical_Precision": 0.4026845638,
+      "Critical_F1": 0.4181184669,
+      "Critical_F2": 0.4279600571,
+      "false_critical_alerts": 89,
+      "predicted_critical_count": 149,
+      "actual_critical_count": 138,
+      "critical_containing_batches_improved": 3,
+      "critical_containing_batches_unchanged": 2,
+      "critical_containing_batches_worsened": 1,
+      "critical_containing_batches_at_zero_recall": 2,
+      "comparison_source": "outputs/classification_v2/09_promotion_readiness_gate.csv, outputs/final_classification/final_ordinal_pooled_metrics.json"
+    },
+    "critical_detection_limitation": "Critical-class generalization remains limited and batch-sensitive. 2 of 6 Critical-containing development batches produced zero Critical Recall under every method tested across two full rounds of controlled experimentation. This is a structural data-scarcity limitation (only 6 of 10 development batches contain any Critical example), not solely a modeling deficiency. All Critical-risk performance claims must preserve this limitation.",
+    "no_test_used_for_selection": true,
+    "stage31_policy": "The historical Stage-31 locked test evaluated XGB_03 only and has NOT been rerun for the Ordinal classifier, because the Test set has already been observed historically during the XGB_03 research process and cannot be presented as an untouched independent test for a newly promoted model. See promotion_history above for the preserved XGB_03 Stage-31 result.",
+    "sha256": "61b4304b082672e9b7e0f91620e9854cac1abaabefd345a190e375110983083b"
+  },
+  "research_integrity": {
+    "dataset_type": "synthetic/simulated development data",
+    "field_collected_claim": false,
+    "test_based_retuning_after_stage31": false,
+    "test_used_for_ordinal_promotion": false,
+    "stage32_used_for_model_changes": false,
+    "deployment_scope": "Research/prototype decision support pending independent field/expert validation. NOT a certified fire alarm, guaranteed fire detector, or production safety device."
+  },
+  "artifact_reproduction": {
+    "research_regression_matches_stage31": true,
+    "ordinal_development_reproduction_exact": true,
+    "backend_regression_reload_matches_stage31": true,
+    "backend_ordinal_reload_matches_inmemory_refit": true,
+    "reload_test_label_mismatches": 0,
+    "reload_test_max_abs_probability_difference": 2.98e-08
+  },
+  "explainability": {
+    "method": "SHAP (TreeExplainer), computed separately for O1 and O2",
+    "location": "outputs/final_classification/ordinal_o1_shap_importance.csv, ordinal_o2_shap_importance.csv",
+    "note": "SHAP explains model behavior/association only, not physical causation. Historical Stage-32 XGB_03 SHAP evidence (outputs/reports/32_*) was not modified."
+  },
+  "software_environment": {
+    "python": "3.13.5",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit_learn": "1.9.1",
+    "xgboost": "3.4.1",
+    "joblib": "1.6.0",
+    "shap": "0.53.0"
+  }
+}

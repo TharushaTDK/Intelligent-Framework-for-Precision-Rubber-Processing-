@@ -1,0 +1,9 @@
+TARGET VALIDATION NOTES
+==============================
+Model 1 predicts water_amount_L and prepared_1pct_formic_acid_solution_mL.
+Model 2 predicts coagulation_time_hours.
+Expected available inputs in this dataset: drc, latex_volume_L, water_amount_L, prepared_1pct_formic_acid_solution_mL.
+
+This script checks column presence and basic numeric completeness only.
+It does not validate whether the target values are scientifically correct.
+The current dataset is synthetic demonstration data; do not treat model results from it as real-world evidence.

@@ -1,0 +1,29 @@
+COMPONENT 3 - RAW -> PREPROCESSED IDENTITY AUDIT
+==============================================================================
+
+Raw rows: 24,463
+Raw exact duplicates: 0
+Raw after exact dedup: 24,463
+Preprocessed rows: 24,463
+
+Raw-after-dedup fire-risk counts:
+Fire_Risk_Label
+Normal      23371
+Warning       936
+Critical      156
+
+Preprocessed fire-risk counts:
+Fire_Risk_Label
+Normal      23371
+Warning       936
+Critical      156
+
+Row count match: True
+Fire-risk counts preserved: True
+Rows missing from raw by stable key: 0
+Total target changes: 0
+
+FINAL STATUS: PASS
+Stage-4 preprocessing is consistent with the current raw dataset: no extra rows were created after exact duplicate removal and the research targets were preserved.
+
+Component3_Test.csv contents loaded: False

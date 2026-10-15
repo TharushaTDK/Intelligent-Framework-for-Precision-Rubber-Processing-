@@ -1,0 +1,7 @@
+Split,Class,Rows,Percentage
+Train,Normal,15646,96.30678320817432
+Train,Warning,480,2.9545734334605442
+Train,Critical,120,0.7386433583651361
+Validation,Normal,3973,95.52777109882183
+Validation,Warning,168,4.039432555902861
+Validation,Critical,18,0.4327963452753066

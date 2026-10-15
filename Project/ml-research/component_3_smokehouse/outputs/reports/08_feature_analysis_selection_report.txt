@@ -1,0 +1,129 @@
+COMPONENT 3 - STAGE 08: FEATURE ANALYSIS & SELECTION
+==============================================================================
+
+OVERALL STATUS: PASS
+
+METHODOLOGY SAFEGUARD
+---------------------
+Target-association statistics were calculated only for descriptive research reporting. They were NOT used to choose or drop features before the train/validation/test split. Feature selection was deterministic and based on leakage safety, runtime availability, redundancy, near-constant behavior, and findings from the earlier temporal/domain analysis.
+
+INPUT
+-----
+Rows: 24,463
+Columns: 41
+Stage-07 SHA-256: 4990acb69da8708a34d403e6fb08440a1bb978fb6dba40e948c12851f5ecdcb7
+Candidate features: 36
+
+REDUNDANCY ANALYSIS
+-------------------
+Numeric predictor pairs with |Pearson r| >= 0.95: 34
+
+                 Feature_A                  Feature_B  Pearson_Correlation  Absolute_Correlation
+   Humidity_Rate_per_10min        Humidity_Change_10m             1.000000              1.000000
+           Humidity_Change        Humidity_Change_10m             1.000000              1.000000
+Temperature_Rate_per_10min     Temperature_Change_10m             1.000000              1.000000
+        Temperature_Change     Temperature_Change_10m             1.000000              1.000000
+          Humidity_Lag_10m      Humidity_RollMean_30m             0.999859              0.999859
+           Humidity_Change    Humidity_Rate_per_10min             0.999814              0.999814
+        Temperature_Change Temperature_Rate_per_10min             0.999812              0.999812
+          Humidity_Lag_30m      Humidity_RollMean_60m             0.999764              0.999764
+     Humidity_RollMean_30m      Humidity_RollMean_60m             0.999675              0.999675
+                Humidity_%           Humidity_Lag_10m             0.999596              0.999596
+                Humidity_%      Humidity_RollMean_30m             0.999498              0.999498
+          Humidity_Lag_30m      Humidity_RollMean_30m             0.999494              0.999494
+          Humidity_Lag_10m      Humidity_RollMean_60m             0.999280              0.999280
+          Humidity_Lag_10m           Humidity_Lag_30m             0.998941              0.998941
+                Humidity_%      Humidity_RollMean_60m             0.998719              0.998719
+          Humidity_Lag_60m      Humidity_RollMean_60m             0.998700              0.998700
+       Temperature_Lag_10m   Temperature_RollMean_30m             0.998509              0.998509
+                Humidity_%           Humidity_Lag_30m             0.998117              0.998117
+          Humidity_Lag_30m           Humidity_Lag_60m             0.998114              0.998114
+       Temperature_Lag_30m   Temperature_RollMean_60m             0.997436              0.997436
+          Humidity_Lag_60m      Humidity_RollMean_30m             0.997127              0.997127
+          Humidity_Lag_10m           Humidity_Lag_60m             0.996328              0.996328
+  Temperature_RollMean_30m   Temperature_RollMean_60m             0.995559              0.995559
+             Temperature_C        Temperature_Lag_10m             0.995549              0.995549
+                Humidity_%           Humidity_Lag_60m             0.995483              0.995483
+             Temperature_C   Temperature_RollMean_30m             0.993592              0.993592
+       Temperature_Lag_30m   Temperature_RollMean_30m             0.993516              0.993516
+       Temperature_Lag_10m   Temperature_RollMean_60m             0.990499              0.990499
+       Temperature_Lag_10m        Temperature_Lag_30m             0.986856              0.986856
+             Temperature_C   Temperature_RollMean_60m             0.982669              0.982669
+       Temperature_Lag_60m   Temperature_RollMean_60m             0.982207              0.982207
+             Temperature_C        Temperature_Lag_30m             0.975213              0.975213
+       Temperature_Lag_30m        Temperature_Lag_60m             0.975207              0.975207
+       Temperature_Lag_60m   Temperature_RollMean_30m             0.960064              0.960064
+
+FEATURE SELECTION POLICY
+------------------------
+- Keep current temperature/humidity and known drying context.
+- Keep gap-aware short-term rate features.
+- Keep exact 30/60-minute changes because Stage 06 showed recent behavior is useful, especially for fire risk.
+- Keep 30/60-minute variability because the two variability scales are not deterministically identical.
+- Drop exact lag values because current + change already reconstruct the lag value algebraically.
+- Drop raw source change/trend columns because the timestamp-aware engineered features supersede them.
+- Drop near-constant availability indicators from the core predictor set.
+
+SELECTED FEATURES
+-----------------
+Regression selected count: 17
+Classification selected count: 17
+
+- Smokehouse_ID
+- Layer_ID
+- Temperature_C
+- Humidity_%
+- Elapsed_Drying_Hours
+- Number_of_Sheets
+- Layer_Area_m2
+- Temperature_Rate_per_10min
+- Humidity_Rate_per_10min
+- Temperature_Change_30m
+- Humidity_Change_30m
+- Temperature_Change_60m
+- Humidity_Change_60m
+- Temperature_RollStd_30m
+- Humidity_RollStd_30m
+- Temperature_RollStd_60m
+- Humidity_RollStd_60m
+
+TASK-SPECIFIC NOTE
+------------------
+At Stage 08 the same physically justified core sensor/context feature set is retained for regression and classification. This is intentional: both outputs describe the same smokehouse process, while the later models learn different nonlinear relationships and feature importances. No target-driven pre-split selection is performed.
+
+EXPECTED HISTORY-RELATED MISSINGNESS
+------------------------------------
+Regression selected missing cells: 768
+Classification selected missing cells: 768
+These missing values occur in temporal features near sequence starts or unavailable exact histories. They remain untouched here. Stage 10 will fit missing-value handling on training data only.
+
+DESCRIPTIVE TARGET ASSOCIATION
+------------------------------
+Regression numeric target associations are saved to:
+08_regression_target_association_descriptive.csv
+Classification numeric associations use the 4,098 unique hourly keeper/expert assessment events and are saved to:
+08_classification_numeric_association_descriptive.csv
+These association tables are for interpretation only and did not determine the feature list.
+
+LEAKAGE PROTECTION
+------------------
+- Actual_Total_Drying_Time is absent from the Stage-07 engineered dataset.
+- Batch_ID is not selected as a predictor.
+- Timestamp is not selected as a raw predictor.
+- Fire_Risk_Assessment_Timestamp is not selected as a predictor.
+- Neither prediction target is selected as a feature.
+- No previous/future fire-risk label is used.
+
+PASS / FAIL CHECKS
+------------------
+                                                      Check Status                                                                                                        Details
+                                         Expected row count   PASS                                                                                                    Rows=24,463
+                         All 36 Stage-07 candidates present   PASS                                                                                                  Candidates=36
+                         Regression selected features exist   PASS                                                                                                     Missing=[]
+                     Classification selected features exist   PASS                                                                                                     Missing=[]
+    Regression selected set has no forbidden leakage fields   PASS                                                                                                   Forbidden=[]
+Classification selected set has no forbidden leakage fields   PASS                                                                                                   Forbidden=[]
+              Unique hourly fire-risk assessments preserved   PASS                                                                                              Assessments=4,098
+         Selection policy did not use target-ranking output   PASS Feature decisions are hard-coded from structural/runtime/redundancy rules; target tables are descriptive only.
+
+STAGE 08 STATUS: PASS

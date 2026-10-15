@@ -1,0 +1,86 @@
+COMPONENT 3 - STAGE 13: GRADIENT BOOSTING REGRESSION
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 13 trains a fixed, untuned Gradient Boosting regressor. Gradient Boosting sequentially adds weak decision trees that correct errors from earlier trees. The model is fitted on Train only and evaluated on Validation only.
+
+FIXED CONFIGURATION
+-------------------
+loss: squared_error
+learning_rate: 0.05
+n_estimators: 200
+subsample: 1.0
+criterion: friedman_mse
+min_samples_split: 2
+min_samples_leaf: 1
+max_depth: 3
+max_features: None
+random_state: 42
+
+RESULTS
+-------
+     Split      MAE     RMSE       R2  Negative_Predictions  Predictions_Above_126h
+     Train 1.269878 1.623897 0.997618                     0                       0
+Validation 4.149714 5.204995 0.976764                    12                       0
+
+COMPARISON WITH PREVIOUS MODELS
+-------------------------------
+Full Linear Validation MAE: 7.853900 h
+Random Forest Validation MAE: 5.066943 h
+Gradient Boosting Validation MAE: 4.149714 h
+MAE improvement vs Full Linear: 47.163652%
+MAE improvement vs Random Forest: 18.102220%
+RMSE improvement vs Random Forest: 17.061098%
+R² change vs Random Forest: +0.010543
+Beats Random Forest by Validation MAE: True
+
+GENERALIZATION GAP
+------------------
+Validation MAE - Train MAE: 2.879836 h
+Validation RMSE - Train RMSE: 3.581098 h
+Train R² - Validation R²: 0.020854
+
+TOP 10 FEATURE IMPORTANCES
+--------------------------
+ Rank              Feature  Importance
+    1 Elapsed_Drying_Hours    0.673564
+    2           Humidity_%    0.307175
+    3     Number_of_Sheets    0.014368
+    4        Temperature_C    0.002044
+    5   Smokehouse_ID_SH01    0.000755
+    6  Humidity_Change_60m    0.000553
+    7        Layer_Area_m2    0.000424
+    8   Smokehouse_ID_SH02    0.000366
+    9          Layer_ID_L1    0.000320
+   10          Layer_ID_L3    0.000192
+
+INTERPRETATION CAUTION
+----------------------
+Impurity-based feature importance is only a preliminary model interpretation. Correlated predictors can share or redistribute importance. Final explainability will be performed in Stage 32 using SHAP.
+
+LEAKAGE PROTECTION
+------------------
+- Gradient Boosting fitted on Train only.
+- Validation used only for development evaluation.
+- No hyperparameter search was performed.
+- Final Test rows were not loaded.
+- Final Test remains frozen until Stage 31.
+
+PASS / FAIL CHECKS
+------------------
+                             Check Status                                                   Details
+              Expected Train shape   PASS                                         Shape=(16246, 20)
+         Expected Validation shape   PASS                                          Shape=(4159, 20)
+No missing/non-finite model inputs   PASS                               Stage-10 matrices verified.
+        Previous benchmarks loaded   PASS        FullLinear MAE=7.853900; RandomForest MAE=5.066943
+      Prediction lengths preserved   PASS                            Train=16,246; Validation=4,159
+            All predictions finite   PASS                           No NaN or infinite predictions.
+         Feature importances valid   PASS                Features=20; Importance sum=1.000000000000
+        Model fitted on Train only   PASS                      Validation used only for evaluation.
+No hyperparameter tuning performed   PASS Single fixed configuration; Stage 18 reserved for tuning.
+             Final Test not loaded   PASS      Only Test file existence checked; contents not read.
+
+STAGE 13 STATUS: PASS

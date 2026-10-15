@@ -1,0 +1,40 @@
+COMPONENT 3 - STAGE 33: EXPORT FINAL INFERENCE PIPELINES
+==============================================================================
+
+EXPORT STRATEGY
+---------------
+The frozen Stage-31 regression and classification configurations were refitted on the full Development dataset (Train + Validation) only.
+The Final Test was not included in fitting. It was used only to verify exact reproduction of the already-saved Stage-31 predictions.
+
+PIPELINES
+---------
+Regression: Gradient_Boosting / GB_02
+Classification: XGBoost / XGB_03
+Each pipeline contains numeric median imputation, StandardScaler, categorical OneHotEncoder and the frozen selected model.
+Stage-07 feature engineering is NOT inside the sklearn pipeline and must be constructed in backend logic before calling the pipeline.
+
+ARTIFACT VALIDATION
+-------------------
+Regression Stage-31 reproduction: True
+Classification Stage-31 reproduction: True
+Regression SHA256: 5bc446c3802d3d1d8f4eb997253eee1095410c4ed43edac743990dc8f928fdd6
+Classification SHA256: 8f375f81b16213e5bde09a6f4519e65db2bb872f4b1f076f4565ae4af6a601aa
+
+CLASSIFICATION LIMITATION
+-------------------------
+Locked final-test Warning Recall: 0.9861111111111112
+Locked final-test Critical Recall: 0.0
+Critical-risk detection remains a major documented limitation. The exported classifier is a research/prototype decision-support artifact and must not be described as a proven standalone Critical alarm.
+
+BACKEND LOCATION
+----------------
+D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\backend\app\ml\component_3_smokehouse\drying_time_pipeline.pkl
+D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\backend\app\ml\component_3_smokehouse\fire_risk_pipeline.pkl
+D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\backend\app\ml\component_3_smokehouse\component3_model_metadata.json
+D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\backend\app\ml\component_3_smokehouse\component3_inference_contract.json
+
+FINAL STATUS
+------------
+STAGE 33 EXPORT FINAL MODELS: PASS
+Component 3 ML research lifecycle stages 01-33 are complete.
+Next phase: FastAPI backend integration.

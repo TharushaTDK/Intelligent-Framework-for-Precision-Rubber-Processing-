@@ -1,0 +1,11 @@
+ORDINAL CLASSIFIER EXPLAINABILITY NOTES
+==============================================================================
+
+The final classifier is two independent binary XGBoost models (O1, O2), not one multiclass model. SHAP was computed separately for each.
+
+O1: Normal vs Warning-or-Higher (P(Y>=Warning))
+O2: Normal/Warning vs Critical (P(Y>=Critical)) - corresponds directly to Critical-severity behavior.
+
+SHAP values explain model behavior/association only. They are NOT evidence of physical causation.
+
+Historical Stage-32 SHAP evidence for XGB_03 (outputs/reports/32_*) was NOT modified or overwritten by this analysis.

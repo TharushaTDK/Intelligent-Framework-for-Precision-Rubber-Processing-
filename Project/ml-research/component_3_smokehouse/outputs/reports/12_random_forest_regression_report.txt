@@ -1,0 +1,87 @@
+COMPONENT 3 - STAGE 12: RANDOM FOREST REGRESSION
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 12 trains the first nonlinear regression candidate using a fixed, untuned Random Forest. The model is fitted on Train only and evaluated on Validation. Final Test remains untouched.
+
+FIXED CONFIGURATION
+-------------------
+n_estimators: 500
+criterion: squared_error
+max_depth: None
+min_samples_split: 2
+min_samples_leaf: 1
+max_features: 1.0
+bootstrap: True
+random_state: 42
+n_jobs: -1
+
+RESULTS
+-------
+     Split      MAE     RMSE       R2  Negative_Predictions  Predictions_Above_126h
+     Train 0.119377 0.206784 0.999961                     0                       0
+Validation 5.066943 6.275698 0.966221                     0                       0
+
+COMPARISON WITH STAGE-11 FULL LINEAR BASELINE
+---------------------------------------------
+Full Linear Validation MAE: 7.853900 h
+Random Forest Validation MAE: 5.066943 h
+MAE improvement: 35.485005%
+Full Linear Validation RMSE: 8.874091 h
+Random Forest Validation RMSE: 6.275698 h
+RMSE improvement: 29.280673%
+Full Linear Validation R²: 0.932459
+Random Forest Validation R²: 0.966221
+R² change: +0.033762
+Beats Full Linear by Validation MAE: True
+
+GENERALIZATION GAP
+------------------
+Validation MAE - Train MAE: 4.947566 h
+Validation RMSE - Train RMSE: 6.068914 h
+Train R² - Validation R²: 0.033740
+
+TOP 10 FEATURE IMPORTANCES
+--------------------------
+ Rank              Feature  Importance
+    1 Elapsed_Drying_Hours    0.810407
+    2           Humidity_%    0.171857
+    3     Number_of_Sheets    0.011098
+    4   Smokehouse_ID_SH01    0.001374
+    5   Smokehouse_ID_SH02    0.001222
+    6        Layer_Area_m2    0.001164
+    7          Layer_ID_L3    0.001088
+    8        Temperature_C    0.000489
+    9  Humidity_Change_60m    0.000274
+   10          Layer_ID_L1    0.000233
+
+INTERPRETATION CAUTION
+----------------------
+Random Forest impurity-based feature importance is useful for preliminary inspection but should not be treated as causal importance. Stage 32 will provide SHAP-based explainability for the final selected models.
+
+LEAKAGE PROTECTION
+------------------
+- Model fitted on Stage-10 Train matrix only.
+- Validation used only for development evaluation.
+- No hyperparameter search was performed.
+- No final Test rows were loaded.
+- Final Test remains frozen until Stage 31.
+
+PASS / FAIL CHECKS
+------------------
+                                Check Status                                                    Details
+                 Expected Train shape   PASS                                          Shape=(16246, 20)
+            Expected Validation shape   PASS                                           Shape=(4159, 20)
+   No missing/non-finite model inputs   PASS                                Stage-10 matrices verified.
+Stage-11 Full Linear benchmark loaded   PASS                   MAE=7.853900; RMSE=8.874091; R2=0.932459
+         Prediction lengths preserved   PASS                             Train=16,246; Validation=4,159
+               All predictions finite   PASS                            No NaN or infinite predictions.
+            Feature importances valid   PASS                 Features=20; Importance sum=1.000000000000
+           Model fitted on Train only   PASS                       Validation used only for evaluation.
+   No hyperparameter tuning performed   PASS Fixed untuned configuration; tuning reserved for Stage 18.
+                Final Test not loaded   PASS       Only Test file existence checked; contents not read.
+
+STAGE 12 STATUS: PASS

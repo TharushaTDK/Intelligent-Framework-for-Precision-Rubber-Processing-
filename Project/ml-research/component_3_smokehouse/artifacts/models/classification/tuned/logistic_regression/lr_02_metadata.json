@@ -1,0 +1,25 @@
+{
+  "stage": "28_bounded_classification_tuning",
+  "model_family": "Logistic_Regression",
+  "selected_trial_within_family": "LR_02",
+  "parameters": {
+    "C": 0.05,
+    "class_weight": "balanced",
+    "max_iter": 5000,
+    "random_state": 42,
+    "solver": "lbfgs",
+    "tol": 0.0001
+  },
+  "label_mapping": null,
+  "validation_macro_f1": 0.6284280762165442,
+  "validation_balanced_accuracy": 0.708028864145149,
+  "warning_recall": 0.9642857142857143,
+  "critical_recall": 0.2222222222222222,
+  "warning_f1": 0.5557461406518011,
+  "critical_f1": 0.36363636363636365,
+  "macro_f1_gap": 0.10637045041700022,
+  "fit_scope": "TRAIN_ONLY",
+  "validation_role": "BOUNDED_HYPERPARAMETER_SELECTION",
+  "test_loaded": false,
+  "model_sha256": "5adbb86b8ffd367b894986622fad8c85344ec06d651d75908f9dea1cb04aee63"
+}

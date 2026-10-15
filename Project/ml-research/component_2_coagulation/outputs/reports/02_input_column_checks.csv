@@ -1,0 +1,3 @@
+input_column,missing_values,non_numeric_values,unique_values,status
+drc,0,0,1600,STRUCTURE_OK_NEEDS_DOMAIN_VALIDATION
+latex_volume_L,0,0,2345,STRUCTURE_OK_NEEDS_DOMAIN_VALIDATION

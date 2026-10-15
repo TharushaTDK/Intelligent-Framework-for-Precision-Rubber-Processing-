@@ -1,0 +1,10 @@
+Check,Status,Details
+Row count preserved,PASS,"Rows=24,463"
+Targets remain complete,PASS,Missing target cells=0
+Actual_Total_Drying_Time excluded,PASS,Leakage/reference field must not enter engineered dataset.
+Metadata and targets preserved,PASS,Changed cells=0
+No future exact-lag values,PASS,Violations=0
+Sampling gaps preserved,PASS,10-min=24415; 20-min=12; other=0
+No duplicate observation keys,PASS,Extra duplicate keys=0
+Expected 36 Batch-Layer sequences,PASS,Sequences=36
+Candidate feature set created,PASS,Candidate features=36

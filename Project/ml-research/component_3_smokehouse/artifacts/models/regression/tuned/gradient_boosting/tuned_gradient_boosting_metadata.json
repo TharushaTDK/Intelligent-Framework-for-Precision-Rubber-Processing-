@@ -1,0 +1,27 @@
+{
+  "stage": "18_regression_tuning",
+  "model_family": "Gradient_Boosting",
+  "best_trial_id": "GB_02",
+  "best_parameters": {
+    "learning_rate": 0.03,
+    "n_estimators": 300,
+    "max_depth": 3,
+    "min_samples_leaf": 1,
+    "subsample": 1.0
+  },
+  "validation": {
+    "MAE": 4.102381542885221,
+    "RMSE": 5.162021658710703,
+    "R2": 0.9771461557253884,
+    "Negative_Predictions": 12,
+    "Predictions_Above_126h": 0,
+    "Prediction_Min": -1.4371879290807237,
+    "Prediction_Max": 116.55608710374452
+  },
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "HYPERPARAMETER_SELECTION",
+  "test_loaded": false,
+  "x_train_sha256": "2380a386f68d6bdf2be112c8ac0fac5c7365e19be8a8e74cbdd8dc94c8c0ab80",
+  "x_validation_sha256": "2de960e1ea7d3fbbfe4ac59c955829eb3d3d043cabd6b0ada8382c7eb5749e3c",
+  "model_sha256": "b7f74b428cbba8c5de05405e86327bac8eec6849221e0ae2a279099b74019d64"
+}

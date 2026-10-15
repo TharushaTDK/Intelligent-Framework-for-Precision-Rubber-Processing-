@@ -1,0 +1,50 @@
+{
+  "stage": "18_regression_hyperparameter_tuning",
+  "overall_status": "PASS",
+  "search_strategy": "bounded_predefined_validation_search",
+  "primary_metric": "Validation_MAE",
+  "gradient_boosting_trials": 10,
+  "xgboost_trials": 10,
+  "best_gradient_boosting": {
+    "trial_id": "GB_02",
+    "parameters": {
+      "learning_rate": 0.03,
+      "n_estimators": 300,
+      "max_depth": 3,
+      "min_samples_leaf": 1,
+      "subsample": 1.0
+    },
+    "MAE": 4.102381542885221,
+    "RMSE": 5.162021658710703,
+    "R2": 0.9771461557253884
+  },
+  "best_xgboost": {
+    "trial_id": "XGB_02",
+    "parameters": {
+      "learning_rate": 0.03,
+      "n_estimators": 400,
+      "max_depth": 3,
+      "min_child_weight": 1.0,
+      "subsample": 0.9,
+      "colsample_bytree": 0.9,
+      "reg_alpha": 0.0,
+      "reg_lambda": 1.0,
+      "gamma": 0.0
+    },
+    "MAE": 4.274153815207716,
+    "RMSE": 5.304636584420024,
+    "R2": 0.9758659120388172
+  },
+  "stage18_validation_leader": {
+    "model_family": "Gradient_Boosting",
+    "trial_id": "GB_02",
+    "MAE": 4.102381542885221,
+    "RMSE": 5.162021658710703,
+    "R2": 0.9771461557253884
+  },
+  "test_loaded": false,
+  "final_model_selected": false,
+  "final_model_selection_stage": 19,
+  "group_cross_validation_stage": 30,
+  "final_test_evaluation_stage": 31
+}

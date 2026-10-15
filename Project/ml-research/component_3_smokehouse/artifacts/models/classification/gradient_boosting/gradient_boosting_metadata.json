@@ -1,0 +1,57 @@
+{
+  "stage": "25_weighted_gradient_boosting_classification",
+  "model": "GradientBoostingClassifier",
+  "parameters": {
+    "loss": "log_loss",
+    "learning_rate": 0.05,
+    "n_estimators": 200,
+    "subsample": 1.0,
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "max_depth": 3,
+    "max_features": null,
+    "random_state": 42
+  },
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "DEVELOPMENT_EVALUATION_ONLY",
+  "imbalance_strategy": "TRAIN-derived sample_weight",
+  "sample_weight_source": "D:\\SLIIT\\Research\\Projet Github\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_3_smokehouse\\artifacts\\classification\\train_classification_sample_weights.csv",
+  "smote_used": false,
+  "hyperparameter_tuning_performed": false,
+  "threshold_tuning_performed": false,
+  "validation": {
+    "Accuracy": 0.9398893964895407,
+    "Balanced_Accuracy": 0.6848361026878519,
+    "Macro_F1": 0.6048799231589349,
+    "Warning_Recall": 0.8869047619047619,
+    "Critical_Recall": 0.2222222222222222,
+    "Warning_F1": 0.5488029465930019,
+    "Critical_F1": 0.2962962962962963
+  },
+  "comparison_vs_logistic": {
+    "Macro_F1_change": -0.004282693025937645,
+    "Balanced_Accuracy_change": 0.017694670507406363,
+    "Warning_Recall_change": -0.04166666666666674,
+    "Critical_Recall_change": 0.1111111111111111
+  },
+  "comparison_vs_random_forest": {
+    "Macro_F1_change": 0.019954388737319806
+  },
+  "comparison_vs_extra_trees": {
+    "Macro_F1_change": 0.07878402711485233
+  },
+  "generalization": {
+    "Macro_F1_Train_minus_Validation": 0.2853039281791869,
+    "Balanced_Accuracy_Train_minus_Validation": 0.30734507247939
+  },
+  "validation_predicted_classes": [
+    "Critical",
+    "Normal",
+    "Warning"
+  ],
+  "x_train_sha256": "2380a386f68d6bdf2be112c8ac0fac5c7365e19be8a8e74cbdd8dc94c8c0ab80",
+  "x_validation_sha256": "2de960e1ea7d3fbbfe4ac59c955829eb3d3d043cabd6b0ada8382c7eb5749e3c",
+  "sample_weight_sha256": "5b31ff29a63779dd7d7e5d05433e87ff4569a373d51d4e94ca64d7fb2a995c07",
+  "model_sha256": "d1c8d3c7bacafe168b6c76ae11633d4402186284d46d6a9cc84f325f56d49abf",
+  "test_loaded": false
+}

@@ -1,0 +1,205 @@
+{
+  "component": "component_3_smokehouse",
+  "model_version": "component3-stage33-v1",
+  "input_contract": {
+    "description": "The backend must construct these 17 post-feature-engineering inputs before calling either exported sklearn pipeline.",
+    "feature_count": 17,
+    "ordered_features": [
+      "Smokehouse_ID",
+      "Layer_ID",
+      "Temperature_C",
+      "Humidity_%",
+      "Elapsed_Drying_Hours",
+      "Number_of_Sheets",
+      "Layer_Area_m2",
+      "Temperature_Rate_per_10min",
+      "Humidity_Rate_per_10min",
+      "Temperature_Change_30m",
+      "Humidity_Change_30m",
+      "Temperature_Change_60m",
+      "Humidity_Change_60m",
+      "Temperature_RollStd_30m",
+      "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m",
+      "Humidity_RollStd_60m"
+    ],
+    "features": [
+      {
+        "name": "Smokehouse_ID",
+        "type": "categorical",
+        "required": true
+      },
+      {
+        "name": "Layer_ID",
+        "type": "categorical",
+        "required": true
+      },
+      {
+        "name": "Temperature_C",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Humidity_%",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Elapsed_Drying_Hours",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Number_of_Sheets",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Layer_Area_m2",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Temperature_Rate_per_10min",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Humidity_Rate_per_10min",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Temperature_Change_30m",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Humidity_Change_30m",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Temperature_Change_60m",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Humidity_Change_60m",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Temperature_RollStd_30m",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Humidity_RollStd_30m",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Temperature_RollStd_60m",
+        "type": "numeric",
+        "required": true
+      },
+      {
+        "name": "Humidity_RollStd_60m",
+        "type": "numeric",
+        "required": true
+      }
+    ],
+    "categorical_features": [
+      "Smokehouse_ID",
+      "Layer_ID"
+    ],
+    "numeric_features": [
+      "Temperature_C",
+      "Humidity_%",
+      "Elapsed_Drying_Hours",
+      "Number_of_Sheets",
+      "Layer_Area_m2",
+      "Temperature_Rate_per_10min",
+      "Humidity_Rate_per_10min",
+      "Temperature_Change_30m",
+      "Humidity_Change_30m",
+      "Temperature_Change_60m",
+      "Humidity_Change_60m",
+      "Temperature_RollStd_30m",
+      "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m",
+      "Humidity_RollStd_60m"
+    ],
+    "excluded_runtime_fields": [
+      "Batch_ID",
+      "Timestamp",
+      "Actual_Total_Drying_Time",
+      "Remaining_Drying_Time",
+      "Fire_Risk_Label"
+    ],
+    "note": "Batch_ID/Timestamp may be needed by the backend to construct temporal context, but they are not passed as physical model predictors unless they appear through an explicitly engineered selected feature."
+  },
+  "preprocessing_inside_pipeline": {
+    "numeric": "SimpleImputer(strategy='median') + StandardScaler",
+    "categorical": "OneHotEncoder(handle_unknown='ignore')",
+    "transformed_feature_count": 20,
+    "transformed_feature_order": [
+      "Temperature_C",
+      "Humidity_%",
+      "Elapsed_Drying_Hours",
+      "Number_of_Sheets",
+      "Layer_Area_m2",
+      "Temperature_Rate_per_10min",
+      "Humidity_Rate_per_10min",
+      "Temperature_Change_30m",
+      "Humidity_Change_30m",
+      "Temperature_Change_60m",
+      "Humidity_Change_60m",
+      "Temperature_RollStd_30m",
+      "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m",
+      "Humidity_RollStd_60m",
+      "Smokehouse_ID_SH01",
+      "Smokehouse_ID_SH02",
+      "Layer_ID_L1",
+      "Layer_ID_L2",
+      "Layer_ID_L3"
+    ]
+  },
+  "regression_output": {
+    "pipeline_file": "drying_time_pipeline.pkl",
+    "target": "Remaining_Drying_Time",
+    "unit": "hours",
+    "model_family": "Gradient_Boosting",
+    "selected_trial": "GB_02",
+    "postprocessing_note": "Do not silently alter research evaluation outputs. For runtime UI safety, a separate service-layer rule may clamp impossible negative displayed time to zero if explicitly documented."
+  },
+  "classification_output": {
+    "pipeline_file": "fire_risk_pipeline.pkl",
+    "target": "Fire_Risk_Label",
+    "model_family": "XGBoost",
+    "selected_trial": "XGB_03",
+    "pipeline_predict_returns": "integer class id",
+    "class_id_to_label": {
+      "0": "Normal",
+      "1": "Warning",
+      "2": "Critical"
+    },
+    "predict_proba_class_order": [
+      {
+        "class_id": 0,
+        "label": "Normal"
+      },
+      {
+        "class_id": 1,
+        "label": "Warning"
+      },
+      {
+        "class_id": 2,
+        "label": "Critical"
+      }
+    ],
+    "safety_limitation": "Locked final-test Critical recall was 0.0. This classifier is a research/prototype decision-support model and must NOT be treated as a proven standalone Critical fire alarm."
+  }
+}

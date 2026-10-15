@@ -1,0 +1,81 @@
+{
+  "stage": 31,
+  "evaluation_scope": "LOCKED_FINAL_TEST",
+  "method": {
+    "development_refit": "Train + Validation combined",
+    "preprocessing_fit": "Development only",
+    "test_used_for_fit": false,
+    "test_used_for_tuning": false,
+    "resampling": "None",
+    "classification_weighting": "Balanced sample weights computed from Development labels only"
+  },
+  "data": {
+    "development_rows": 20405,
+    "development_batches": [
+      "SH01_B01",
+      "SH01_B02",
+      "SH01_B04",
+      "SH01_B05",
+      "SH01_B06",
+      "SH02_B01",
+      "SH02_B02",
+      "SH02_B03",
+      "SH02_B05",
+      "SH02_B06"
+    ],
+    "test_rows": 4058,
+    "test_batches": [
+      "SH01_B03",
+      "SH02_B04"
+    ],
+    "batch_overlap_count": 0,
+    "cross_split_observation_key_overlap": 0
+  },
+  "features": {
+    "selected_raw_feature_count": 17,
+    "transformed_feature_count": 20,
+    "selected_features": [
+      "Smokehouse_ID",
+      "Layer_ID",
+      "Temperature_C",
+      "Humidity_%",
+      "Elapsed_Drying_Hours",
+      "Number_of_Sheets",
+      "Layer_Area_m2",
+      "Temperature_Rate_per_10min",
+      "Humidity_Rate_per_10min",
+      "Temperature_Change_30m",
+      "Humidity_Change_30m",
+      "Temperature_Change_60m",
+      "Humidity_Change_60m",
+      "Temperature_RollStd_30m",
+      "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m",
+      "Humidity_RollStd_60m"
+    ]
+  },
+  "regression": {
+    "selected_family": "Gradient_Boosting",
+    "selected_trial": "GB_02",
+    "MAE": 3.756103085785247,
+    "RMSE": 4.299451102402451,
+    "R2": 0.9835396249444973,
+    "negative_predictions": 0,
+    "predictions_above_development_target_max": 0
+  },
+  "classification": {
+    "selected_family": "XGBoost",
+    "selected_trial": "XGB_03",
+    "Accuracy": 0.9078363725973386,
+    "Balanced_Accuracy": 0.630764826660349,
+    "Macro_Precision": 0.47791356174071403,
+    "Macro_Recall": 0.630764826660349,
+    "Macro_F1": 0.5179549048807933,
+    "Warning_Recall": 0.9861111111111112,
+    "Critical_Recall": 0.0,
+    "Warning_Reference_0_80_Pass": true,
+    "Critical_Reference_0_50_Pass": false
+  },
+  "methodological_status": "PASS",
+  "performance_note": "Final-test results are evidence only. No model tuning/reselection is permitted from Stage-31 results."
+}

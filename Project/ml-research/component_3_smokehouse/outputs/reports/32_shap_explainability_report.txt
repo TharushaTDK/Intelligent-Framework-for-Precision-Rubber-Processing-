@@ -1,0 +1,109 @@
+COMPONENT 3 - STAGE 32: SHAP EXPLAINABILITY
+==============================================================================
+
+PURPOSE
+-------
+Explain the frozen Stage-31 regression and classification model behavior without tuning, reselection, resampling or threshold adjustment.
+
+MODEL REPRODUCTION
+------------------
+Regression predictions reproduce Stage 31: True
+Classification predictions reproduce Stage 31: True
+
+REGRESSION GLOBAL SHAP IMPORTANCE
+---------------------------------
+    Transformed_Feature  Mean_Absolute_SHAP
+   Elapsed_Drying_Hours           21.111829
+             Humidity_%           10.731251
+       Number_of_Sheets            2.057591
+          Temperature_C            0.958432
+    Humidity_Change_60m            0.429736
+     Smokehouse_ID_SH01            0.228093
+     Smokehouse_ID_SH02            0.189904
+          Layer_Area_m2            0.162153
+            Layer_ID_L1            0.134695
+ Temperature_Change_60m            0.031064
+   Humidity_RollStd_60m            0.027905
+            Layer_ID_L3            0.027083
+Temperature_RollStd_60m            0.016896
+   Humidity_RollStd_30m            0.008394
+Temperature_RollStd_30m            0.001860
+
+CLASSIFICATION GLOBAL SHAP IMPORTANCE BY CLASS
+----------------------------------------------
+
+Normal
+------
+    Transformed_Feature  Mean_Absolute_SHAP
+          Temperature_C            1.617859
+             Humidity_%            0.763916
+   Humidity_RollStd_60m            0.335660
+Temperature_RollStd_60m            0.319289
+       Number_of_Sheets            0.247580
+ Temperature_Change_30m            0.228144
+   Elapsed_Drying_Hours            0.117095
+    Humidity_Change_60m            0.076945
+ Temperature_Change_60m            0.073719
+Temperature_RollStd_30m            0.048673
+
+Warning
+-------
+       Transformed_Feature  Mean_Absolute_SHAP
+             Temperature_C            1.456753
+    Temperature_Change_60m            0.175423
+    Temperature_Change_30m            0.169180
+      Humidity_RollStd_60m            0.130242
+          Number_of_Sheets            0.112344
+                Humidity_%            0.112297
+      Elapsed_Drying_Hours            0.075949
+Temperature_Rate_per_10min            0.059755
+   Temperature_RollStd_60m            0.032060
+       Humidity_Change_60m            0.021957
+
+Critical
+--------
+    Transformed_Feature  Mean_Absolute_SHAP
+   Humidity_RollStd_60m            0.753232
+             Humidity_%            0.649651
+Temperature_RollStd_60m            0.438338
+       Number_of_Sheets            0.364849
+   Elapsed_Drying_Hours            0.312680
+    Humidity_Change_60m            0.281846
+          Temperature_C            0.225982
+    Humidity_Change_30m            0.154463
+            Layer_ID_L1            0.094863
+Temperature_RollStd_30m            0.079544
+
+ACTUAL CRITICAL TEST-ROW DIAGNOSTIC
+-----------------------------------
+Actual Critical rows: 18
+Predictions for actual Critical rows: {'Warning': 18}
+
+Top SHAP features for Warning output on actual Critical rows:
+       Transformed_Feature  Mean_Absolute_SHAP_for_Warning_Output  Mean_Absolute_SHAP_for_Critical_Output
+             Temperature_C                               0.375586                                0.229225
+      Humidity_RollStd_60m                               0.266652                                0.627778
+      Elapsed_Drying_Hours                               0.195319                                0.510677
+    Temperature_Change_60m                               0.188513                                0.002067
+          Number_of_Sheets                               0.146810                                0.511514
+    Temperature_Change_30m                               0.116029                                0.008020
+                Humidity_%                               0.074109                                0.473680
+Temperature_Rate_per_10min                               0.056591                                0.022297
+      Humidity_RollStd_30m                               0.054302                                0.029264
+   Temperature_RollStd_60m                               0.046894                                0.181472
+       Humidity_Change_60m                               0.032347                                0.350276
+   Humidity_Rate_per_10min                               0.026282                                0.086452
+   Temperature_RollStd_30m                               0.009552                                0.048259
+               Layer_ID_L1                               0.009114                                0.114054
+             Layer_Area_m2                               0.007247                                0.030373
+
+INTERPRETATION RULES
+--------------------
+- Larger mean absolute SHAP means the model relied more strongly on that feature for the explained output.
+- Positive/negative SHAP direction is model-output specific and should not be interpreted as causality.
+- Classification SHAP is reported separately for Normal, Warning and Critical outputs.
+- The actual-Critical diagnostic is post-hoc and must not be used to alter Stage-31 test results.
+
+FINAL STATUS
+------------
+STAGE 32 SHAP EXPLAINABILITY: PASS

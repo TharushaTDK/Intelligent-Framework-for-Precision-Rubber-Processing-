@@ -1,0 +1,13 @@
+{
+  "Candidate":"Critical_vs_Rest_Binary_Detector_Standalone",
+  "Binary_Critical_Recall":0.6086956522,
+  "Binary_Critical_Precision":0.2228116711,
+  "Binary_Critical_F1":0.3262135922,
+  "Binary_Critical_F2":0.4520990312,
+  "Binary_ROC_AUC":0.9437021202,
+  "Binary_PR_AUC":0.362047065,
+  "Predicted_Positive_Count":377,
+  "Actual_Positive_Count":138,
+  "False_Positives":293,
+  "False_Negatives":54
+}

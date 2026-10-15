@@ -1,0 +1,13 @@
+Check,Status,Details
+Stage-27 shortlist exactly reproduced,PASS,"Gradient_Boosting, Logistic_Regression, XGBoost"
+Stage-21 Train sample weights verified,PASS,"Indices, labels, and values match."
+Expected bounded trial count,PASS,Trials=24
+All tuning metrics finite,PASS,Train/Validation metrics verified.
+Best configuration identified for all three families,PASS,"XGBoost, Logistic_Regression, Gradient_Boosting"
+LR_01 reproduces Stage-22 untuned Macro-F1,PASS,LR_01=0.609163; Stage22=0.609163
+GB_01 reproduces Stage-25 untuned Macro-F1,PASS,GB_01=0.604880; Stage25=0.604880
+XGB_01 reproduces Stage-26 untuned Macro-F1,PASS,XGB_01=0.665767; Stage26=0.665767
+Best tuned model artifact saved for each family,PASS,"XGBoost, Logistic_Regression, Gradient_Boosting"
+No SMOTE or resampling,PASS,Only class/sample weighting used.
+No threshold tuning,PASS,Default multiclass decision rule retained.
+Final Test not loaded,PASS,Only Test file existence checked; contents not read.

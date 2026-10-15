@@ -1,0 +1,7 @@
+Model,Split,Class,Precision,Recall,F1,Support
+Extra_Trees,Train,Normal,1.0,1.0,1.0,15646
+Extra_Trees,Train,Warning,1.0,1.0,1.0,480
+Extra_Trees,Train,Critical,1.0,1.0,1.0,120
+Extra_Trees,Validation,Normal,0.9593515606097266,0.9979864082557262,0.9782876881322478,3973
+Extra_Trees,Validation,Warning,0.0,0.0,0.0,168
+Extra_Trees,Validation,Critical,0.75,0.5,0.6,18

@@ -1,0 +1,129 @@
+{
+  "stage": "28_bounded_classification_hyperparameter_tuning",
+  "overall_status": "PASS",
+  "methodology": {
+    "fit_data": "TRAIN_ONLY",
+    "selection_data": "VALIDATION_ONLY",
+    "primary_metric": "Validation Macro-F1",
+    "tie_breakers": [
+      "Validation Balanced Accuracy",
+      "Critical Recall",
+      "Warning Recall",
+      "Smaller Train-Validation Macro-F1 Gap"
+    ],
+    "group_cross_validation_used": false,
+    "group_cross_validation_stage": 30,
+    "smote_used": false,
+    "threshold_tuning_used": false,
+    "test_loaded": false
+  },
+  "trial_counts": {
+    "Logistic_Regression": 8,
+    "Gradient_Boosting": 8,
+    "XGBoost": 8,
+    "total": 24
+  },
+  "best_by_family": [
+    {
+      "family": "XGBoost",
+      "trial": "XGB_08",
+      "validation_macro_f1": 0.7049289504405606,
+      "validation_balanced_accuracy": 0.7289207108298476,
+      "warning_recall": 0.8869047619047619,
+      "critical_recall": 0.3333333333333333,
+      "warning_f1": 0.654945054945055,
+      "critical_f1": 0.48,
+      "macro_f1_gap": 0.21257558996592496,
+      "macro_f1_change_vs_untuned": 0.039161486632680376,
+      "parameters": {
+        "colsample_bytree": 0.85,
+        "eval_metric": "mlogloss",
+        "gamma": 0.1,
+        "learning_rate": 0.03,
+        "max_depth": 4,
+        "min_child_weight": 2.0,
+        "n_estimators": 350,
+        "n_jobs": -1,
+        "num_class": 3,
+        "objective": "multi:softprob",
+        "random_state": 42,
+        "reg_alpha": 0.05,
+        "reg_lambda": 2.0,
+        "subsample": 0.85,
+        "tree_method": "hist"
+      }
+    },
+    {
+      "family": "Logistic_Regression",
+      "trial": "LR_02",
+      "validation_macro_f1": 0.6284280762165442,
+      "validation_balanced_accuracy": 0.708028864145149,
+      "warning_recall": 0.9642857142857143,
+      "critical_recall": 0.2222222222222222,
+      "warning_f1": 0.5557461406518011,
+      "critical_f1": 0.36363636363636365,
+      "macro_f1_gap": 0.10637045041700022,
+      "macro_f1_change_vs_untuned": 0.019265460031671622,
+      "parameters": {
+        "C": 0.05,
+        "class_weight": "balanced",
+        "max_iter": 5000,
+        "random_state": 42,
+        "solver": "lbfgs",
+        "tol": 0.0001
+      }
+    },
+    {
+      "family": "Gradient_Boosting",
+      "trial": "GB_02",
+      "validation_macro_f1": 0.6051348965056733,
+      "validation_balanced_accuracy": 0.6867363300159676,
+      "warning_recall": 0.8928571428571429,
+      "critical_recall": 0.2222222222222222,
+      "warning_f1": 0.5494505494505495,
+      "critical_f1": 0.2962962962962963,
+      "macro_f1_gap": 0.2784040969026633,
+      "macro_f1_change_vs_untuned": 0.00025497334673840744,
+      "parameters": {
+        "learning_rate": 0.03,
+        "loss": "log_loss",
+        "max_depth": 3,
+        "max_features": null,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "n_estimators": 300,
+        "random_state": 42,
+        "subsample": 1.0
+      }
+    }
+  ],
+  "provisional_tuning_leader": {
+    "family": "XGBoost",
+    "trial": "XGB_08",
+    "validation_macro_f1": 0.7049289504405606,
+    "validation_balanced_accuracy": 0.7289207108298476,
+    "warning_recall": 0.8869047619047619,
+    "critical_recall": 0.3333333333333333
+  },
+  "saved_models": {
+    "XGBoost": {
+      "trial": "XGB_08",
+      "model_path": "D:\\SLIIT\\Research\\Projet Github\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_3_smokehouse\\artifacts\\models\\classification\\tuned\\xgboost\\xgb_08_classifier.joblib",
+      "metadata_path": "D:\\SLIIT\\Research\\Projet Github\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_3_smokehouse\\artifacts\\models\\classification\\tuned\\xgboost\\xgb_08_metadata.json",
+      "model_sha256": "2d01d24e6f9db96ed22233982e662059b36ba720f28ddf61c4302eb1216a4235"
+    },
+    "Logistic_Regression": {
+      "trial": "LR_02",
+      "model_path": "D:\\SLIIT\\Research\\Projet Github\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_3_smokehouse\\artifacts\\models\\classification\\tuned\\logistic_regression\\lr_02_classifier.joblib",
+      "metadata_path": "D:\\SLIIT\\Research\\Projet Github\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_3_smokehouse\\artifacts\\models\\classification\\tuned\\logistic_regression\\lr_02_metadata.json",
+      "model_sha256": "5adbb86b8ffd367b894986622fad8c85344ec06d651d75908f9dea1cb04aee63"
+    },
+    "Gradient_Boosting": {
+      "trial": "GB_02",
+      "model_path": "D:\\SLIIT\\Research\\Projet Github\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_3_smokehouse\\artifacts\\models\\classification\\tuned\\gradient_boosting\\gb_02_classifier.joblib",
+      "metadata_path": "D:\\SLIIT\\Research\\Projet Github\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_3_smokehouse\\artifacts\\models\\classification\\tuned\\gradient_boosting\\gb_02_metadata.json",
+      "model_sha256": "b82557fd08fe53b161532a86d6147cc1fc38c2ede4c8125fe61f6a71fdc5b739"
+    }
+  },
+  "next_stage": "29_final_classification_selection"
+}

@@ -1,0 +1,3 @@
+Model,Split,MAE,RMSE,R2,Negative_Predictions,Predictions_Above_126h
+Extra_Trees,Train,4.041043287539132e-13,6.183375649747508e-13,1.0,0,0
+Extra_Trees,Validation,6.451669420533786,7.43846593807779,0.9525445193753843,0,0

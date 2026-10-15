@@ -1,0 +1,32 @@
+Artifact_Path,Purpose,SHA256,Status
+data/raw/Component3_Dataset.csv,Frozen raw dataset (24463 rows),229139d2b4413fe15a8d322023b3b42574f9dccd5df6a91550bc72f05faaa5cb,active
+data/validated/Component3_Dataset_Validated.csv,Pre-imputation structural validation snapshot,229139d2b4413fe15a8d322023b3b42574f9dccd5df6a91550bc72f05faaa5cb,active
+data/processed/Component3_Dataset_Preprocessed.csv,Stage-04 preprocessed dataset,957c9c150b4b9a8bd303576473a46feb67ea5415b8a8b7c6dc5304bdb28f59eb,active
+data/processed/Component3_Dataset_FeatureEngineered.csv,Stage-07 feature-engineered dataset,4990acb69da8708a34d403e6fb08440a1bb978fb6dba40e948c12851f5ecdcb7,active
+data/splits/Component3_Train.csv,Stage-09 Train split (16246 rows),de9beb79de7ad9abc898d69b20f0aed585702dcaf6cc61f09a1049ab6ae9ddf2,active
+data/splits/Component3_Validation.csv,Stage-09 Validation split (4159 rows),25fa37e1516f080dddd58124d6322bc438401bc70f3daefda01655f15310586c,active
+data/splits/Component3_Test.csv,Stage-09 locked Test split (4058 rows) - never used for Ordinal selection,2ff12dc0ff30b673b6ad26cafc03cda8d9d665425c2eb2381f793991fbed8c80,active_locked
+backend/app/ml/component_3_smokehouse/drying_time_pipeline.pkl,Final regression pipeline (GB_02) - frozen/unchanged,5bc446c3802d3d1d8f4eb997253eee1095410c4ed43edac743990dc8f928fdd6,active
+backend/app/ml/component_3_smokehouse/fire_risk_pipeline.pkl,Active final classification pipeline (Ordinal XGBoost Classifier with Argmax Decision Rule),61b4304b082672e9b7e0f91620e9854cac1abaabefd345a190e375110983083b,active
+backend/app/ml/component_3_smokehouse/archive/fire_risk_xgb03_baseline_pipeline.pkl,Archived historical classifier (XGBoost XGB_03) - identical to pre-promotion active artifact,8f375f81b16213e5bde09a6f4519e65db2bb872f4b1f076f4565ae4af6a601aa,archived
+backend/app/ml/component_3_smokehouse/component3_model_metadata.json,Updated metadata documenting Ordinal classifier + preserved XGB_03 history,6514d333e90dd88e3568b7830cbb437e31e1bf2541db041bd063afb4c81240e5,active
+backend/app/ml/component_3_smokehouse/archive/component3_model_metadata_xgb03_baseline.json,Archived historical XGB_03 metadata,n/a (preserved copy),archived
+backend/app/ml/component_3_smokehouse/component3_inference_contract.json,Updated inference contract for Ordinal classifier,298891f8fe6d4c7e19e34cc87c8f6e3bc24824e5376ad930c68cf93c2e3c29e8,active
+backend/app/ml/component_3_smokehouse/archive/component3_inference_contract_xgb03_baseline.json,Archived historical XGB_03 inference contract,n/a (preserved copy),archived
+backend/app/ml/component_3_smokehouse/ordinal_fire_risk_pipeline.py,Importable OrdinalFireRiskPipeline class/module used by the pickled artifact,n/a (source file),active
+outputs/reports/19_final_regression_selection_report.txt,Historical regression selection evidence (GB_02),unchanged,research_evidence
+outputs/reports/29_classification_final_selection_report.txt,Historical classification selection evidence (XGB_03),unchanged,historical
+outputs/reports/30_group_cross_validation_summary.json,Historical Stage-30 GroupKFold summary (XGB_03 + GB_02),480ba32188ccf7618ed980a062d2f8ba1fbc6f6834e151e3c4a9d5dc480f2493,historical
+outputs/reports/31_final_test_evaluation_summary.json,Historical Stage-31 locked-test summary (XGB_03 + GB_02) - preserved, not rerun for Ordinal,8b3ea3911895eb684b3871a235b7464043822891583bc1f1f103cb63356f9909,historical
+outputs/reports/32_shap_explainability_summary.json,Historical Stage-32 SHAP summary (XGB_03),473bffe25c6bf0a4dbaa5c01bc29904e9c8e1a6076a2205011bca28131026b75,historical
+outputs/reports/33_export_final_models_summary.json,Historical Stage-33 export summary (XGB_03 + GB_02),a4d8e1aa52f26bcb33147a673e0230b6aea6a7313d6bf20458f9a4f0aff5cefc,historical
+outputs/final_classification/final_ordinal_pooled_metrics.json,Final Ordinal classifier development GroupKFold pooled evidence,research_evidence,research_evidence
+outputs/final_classification/final_ordinal_fold_metrics.csv,Final Ordinal classifier fold-level evidence,research_evidence,research_evidence
+outputs/final_classification/final_ordinal_batch_metrics.csv,Final Ordinal classifier batch-level evidence,research_evidence,research_evidence
+outputs/final_classification/final_ordinal_confusion_matrix.csv,Final Ordinal classifier pooled confusion matrix,research_evidence,research_evidence
+outputs/final_classification/final_promotion_readiness_gate.csv,Promotion-readiness gate criteria results (10/10 checkable items PASS),research_evidence,research_evidence
+outputs/final_classification/final_ordinal_reload_reproduction_test.txt,Fresh-process reload + full-Development reproduction test (PASS),research_evidence,research_evidence
+outputs/final_classification/ordinal_o1_shap_importance.csv,O1 (Normal vs Warning-or-Higher) SHAP feature ranking,research_evidence,research_evidence
+outputs/final_classification/ordinal_o2_shap_importance.csv,O2 (Normal/Warning vs Critical) SHAP feature ranking,research_evidence,research_evidence
+outputs/final_classification/final_classifier_selection.md,Chronological final promotion decision document,research_evidence,research_evidence
+outputs/reports/component3_final_ml_model_summary.md,Final ML lifecycle summary (this finalization task),research_evidence,research_evidence

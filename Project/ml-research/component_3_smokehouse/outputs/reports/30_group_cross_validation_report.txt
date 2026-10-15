@@ -1,0 +1,51 @@
+COMPONENT 3 - STAGE 30: LEAKAGE-SAFE GROUP / BATCH CROSS-VALIDATION
+==============================================================================
+
+METHOD
+------
+5-fold GroupKFold using Batch_ID across the combined development Train + Validation batches.
+For every fold, median imputation, StandardScaler and OneHotEncoder were freshly fitted on fold-training rows only. Fold-validation rows never contributed to preprocessing fit.
+Final Test contents were NOT loaded.
+
+REGRESSION
+----------
+Selected family: Gradient_Boosting
+Selected trial: GB_02
+Pooled OOF MAE: 3.128315 h
+Pooled OOF RMSE: 3.955784 h
+Pooled OOF R2: 0.986020
+Negative predictions: 1
+Predictions above development target max: 0
+
+CLASSIFICATION
+--------------
+Selected family: XGBoost
+Selected trial: XGB_03
+Balanced sample weights were recomputed from each fold-training target only.
+Pooled OOF Accuracy: 0.955844
+Pooled OOF Balanced Accuracy: 0.724969
+Pooled OOF Macro-F1: 0.645267
+Pooled OOF Warning Recall: 0.856481
+Pooled OOF Critical Recall: 0.355072
+Warning Recall >= 0.80 reference: PASS
+Critical Recall >= 0.50 reference: BELOW REFERENCE
+
+POOLED CONFUSION MATRIX
+-----------------------
+                 Predicted_Normal  Predicted_Warning  Predicted_Critical
+Actual_Normal               18900                689                  30
+Actual_Warning                 59                555                  34
+Actual_Critical                20                 69                  49
+
+METHODOLOGICAL CHECKS
+---------------------
+Batch-overlap folds: 0
+All fold preprocessors fitted on fold Train only: True
+Final Test contents loaded: False
+Regression OOF rows: 20405
+Classification OOF rows: 20405
+
+FINAL STATUS
+------------
+STAGE 30 GROUP / BATCH CROSS-VALIDATION: PASS
+This PASS refers to the validation methodology. Predictive robustness must be interpreted from the reported regression and classification metrics.

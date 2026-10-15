@@ -1,0 +1,10 @@
+Check,Status,Details
+All five real classifiers present,PASS,"XGBoost, Logistic_Regression, Gradient_Boosting, Random_Forest, Extra_Trees"
+All classification metrics finite,PASS,Baseline + real-model comparison metrics verified.
+Validation class supports consistent across models,PASS,"Expected Normal=3973, Warning=168, Critical=18."
+Best real classifier beats best dummy baseline,PASS,Best real Macro-F1=0.665767; best baseline=0.343550
+Shortlist contains exactly three models,PASS,"XGBoost, Logistic_Regression, Gradient_Boosting"
+Shortlisted models detect both minority classes,PASS,Warning Recall > 0 and Critical Recall > 0.
+No model training performed,PASS,Stage 27 reads saved development metrics only.
+No hyperparameter tuning performed,PASS,Tuning reserved for Stage 28.
+Final Test not loaded,PASS,Only Test file existence checked; contents not read.

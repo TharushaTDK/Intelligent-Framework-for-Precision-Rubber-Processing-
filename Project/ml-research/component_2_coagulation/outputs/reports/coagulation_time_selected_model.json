@@ -1,0 +1,5 @@
+{
+  "selected_algorithm": "Ridge",
+  "target": "coagulation_time_hours",
+  "cv_mae": -0.6279441662686931
+}

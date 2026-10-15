@@ -1,0 +1,17 @@
+Check,Status,Details
+Frozen dataset SHA-256 matches,PASS,229139d2b4413fe15a8d322023b3b42574f9dccd5df6a91550bc72f05faaa5cb
+Regression target has no missing values,PASS,Missing=0
+Remaining drying time is never negative,PASS,Negative rows=0
+Remaining-time construction formula is valid,PASS,Rows above tolerance=0; Max abs error=0.010000 h
+All sequences start at elapsed time zero,PASS,Violations=0
+All sequences end at remaining time zero,PASS,Violations=0
+Final elapsed time matches total drying time,PASS,Violations=0
+Actual total drying time is constant within sequence,PASS,Violations=0
+Elapsed time strictly increases within sequence,PASS,Sequences with violations=0
+Remaining time never increases within sequence,PASS,Sequences with violations=0
+Fire-risk target has no missing values,PASS,Missing=0
+Fire-risk labels are exactly Normal/Warning/Critical,PASS,"Observed=['Critical', 'Normal', 'Warning']"
+Sensor and assessment timestamps are valid,PASS,Sensor invalid/missing=0; Assessment invalid/missing=0
+Each row uses the latest valid hourly assessment,PASS,Invalid rows=0
+Fire-risk label is constant inside assessment window,PASS,Inconsistent assessment groups=0
+Hourly assessment cadence is valid,PASS,Cadence errors=0

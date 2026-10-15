@@ -1,0 +1,13 @@
+Check,Status
+Stage 31 methodological status,PASS
+Stage 32 methodological status,PASS
+17-feature inference contract,PASS
+20 transformed features,PASS
+Regression research artifact reproduces Stage 31,PASS
+Classification research artifact reproduces Stage 31,PASS
+Regression backend artifact hash copy,PASS
+Classification backend artifact hash copy,PASS
+Reloaded backend regression reproduces Stage 31,PASS
+Reloaded backend classification reproduces Stage 31,PASS
+Final Test excluded from export fitting,PASS
+Critical-class limitation preserved in metadata,PASS

@@ -1,0 +1,3287 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+
+        Component 3 - Smokehouse Validation Dashboard
+
+    </title>
+
+    <style>
+        :root {
+
+            --background: #f5f7fa;
+
+            --surface: #ffffff;
+
+            --surface-soft: #f8fafc;
+
+            --text: #172033;
+
+            --muted: #667085;
+
+            --primary: #17345c;
+
+            --primary-hover: #102747;
+
+            --border: #dfe5ec;
+
+            --success-bg: #eaf8ef;
+
+            --success-text: #176b37;
+
+            --warning-bg: #fff5d9;
+
+            --warning-text: #8a6200;
+
+            --critical-bg: #fdeaea;
+
+            --critical-text: #a22222;
+
+            --normal-bg: #eaf8ef;
+
+            --normal-text: #176b37;
+
+            --shadow: 0 8px 30px rgba(23, 32, 51, 0.08);
+
+        }
+
+        * {
+
+            box-sizing: border-box;
+
+        }
+
+        body {
+
+            margin: 0;
+
+            font-family:
+
+                Inter,
+
+                system-ui,
+
+                -apple-system,
+
+                BlinkMacSystemFont,
+
+                "Segoe UI",
+
+                sans-serif;
+
+            background: var(--background);
+
+            color: var(--text);
+
+        }
+
+        header {
+
+            background: var(--primary);
+
+            color: white;
+
+            padding: 26px 32px;
+
+        }
+
+        header h1 {
+
+            margin: 0 0 6px 0;
+
+            font-size: 25px;
+
+            font-weight: 700;
+
+        }
+
+        header p {
+
+            margin: 0;
+
+            opacity: 0.8;
+
+            font-size: 14px;
+
+        }
+
+        main {
+
+            max-width: 1350px;
+
+            margin: 0 auto;
+
+            padding: 28px;
+
+        }
+
+        .notice {
+
+            background: #eef4ff;
+
+            border: 1px solid #d5e2f7;
+
+            border-radius: 12px;
+
+            padding: 16px 18px;
+
+            margin-bottom: 24px;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+        }
+
+        .grid {
+
+            display: grid;
+
+            grid-template-columns:
+
+                repeat(auto-fit,
+
+                    minmax(360px, 1fr));
+
+            gap: 22px;
+
+        }
+
+        .card {
+
+            background: var(--surface);
+
+            border: 1px solid var(--border);
+
+            border-radius: 15px;
+
+            box-shadow: var(--shadow);
+
+            padding: 22px;
+
+        }
+
+        .card-wide {
+
+            grid-column: 1 / -1;
+
+        }
+
+        .card h2 {
+
+            margin-top: 0;
+
+            margin-bottom: 6px;
+
+            font-size: 19px;
+
+        }
+
+        .card-subtitle {
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            margin-bottom: 20px;
+
+        }
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+
+                repeat(2, minmax(0, 1fr));
+
+            gap: 14px;
+
+        }
+
+        .form-full {
+
+            grid-column: 1 / -1;
+
+        }
+
+        label {
+
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+        }
+
+        input,
+
+        select {
+
+            width: 100%;
+
+            border: 1px solid var(--border);
+
+            border-radius: 9px;
+
+            background: white;
+
+            padding: 10px 11px;
+
+            font-size: 14px;
+
+            color: var(--text);
+
+        }
+
+        input:focus,
+
+        select:focus {
+
+            outline: 2px solid rgba(23, 52, 92, 0.12);
+
+            border-color: var(--primary);
+
+        }
+
+        button {
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: var(--primary);
+
+            color: white;
+
+            padding: 11px 16px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+        }
+
+        button:hover {
+
+            background: var(--primary-hover);
+
+        }
+
+        .button-row {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 18px;
+
+        }
+
+        .layer-title {
+
+            margin-top: 18px;
+
+            margin-bottom: 10px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: var(--primary);
+
+        }
+
+        .result-box {
+
+            margin-top: 18px;
+
+            background: var(--surface-soft);
+
+            border: 1px solid var(--border);
+
+            border-radius: 10px;
+
+            padding: 14px;
+
+            font-size: 13px;
+
+        }
+
+        .result-box:empty {
+
+            display: none;
+
+        }
+
+        .prediction-grid {
+
+            display: grid;
+
+            grid-template-columns:
+
+                repeat(auto-fit,
+
+                    minmax(150px, 1fr));
+
+            gap: 12px;
+
+            margin-top: 14px;
+
+        }
+
+        .metric {
+
+            background: var(--surface-soft);
+
+            border: 1px solid var(--border);
+
+            border-radius: 10px;
+
+            padding: 14px;
+
+        }
+
+        .metric-label {
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            margin-bottom: 6px;
+
+        }
+
+        .metric-value {
+
+            font-size: 19px;
+
+            font-weight: 700;
+
+        }
+
+        .risk {
+
+            display: inline-block;
+
+            border-radius: 999px;
+
+            padding: 6px 11px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+        }
+
+        .risk-normal {
+
+            background: var(--normal-bg);
+
+            color: var(--normal-text);
+
+        }
+
+        .risk-warning {
+
+            background: var(--warning-bg);
+
+            color: var(--warning-text);
+
+        }
+
+        .risk-critical {
+
+            background: var(--critical-bg);
+
+            color: var(--critical-text);
+
+        }
+
+        .status-success {
+
+            color: var(--success-text);
+
+        }
+
+        .status-error {
+
+            color: var(--critical-text);
+
+        }
+
+        .guidance-panel {
+            margin-top: 14px;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 10px;
+            background: #eef4ff;
+            padding: 13px 14px;
+        }
+
+        .guidance-label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .guidance-text {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            margin-top: 16px;
+
+            font-size: 13px;
+
+        }
+
+        th,
+
+        td {
+
+            padding: 11px 9px;
+
+            text-align: left;
+
+            border-bottom: 1px solid var(--border);
+
+        }
+
+        th {
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+        }
+
+        .table-wrapper {
+
+            overflow-x: auto;
+
+        }
+
+        pre {
+
+            white-space: pre-wrap;
+
+            word-break: break-word;
+
+            margin: 0;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+        }
+
+        .small {
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+        }
+
+        @media (max-width: 700px) {
+
+            main {
+
+                padding: 16px;
+
+            }
+
+            header {
+
+                padding: 20px;
+
+            }
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .form-full {
+
+                grid-column: auto;
+
+            }
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1>
+
+            Component 3 — Smart Smokehouse
+
+        </h1>
+
+        <p>
+
+            Backend validation dashboard for layer-wise
+
+            drying-time and fire-risk prediction
+
+        </p>
+
+    </header>
+
+    <main>
+
+        <div class="notice">
+
+            This dashboard is for research-system validation.
+            Temperature and humidity are submitted as raw readings.
+            The backend automatically retrieves historical readings,
+            constructs the finalized 17 ML features and runs both
+            Component 3 models. Current guidance is classifier-derived
+            status guidance only; Add Fire / Hold Fire / Reduce Fire
+            operating rules remain pending domain validation.
+
+        </div>
+
+        <div class="grid">
+
+            <!-- =================================================
+
+             CREATE BATCH
+
+        ================================================== -->
+
+            <section class="card">
+
+                <h2>1. Start Drying Batch</h2>
+
+                <div class="card-subtitle">
+
+                    Configure the smokehouse and its three layers.
+
+                </div>
+
+                <form id="batchForm">
+
+                    <div class="form-grid">
+
+                        <div>
+
+                            <label for="batchCode">
+
+                                Batch Code
+
+                            </label>
+
+                            <input id="batchCode" required placeholder="SH01_B01">
+
+                        </div>
+
+                        <div>
+
+                            <label for="smokehouseId">
+
+                                Smokehouse ID
+
+                            </label>
+
+                            <input id="smokehouseId" required placeholder="SH01">
+
+                        </div>
+
+                        <div class="form-full">
+
+                            <label for="batchStartedAt">
+
+                                Batch Start Time
+
+                            </label>
+
+                            <input id="batchStartedAt" type="datetime-local">
+
+                        </div>
+
+                    </div>
+
+                    <div class="layer-title">
+
+                        Layer L1
+
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div>
+
+                            <label for="l1Sheets">
+
+                                Number of Sheets
+
+                            </label>
+
+                            <input id="l1Sheets" type="number" min="1" required>
+
+                        </div>
+
+                        <div>
+
+                            <label for="l1Area">
+
+                                Layer Area (m²)
+
+                            </label>
+
+                            <input id="l1Area" type="number" min="0.01" step="0.01" required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="layer-title">
+
+                        Layer L2
+
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div>
+
+                            <label for="l2Sheets">
+
+                                Number of Sheets
+
+                            </label>
+
+                            <input id="l2Sheets" type="number" min="1" required>
+
+                        </div>
+
+                        <div>
+
+                            <label for="l2Area">
+
+                                Layer Area (m²)
+
+                            </label>
+
+                            <input id="l2Area" type="number" min="0.01" step="0.01" required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="layer-title">
+
+                        Layer L3
+
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div>
+
+                            <label for="l3Sheets">
+
+                                Number of Sheets
+
+                            </label>
+
+                            <input id="l3Sheets" type="number" min="1" required>
+
+                        </div>
+
+                        <div>
+
+                            <label for="l3Area">
+
+                                Layer Area (m²)
+
+                            </label>
+
+                            <input id="l3Area" type="number" min="0.01" step="0.01" required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="button-row">
+
+                        <button type="submit">
+
+                            Create Batch
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+                <div id="batchResult" class="result-box"></div>
+
+            </section>
+
+            <!-- =================================================
+
+             SUBMIT READING
+
+        ================================================== -->
+
+            <section class="card">
+
+                <h2>2. Submit Sensor Reading</h2>
+
+                <div class="card-subtitle">
+
+                    Simulates a future ESP32/DHT22 observation.
+
+                </div>
+
+                <form id="readingForm">
+
+                    <div class="form-grid">
+
+                        <div>
+
+                            <label for="readingBatchCode">
+
+                                Batch Code
+
+                            </label>
+
+                            <input id="readingBatchCode" required placeholder="API_BATCH_001">
+
+                        </div>
+
+                        <div>
+
+                            <label for="readingLayer">
+
+                                Layer
+
+                            </label>
+
+                            <select id="readingLayer" required>
+
+                                <option value="L1">L1</option>
+
+                                <option value="L2">L2</option>
+
+                                <option value="L3">L3</option>
+
+                            </select>
+
+                        </div>
+
+                        <div>
+
+                            <label for="temperature">
+
+                                Temperature °C
+
+                            </label>
+
+                            <input id="temperature" type="number" step="0.01" required>
+
+                        </div>
+
+                        <div>
+
+                            <label for="humidity">
+
+                                Humidity %
+
+                            </label>
+
+                            <input id="humidity" type="number" min="0" max="100" step="0.01" required>
+
+                        </div>
+
+                        <div>
+
+                            <label for="recordedAt">
+
+                                Reading Time
+
+                            </label>
+
+                            <input id="recordedAt" type="datetime-local">
+
+                        </div>
+
+                        <div>
+
+                            <label for="readingSource">
+
+                                Source
+
+                            </label>
+
+                            <select id="readingSource">
+
+                                <option value="manual">
+
+                                    Manual
+
+                                </option>
+
+                                <option value="iot">
+
+                                    IoT
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="button-row">
+
+                        <button type="submit">
+
+                            Submit & Predict
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+                <div id="readingResult" class="result-box"></div>
+
+            </section>
+
+            <!-- =================================================
+
+             LATEST STATUS
+
+        ================================================== -->
+
+            <section class="card">
+
+                <h2>3. Latest Layer Status</h2>
+
+                <div class="card-subtitle">
+
+                    Read the latest persisted observation and
+
+                    prediction.
+
+                </div>
+
+                <div class="form-grid">
+
+                    <div>
+
+                        <label for="latestBatch">
+
+                            Batch Code
+
+                        </label>
+
+                        <input id="latestBatch" placeholder="API_BATCH_001">
+
+                    </div>
+
+                    <div>
+
+                        <label for="latestLayer">
+
+                            Layer
+
+                        </label>
+
+                        <select id="latestLayer">
+
+                            <option value="L1">L1</option>
+
+                            <option value="L2">L2</option>
+
+                            <option value="L3">L3</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="button-row">
+
+                    <button type="button" id="latestButton">
+
+                        Load Latest
+
+                    </button>
+
+                </div>
+
+                <div id="latestResult" class="result-box"></div>
+
+            </section>
+
+            <!-- =================================================
+
+             HISTORY
+
+        ================================================== -->
+
+            <section class="card">
+
+                <h2>4. Layer History</h2>
+
+                <div class="card-subtitle">
+
+                    View persisted observations and predictions.
+
+                </div>
+
+                <div class="form-grid">
+
+                    <div>
+
+                        <label for="historyBatch">
+
+                            Batch Code
+
+                        </label>
+
+                        <input id="historyBatch" placeholder="API_BATCH_001">
+
+                    </div>
+
+                    <div>
+
+                        <label for="historyLayer">
+
+                            Layer
+
+                        </label>
+
+                        <select id="historyLayer">
+
+                            <option value="L1">L1</option>
+
+                            <option value="L2">L2</option>
+
+                            <option value="L3">L3</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="button-row">
+
+                    <button type="button" id="historyButton">
+
+                        Load History
+
+                    </button>
+
+                </div>
+
+                <div id="historyResult" class="result-box"></div>
+
+            </section>
+
+            <!-- =================================================
+
+             RAW API RESPONSE
+
+        ================================================== -->
+
+            <section class="card card-wide">
+
+                <h2>API Debug Output</h2>
+
+                <div class="card-subtitle">
+
+                    Raw response from the most recent API request.
+
+                </div>
+
+                <div class="result-box">
+
+                    <pre id="debugOutput">
+
+No request has been sent yet.
+
+                </pre>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+    <script>
+
+        // ========================================================
+
+        // COMMON HELPERS
+
+        // ========================================================
+
+        const debugOutput =
+
+            document.getElementById("debugOutput");
+
+        function showDebug(data) {
+
+            debugOutput.textContent =
+
+                JSON.stringify(
+
+                    data,
+
+                    null,
+
+                    2
+
+                );
+
+        }
+
+        function optionalIsoDate(inputId) {
+
+            const value =
+
+                document.getElementById(
+
+                    inputId
+
+                ).value;
+
+            if (!value) {
+
+                return null;
+
+            }
+
+            return new Date(
+
+                value
+
+            ).toISOString();
+
+        }
+
+        async function apiRequest(
+
+            url,
+
+            options = {}
+
+        ) {
+
+            const response = await fetch(
+
+                url,
+
+                options
+
+            );
+
+            let data;
+
+            try {
+
+                data = await response.json();
+
+            }
+
+            catch {
+
+                data = {
+
+                    detail:
+
+                        "Server returned a non-JSON response."
+
+                };
+
+            }
+
+            showDebug(data);
+
+            if (!response.ok) {
+
+                let message =
+
+                    "Request failed.";
+
+                if (
+
+                    typeof data.detail === "string"
+
+                ) {
+
+                    message = data.detail;
+
+                }
+
+                else if (
+
+                    Array.isArray(data.detail)
+
+                ) {
+
+                    message =
+
+                        data.detail
+
+                            .map(
+
+                                item =>
+
+                                    typeof item?.msg === "string"
+
+                                        ? item.msg
+
+                                        : "Invalid request."
+
+                            )
+
+                            .join("; ");
+
+                }
+
+                throw new Error(
+
+                    message
+
+                );
+
+            }
+
+            return data;
+
+        }
+
+        function clearElement(element) {
+
+            element.replaceChildren();
+
+        }
+
+        function createElement(
+
+            tagName,
+
+            {
+
+                className = "",
+
+                text = null
+
+            } = {}
+
+        ) {
+
+            const element =
+
+                document.createElement(
+
+                    tagName
+
+                );
+
+            if (className) {
+
+                element.className =
+
+                    className;
+
+            }
+
+            if (text !== null) {
+
+                element.textContent =
+
+                    String(text);
+
+            }
+
+            return element;
+
+        }
+
+        function setPlainMessage(
+
+            resultBox,
+
+            message
+
+        ) {
+
+            resultBox.textContent =
+
+                String(message);
+
+        }
+
+        function setStatusMessage(
+
+            resultBox,
+
+            message,
+
+            className
+
+        ) {
+
+            clearElement(
+
+                resultBox
+
+            );
+
+            const statusElement =
+
+                createElement(
+
+                    "div",
+
+                    {
+
+                        className,
+
+                        text: message
+
+                    }
+
+                );
+
+            resultBox.appendChild(
+
+                statusElement
+
+            );
+
+        }
+
+        function appendStrongStatus(
+
+            container,
+
+            message,
+
+            className
+
+        ) {
+
+            const statusElement =
+
+                createElement(
+
+                    "div",
+
+                    {
+
+                        className
+
+                    }
+
+                );
+
+            const strong =
+
+                createElement(
+
+                    "strong",
+
+                    {
+
+                        text: message
+
+                    }
+
+                );
+
+            statusElement.appendChild(
+
+                strong
+
+            );
+
+            container.appendChild(
+
+                statusElement
+
+            );
+
+        }
+
+        function appendLabelValueLine(
+
+            container,
+
+            label,
+
+            value,
+
+            addBreak = true
+
+        ) {
+
+            container.appendChild(
+
+                document.createTextNode(
+
+                    `${label}: ${String(value)}`
+
+                )
+
+            );
+
+            if (addBreak) {
+
+                container.appendChild(
+
+                    document.createElement(
+
+                        "br"
+
+                    )
+
+                );
+
+            }
+
+        }
+
+        function riskClass(label) {
+
+            if (label === "Critical") {
+
+                return "risk-critical";
+
+            }
+
+            if (label === "Warning") {
+
+                return "risk-warning";
+
+            }
+
+            return "risk-normal";
+
+        }
+
+        function fixedNumber(
+
+            value,
+
+            digits = 2
+
+        ) {
+
+            const number =
+
+                Number(value);
+
+            if (!Number.isFinite(number)) {
+
+                return "N/A";
+
+            }
+
+            return number.toFixed(
+
+                digits
+
+            );
+
+        }
+
+        function percentage(
+
+            value
+
+        ) {
+
+            const number =
+
+                Number(value);
+
+            if (!Number.isFinite(number)) {
+
+                return "N/A";
+
+            }
+
+            return `${(
+
+                number * 100
+
+            ).toFixed(2)}%`;
+
+        }
+
+        function createMetric(
+
+            label,
+
+            value
+
+        ) {
+
+            const metric =
+
+                createElement(
+
+                    "div",
+
+                    {
+
+                        className: "metric"
+
+                    }
+
+                );
+
+            metric.appendChild(
+
+                createElement(
+
+                    "div",
+
+                    {
+
+                        className:
+
+                            "metric-label",
+
+                        text: label
+
+                    }
+
+                )
+
+            );
+
+            metric.appendChild(
+
+                createElement(
+
+                    "div",
+
+                    {
+
+                        className:
+
+                            "metric-value",
+
+                        text: value
+
+                    }
+
+                )
+
+            );
+
+            return metric;
+
+        }
+
+        function createRiskMetric(
+
+            label
+
+        ) {
+
+            const metric =
+
+                createElement(
+
+                    "div",
+
+                    {
+
+                        className: "metric"
+
+                    }
+
+                );
+
+            metric.appendChild(
+
+                createElement(
+
+                    "div",
+
+                    {
+
+                        className:
+
+                            "metric-label",
+
+                        text:
+
+                            "Fire-Risk Prediction"
+
+                    }
+
+                )
+
+            );
+
+            const valueContainer =
+
+                createElement(
+
+                    "div"
+
+                );
+
+            const risk =
+
+                createElement(
+
+                    "span",
+
+                    {
+
+                        className:
+
+                            `risk ${riskClass(label)}`,
+
+                        text: label
+
+                    }
+
+                );
+
+            valueContainer.appendChild(
+
+                risk
+
+            );
+
+            metric.appendChild(
+
+                valueContainer
+
+            );
+
+            return metric;
+
+        }
+        function appendGuidance(
+            container,
+            guidance
+        ) {
+            if (
+                typeof guidance !== "string"
+                || !guidance.trim()
+            ) {
+                return;
+            }
+
+            const panel = createElement(
+                "div",
+                {
+                    className: "guidance-panel"
+                }
+            );
+
+            panel.appendChild(
+                createElement(
+                    "div",
+                    {
+                        className: "guidance-label",
+                        text: "Status Guidance"
+                    }
+                )
+            );
+
+            panel.appendChild(
+                createElement(
+                    "div",
+                    {
+                        className: "guidance-text",
+                        text: guidance
+                    }
+                )
+            );
+
+            container.appendChild(
+                panel
+            );
+        }
+
+
+        function appendPrediction(
+            container,
+            prediction
+        ) {
+
+            if (!prediction) {
+
+                container.appendChild(
+
+                    createElement(
+
+                        "p",
+
+                        {
+
+                            text:
+
+                                "No prediction is stored for this reading."
+
+                        }
+
+                    )
+
+                );
+
+                return;
+
+            }
+
+            const grid =
+
+                createElement(
+
+                    "div",
+
+                    {
+
+                        className:
+
+                            "prediction-grid"
+
+                    }
+
+                );
+
+            grid.appendChild(
+
+                createMetric(
+
+                    "Remaining Drying Time",
+
+                    `${fixedNumber(
+
+                        prediction
+
+                            .remaining_drying_time_hours
+
+                    )} h`
+
+                )
+
+            );
+
+            grid.appendChild(
+
+                createRiskMetric(
+
+                    prediction
+
+                        .fire_risk_label
+
+                )
+
+            );
+
+            grid.appendChild(
+
+                createMetric(
+
+                    "Normal Probability",
+
+                    percentage(
+
+                        prediction
+
+                            .probabilities
+
+                            .normal
+
+                    )
+
+                )
+
+            );
+
+            grid.appendChild(
+
+                createMetric(
+
+                    "Warning Probability",
+
+                    percentage(
+
+                        prediction
+
+                            .probabilities
+
+                            .warning
+
+                    )
+
+                )
+
+            );
+
+            grid.appendChild(
+
+                createMetric(
+
+                    "Critical Probability",
+
+                    percentage(
+
+                        prediction
+
+                            .probabilities
+
+                            .critical
+
+                    )
+
+                )
+
+            );
+
+            container.appendChild(
+
+                grid
+
+            );
+
+
+            appendGuidance(
+                container,
+                prediction.guidance
+            );
+
+            const modelInfo =
+
+                createElement(
+
+                    "p",
+
+                    {
+
+                        className: "small"
+
+                    }
+
+                );
+
+            appendLabelValueLine(
+
+                modelInfo,
+
+                "Regression model",
+
+                prediction
+
+                    .regression_model_version
+
+            );
+
+            appendLabelValueLine(
+
+                modelInfo,
+
+                "Classification model",
+
+                prediction
+
+                    .classification_model_version,
+
+                false
+
+            );
+
+            container.appendChild(
+
+                modelInfo
+
+            );
+
+        }
+
+        function renderBatchCreated(
+
+            resultBox,
+
+            result
+
+        ) {
+
+            clearElement(
+
+                resultBox
+
+            );
+
+            appendStrongStatus(
+
+                resultBox,
+
+                "Batch created successfully.",
+
+                "status-success"
+
+            );
+
+            const details =
+
+                createElement(
+
+                    "p"
+
+                );
+
+            appendLabelValueLine(
+
+                details,
+
+                "Batch",
+
+                result.batch_code
+
+            );
+
+            appendLabelValueLine(
+
+                details,
+
+                "Smokehouse",
+
+                result.smokehouse_id
+
+            );
+
+            appendLabelValueLine(
+
+                details,
+
+                "Status",
+
+                result.status,
+
+                false
+
+            );
+
+            resultBox.appendChild(
+
+                details
+
+            );
+
+        }
+
+        function renderReadingResult(
+
+            resultBox,
+
+            result
+
+        ) {
+
+            clearElement(
+
+                resultBox
+
+            );
+
+            appendStrongStatus(
+
+                resultBox,
+
+                "Reading stored and prediction completed.",
+
+                "status-success"
+
+            );
+
+            const details =
+
+                createElement(
+
+                    "p"
+
+                );
+
+            appendLabelValueLine(
+
+                details,
+
+                "Reading ID",
+
+                result.reading.id
+
+            );
+
+            appendLabelValueLine(
+
+                details,
+
+                "Historical readings used",
+
+                result.historical_reading_count,
+
+                false
+
+            );
+
+            resultBox.appendChild(
+
+                details
+
+            );
+
+            appendPrediction(
+
+                resultBox,
+
+                result.prediction
+
+            );
+
+            const missing =
+
+                createElement(
+
+                    "p",
+
+                    {
+
+                        className: "small"
+
+                    }
+
+                );
+
+            const missingText =
+
+                result
+
+                    .missing_numeric_features
+
+                    .length === 0
+
+                    ? "None"
+
+                    : result
+
+                        .missing_numeric_features
+
+                        .join(", ");
+
+            appendLabelValueLine(
+
+                missing,
+
+                "Missing numeric features",
+
+                missingText,
+
+                false
+
+            );
+
+            resultBox.appendChild(
+
+                missing
+
+            );
+
+        }
+
+        function renderLatestResult(
+
+            resultBox,
+
+            result
+
+        ) {
+
+            clearElement(
+
+                resultBox
+
+            );
+
+            const heading =
+
+                createElement(
+
+                    "p"
+
+                );
+
+            heading.appendChild(
+
+                createElement(
+
+                    "strong",
+
+                    {
+
+                        text:
+
+                            `${result.batch_code} / ${result.layer_code}`
+
+                    }
+
+                )
+
+            );
+
+            resultBox.appendChild(
+
+                heading
+
+            );
+
+            const grid =
+
+                createElement(
+
+                    "div",
+
+                    {
+
+                        className:
+
+                            "prediction-grid"
+
+                    }
+
+                );
+
+            grid.appendChild(
+
+                createMetric(
+
+                    "Temperature",
+
+                    `${String(
+
+                        result
+
+                            .latest_reading
+
+                            .temperature_c
+
+                    )} °C`
+
+                )
+
+            );
+
+            grid.appendChild(
+
+                createMetric(
+
+                    "Humidity",
+
+                    `${String(
+
+                        result
+
+                            .latest_reading
+
+                            .humidity_pct
+
+                    )} %`
+
+                )
+
+            );
+
+            resultBox.appendChild(
+
+                grid
+
+            );
+
+            appendPrediction(
+
+                resultBox,
+
+                result.latest_prediction
+
+            );
+
+        }
+
+        function renderHistoryResult(
+
+            resultBox,
+
+            result
+
+        ) {
+
+            clearElement(
+
+                resultBox
+
+            );
+
+            if (
+
+                result.items.length
+
+                === 0
+
+            ) {
+
+                resultBox.appendChild(
+
+                    createElement(
+
+                        "p",
+
+                        {
+
+                            text:
+
+                                `No readings are stored for ${result.batch_code} / ${result.layer_code}.`
+
+                        }
+
+                    )
+
+                );
+
+                return;
+
+            }
+
+            const summary =
+
+                createElement(
+
+                    "p"
+
+                );
+
+            summary.appendChild(
+
+                createElement(
+
+                    "strong",
+
+                    {
+
+                        text:
+
+                            `${result.batch_code} / ${result.layer_code}`
+
+                    }
+
+                )
+
+            );
+
+            summary.appendChild(
+
+                document.createTextNode(
+
+                    ` — ${result.items.length} stored reading(s)`
+
+                )
+
+            );
+
+            resultBox.appendChild(
+
+                summary
+
+            );
+
+            const wrapper =
+
+                createElement(
+
+                    "div",
+
+                    {
+
+                        className:
+
+                            "table-wrapper"
+
+                    }
+
+                );
+
+            const table =
+
+                createElement(
+
+                    "table"
+
+                );
+
+            const thead =
+
+                createElement(
+
+                    "thead"
+
+                );
+
+            const headerRow =
+
+                createElement(
+
+                    "tr"
+
+                );
+
+            [
+
+                "Recorded At",
+
+                "Temp °C",
+
+                "RH %",
+
+                "Remaining h",
+                "Risk",
+                "Guidance"
+
+            ].forEach(
+
+                heading => {
+
+                    headerRow.appendChild(
+
+                        createElement(
+
+                            "th",
+
+                            {
+
+                                text: heading
+
+                            }
+
+                        )
+
+                    );
+
+                }
+
+            );
+
+            thead.appendChild(
+
+                headerRow
+
+            );
+
+            table.appendChild(
+
+                thead
+
+            );
+
+            const tbody =
+
+                createElement(
+
+                    "tbody"
+
+                );
+
+            result.items.forEach(
+
+                item => {
+
+                    const row =
+
+                        createElement(
+
+                            "tr"
+
+                        );
+
+                    row.appendChild(
+
+                        createElement(
+
+                            "td",
+
+                            {
+
+                                text:
+
+                                    item
+
+                                        .reading
+
+                                        .recorded_at
+
+                            }
+
+                        )
+
+                    );
+
+                    row.appendChild(
+
+                        createElement(
+
+                            "td",
+
+                            {
+
+                                text:
+
+                                    item
+
+                                        .reading
+
+                                        .temperature_c
+
+                            }
+
+                        )
+
+                    );
+
+                    row.appendChild(
+
+                        createElement(
+
+                            "td",
+
+                            {
+
+                                text:
+
+                                    item
+
+                                        .reading
+
+                                        .humidity_pct
+
+                            }
+
+                        )
+
+                    );
+
+                    const prediction =
+
+                        item.prediction;
+
+                    row.appendChild(
+
+                        createElement(
+
+                            "td",
+
+                            {
+
+                                text:
+
+                                    prediction
+
+                                        ? fixedNumber(
+
+                                            prediction
+
+                                                .remaining_drying_time_hours
+
+                                        )
+
+                                        : "-"
+
+                            }
+
+                        )
+
+                    );
+
+                    const riskCell =
+
+                        createElement(
+
+                            "td"
+
+                        );
+
+                    if (prediction) {
+
+                        riskCell.appendChild(
+
+                            createElement(
+
+                                "span",
+
+                                {
+
+                                    className:
+
+                                        `risk ${riskClass(
+
+                                            prediction
+
+                                                .fire_risk_label
+
+                                        )}`,
+
+                                    text:
+
+                                        prediction
+
+                                            .fire_risk_label
+
+                                }
+
+                            )
+
+                        );
+
+                    }
+
+                    else {
+
+                        riskCell.textContent =
+
+                            "-";
+
+                    }
+
+                    row.appendChild(
+
+                        riskCell
+
+                    );
+
+
+                    row.appendChild(
+                        createElement(
+                            "td",
+                            {
+                                text:
+                                    prediction
+                                        ? (
+                                            prediction.guidance
+                                            || "-"
+                                        )
+                                        : "-"
+                            }
+                        )
+                    );
+
+                    tbody.appendChild(
+
+                        row
+
+                    );
+
+                }
+
+            );
+
+            table.appendChild(
+
+                tbody
+
+            );
+
+            wrapper.appendChild(
+
+                table
+
+            );
+
+            resultBox.appendChild(
+
+                wrapper
+
+            );
+
+        }
+
+        // ========================================================
+
+        // CREATE BATCH
+
+        // ========================================================
+
+        document
+
+            .getElementById(
+
+                "batchForm"
+
+            )
+
+            .addEventListener(
+
+                "submit",
+
+                async event => {
+
+                    event.preventDefault();
+
+                    const resultBox =
+
+                        document.getElementById(
+
+                            "batchResult"
+
+                        );
+
+                    setPlainMessage(
+
+                        resultBox,
+
+                        "Creating batch..."
+
+                    );
+
+                    const payload = {
+
+                        batch_code:
+
+                            document
+
+                                .getElementById(
+
+                                    "batchCode"
+
+                                )
+
+                                .value
+
+                                .trim(),
+
+                        smokehouse_id:
+
+                            document
+
+                                .getElementById(
+
+                                    "smokehouseId"
+
+                                )
+
+                                .value
+
+                                .trim(),
+
+                        layers: [
+
+                            {
+
+                                layer_code: "L1",
+
+                                number_of_sheets:
+
+                                    Number(
+
+                                        document
+
+                                            .getElementById(
+
+                                                "l1Sheets"
+
+                                            )
+
+                                            .value
+
+                                    ),
+
+                                layer_area_m2:
+
+                                    Number(
+
+                                        document
+
+                                            .getElementById(
+
+                                                "l1Area"
+
+                                            )
+
+                                            .value
+
+                                    )
+
+                            },
+
+                            {
+
+                                layer_code: "L2",
+
+                                number_of_sheets:
+
+                                    Number(
+
+                                        document
+
+                                            .getElementById(
+
+                                                "l2Sheets"
+
+                                            )
+
+                                            .value
+
+                                    ),
+
+                                layer_area_m2:
+
+                                    Number(
+
+                                        document
+
+                                            .getElementById(
+
+                                                "l2Area"
+
+                                            )
+
+                                            .value
+
+                                    )
+
+                            },
+
+                            {
+
+                                layer_code: "L3",
+
+                                number_of_sheets:
+
+                                    Number(
+
+                                        document
+
+                                            .getElementById(
+
+                                                "l3Sheets"
+
+                                            )
+
+                                            .value
+
+                                    ),
+
+                                layer_area_m2:
+
+                                    Number(
+
+                                        document
+
+                                            .getElementById(
+
+                                                "l3Area"
+
+                                            )
+
+                                            .value
+
+                                    )
+
+                            }
+
+                        ]
+
+                    };
+
+                    const startedAt =
+
+                        optionalIsoDate(
+
+                            "batchStartedAt"
+
+                        );
+
+                    if (startedAt) {
+
+                        payload.started_at =
+
+                            startedAt;
+
+                    }
+
+                    try {
+
+                        const result =
+
+                            await apiRequest(
+
+                                "/api/v1/smokehouse/batches",
+
+                                {
+
+                                    method: "POST",
+
+                                    headers: {
+
+                                        "Content-Type":
+
+                                            "application/json"
+
+                                    },
+
+                                    body:
+
+                                        JSON.stringify(
+
+                                            payload
+
+                                        )
+
+                                }
+
+                            );
+
+                        renderBatchCreated(
+
+                            resultBox,
+
+                            result
+
+                        );
+
+                        document
+
+                            .getElementById(
+
+                                "readingBatchCode"
+
+                            )
+
+                            .value =
+
+                            result.batch_code;
+
+                        document
+
+                            .getElementById(
+
+                                "latestBatch"
+
+                            )
+
+                            .value =
+
+                            result.batch_code;
+
+                        document
+
+                            .getElementById(
+
+                                "historyBatch"
+
+                            )
+
+                            .value =
+
+                            result.batch_code;
+
+                    }
+
+                    catch (error) {
+
+                        setStatusMessage(
+
+                            resultBox,
+
+                            error.message,
+
+                            "status-error"
+
+                        );
+
+                    }
+
+                }
+
+            );
+
+        // ========================================================
+
+        // SUBMIT READING
+
+        // ========================================================
+
+        document
+
+            .getElementById(
+
+                "readingForm"
+
+            )
+
+            .addEventListener(
+
+                "submit",
+
+                async event => {
+
+                    event.preventDefault();
+
+                    const resultBox =
+
+                        document.getElementById(
+
+                            "readingResult"
+
+                        );
+
+                    setPlainMessage(
+
+                        resultBox,
+
+                        "Running prediction..."
+
+                    );
+
+                    const payload = {
+
+                        batch_code:
+
+                            document
+
+                                .getElementById(
+
+                                    "readingBatchCode"
+
+                                )
+
+                                .value
+
+                                .trim(),
+
+                        layer_code:
+
+                            document
+
+                                .getElementById(
+
+                                    "readingLayer"
+
+                                )
+
+                                .value,
+
+                        temperature_c:
+
+                            Number(
+
+                                document
+
+                                    .getElementById(
+
+                                        "temperature"
+
+                                    )
+
+                                    .value
+
+                            ),
+
+                        humidity_pct:
+
+                            Number(
+
+                                document
+
+                                    .getElementById(
+
+                                        "humidity"
+
+                                    )
+
+                                    .value
+
+                            ),
+
+                        source:
+
+                            document
+
+                                .getElementById(
+
+                                    "readingSource"
+
+                                )
+
+                                .value
+
+                    };
+
+                    const recordedAt =
+
+                        optionalIsoDate(
+
+                            "recordedAt"
+
+                        );
+
+                    if (recordedAt) {
+
+                        payload.recorded_at =
+
+                            recordedAt;
+
+                    }
+
+                    try {
+
+                        const result =
+
+                            await apiRequest(
+
+                                "/api/v1/smokehouse/readings",
+
+                                {
+
+                                    method: "POST",
+
+                                    headers: {
+
+                                        "Content-Type":
+
+                                            "application/json"
+
+                                    },
+
+                                    body:
+
+                                        JSON.stringify(
+
+                                            payload
+
+                                        )
+
+                                }
+
+                            );
+
+                        renderReadingResult(
+
+                            resultBox,
+
+                            result
+
+                        );
+
+                    }
+
+                    catch (error) {
+
+                        setStatusMessage(
+
+                            resultBox,
+
+                            error.message,
+
+                            "status-error"
+
+                        );
+
+                    }
+
+                }
+
+            );
+
+        // ========================================================
+
+        // LATEST STATUS
+
+        // ========================================================
+
+        document
+
+            .getElementById(
+
+                "latestButton"
+
+            )
+
+            .addEventListener(
+
+                "click",
+
+                async () => {
+
+                    const resultBox =
+
+                        document.getElementById(
+
+                            "latestResult"
+
+                        );
+
+                    const batchCode =
+
+                        document
+
+                            .getElementById(
+
+                                "latestBatch"
+
+                            )
+
+                            .value
+
+                            .trim();
+
+                    const layer =
+
+                        document
+
+                            .getElementById(
+
+                                "latestLayer"
+
+                            )
+
+                            .value;
+
+                    if (!batchCode) {
+
+                        setStatusMessage(
+
+                            resultBox,
+
+                            "Enter a batch code.",
+
+                            "status-error"
+
+                        );
+
+                        return;
+
+                    }
+
+                    setPlainMessage(
+
+                        resultBox,
+
+                        "Loading latest status..."
+
+                    );
+
+                    try {
+
+                        const result =
+
+                            await apiRequest(
+
+                                `/api/v1/smokehouse/batches/${encodeURIComponent(
+
+                                    batchCode
+
+                                )}/layers/${encodeURIComponent(
+
+                                    layer
+
+                                )}/latest`
+
+                            );
+
+                        renderLatestResult(
+
+                            resultBox,
+
+                            result
+
+                        );
+
+                    }
+
+                    catch (error) {
+
+                        setStatusMessage(
+
+                            resultBox,
+
+                            error.message,
+
+                            "status-error"
+
+                        );
+
+                    }
+
+                }
+
+            );
+
+        // ========================================================
+
+        // HISTORY
+
+        // ========================================================
+
+        document
+
+            .getElementById(
+
+                "historyButton"
+
+            )
+
+            .addEventListener(
+
+                "click",
+
+                async () => {
+
+                    const resultBox =
+
+                        document.getElementById(
+
+                            "historyResult"
+
+                        );
+
+                    const batchCode =
+
+                        document
+
+                            .getElementById(
+
+                                "historyBatch"
+
+                            )
+
+                            .value
+
+                            .trim();
+
+                    const layer =
+
+                        document
+
+                            .getElementById(
+
+                                "historyLayer"
+
+                            )
+
+                            .value;
+
+                    if (!batchCode) {
+
+                        setStatusMessage(
+
+                            resultBox,
+
+                            "Enter a batch code.",
+
+                            "status-error"
+
+                        );
+
+                        return;
+
+                    }
+
+                    setPlainMessage(
+
+                        resultBox,
+
+                        "Loading history..."
+
+                    );
+
+                    try {
+
+                        const result =
+
+                            await apiRequest(
+
+                                `/api/v1/smokehouse/batches/${encodeURIComponent(
+
+                                    batchCode
+
+                                )}/layers/${encodeURIComponent(
+
+                                    layer
+
+                                )}/history`
+
+                            );
+
+                        renderHistoryResult(
+
+                            resultBox,
+
+                            result
+
+                        );
+
+                    }
+
+                    catch (error) {
+
+                        setStatusMessage(
+
+                            resultBox,
+
+                            error.message,
+
+                            "status-error"
+
+                        );
+
+                    }
+
+                }
+
+            );
+
+    </script>
+
+</body>
+
+</html>

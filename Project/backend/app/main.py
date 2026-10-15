@@ -1,0 +1,93 @@
+from pathlib import Path
+
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
+
+from backend.app.api.routes.smokehouse import (
+    router as smokehouse_router,
+)
+from backend.app.core.config import settings
+
+
+# ============================================================
+# PATHS
+# ============================================================
+
+APP_DIR = Path(__file__).resolve().parent
+
+STATIC_DIR = APP_DIR / "static"
+
+SMOKEHOUSE_DASHBOARD_FILE = (
+    STATIC_DIR
+    / "smokehouse_dashboard.html"
+)
+
+
+# ============================================================
+# FASTAPI APPLICATION
+# ============================================================
+
+app = FastAPI(
+    title=settings.app_name,
+    version=settings.app_version,
+)
+
+
+# ============================================================
+# API ROUTERS
+# ============================================================
+
+app.include_router(
+    smokehouse_router
+)
+
+
+# ============================================================
+# SYSTEM HEALTH
+# ============================================================
+
+
+@app.get(
+    "/health",
+    tags=["System"],
+)
+def health_check() -> dict[str, str]:
+    """
+    Basic backend health endpoint.
+    """
+
+    return {
+        "status": "ok",
+        "environment": settings.app_env,
+    }
+
+
+# ============================================================
+# COMPONENT 3 TEMPORARY VALIDATION DASHBOARD
+# ============================================================
+
+
+@app.get(
+    "/smokehouse-dashboard",
+    include_in_schema=False,
+)
+def smokehouse_dashboard() -> FileResponse:
+    """
+    Serve the temporary Component 3 validation dashboard.
+
+    The dashboard uses the same FastAPI backend for:
+
+    - batch creation
+    - raw sensor reading submission
+    - ML prediction
+    - latest layer status
+    - layer history
+
+    This is a development/research validation interface,
+    not the final React Native application.
+    """
+
+    return FileResponse(
+        path=SMOKEHOUSE_DASHBOARD_FILE,
+        media_type="text/html",
+    )

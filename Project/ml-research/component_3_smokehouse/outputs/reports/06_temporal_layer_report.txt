@@ -1,0 +1,128 @@
+COMPONENT 3 - STAGE 06: TEMPORAL & LAYER ANALYSIS
+==============================================================================
+
+OVERALL STATUS: PASS
+
+INPUT DATASET
+-------------
+Rows: 24,463
+Columns: 17
+Sequences: 36
+Processed SHA-256: 957c9c150b4b9a8bd303576473a46feb67ea5415b8a8b7c6dc5304bdb28f59eb
+
+SAMPLING
+--------
+10-minute intervals: 24,415
+20-minute gaps: 12
+Other intervals: 0
+Exact timestamp matching was used for lag analysis.
+
+EXACT LAG ANALYSIS
+------------------
+     Variable  Lag_Minutes  Pairs_Available  Coverage_Percent  Exact_Lag_Correlation  Mean_Absolute_Change
+Temperature_C           10            24415         99.803785               0.995549              0.161542
+   Humidity_%           10            24415         99.803785               0.999596              0.277079
+Temperature_C           30            24343         99.509463               0.975213              0.375558
+   Humidity_%           30            24343         99.509463               0.998117              0.598597
+Temperature_C           60            24235         99.067980               0.937019              0.605846
+   Humidity_%           60            24235         99.067980               0.995483              0.971759
+
+LAYER × DRYING PROGRESS
+-----------------------
+Layer_ID Drying_Progress_Stage  Records  Mean_Temperature_C  SD_Temperature_C  Mean_Humidity_pct  SD_Humidity_pct  Mean_Remaining_Hours
+      L1                 0-20%     1597           49.869737          2.637968          70.084878         8.264785            100.314333
+      L1                20-40%     1590           52.079472          1.877783          53.644742         5.082635             77.990566
+      L1                40-60%     1590           52.108157          1.788257          45.552799         4.320022             55.712063
+      L1                60-80%     1590           52.059792          1.876318          41.356767         4.448869             33.426717
+      L1               80-100%     1597           51.367721          1.854036          39.385542         4.583185             11.104064
+      L2                 0-20%     1633           49.420588          2.650178          71.245217         8.222683            102.541941
+      L2                20-40%     1628           51.596302          1.850016          54.526229         4.958605             79.706284
+      L2                40-60%     1624           51.577765          1.803752          46.622777         4.410146             56.941817
+      L2                60-80%     1625           51.594806          1.833888          42.269354         4.342638             34.173329
+      L2               80-100%     1634           50.875532          1.857310          40.651867         4.695408             11.353849
+      L3                 0-20%     1674           48.878315          2.687442          72.572891         8.322299            105.021487
+      L3                20-40%     1668           50.993999          1.821371          55.773717         5.017278             81.630809
+      L3                40-60%     1669           51.014649          1.795389          47.812019         4.581248             58.310869
+      L3                60-80%     1668           51.035240          1.826088          43.619664         4.556919             34.997284
+      L3               80-100%     1676           50.258192          1.812014          42.042643         4.698761             11.636551
+
+SEQUENCE TEMPORAL SUMMARY
+-------------------------
+Smokehouse_ID Batch_ID Layer_ID  Records  Total_Drying_Hours  Mean_Temperature_C  Mean_Humidity_pct  Temperature_Slope_C_per_Hour  Humidity_Slope_pct_per_Hour  Temperature_SD  Humidity_SD
+         SH01 SH01_B01       L1      755              126.00           49.348331          54.253285                      0.012335                    -0.286587        1.404960    11.685877
+         SH01 SH01_B01       L2      757              126.00           48.873672          55.684240                      0.012841                    -0.287570        1.412161    11.721194
+         SH01 SH01_B01       L3      755              126.00           48.308596          57.245338                      0.012087                    -0.290465        1.387244    11.778619
+         SH01 SH01_B02       L1      631              105.00           53.372171          43.959223                      0.018557                    -0.353288        1.393496    11.668170
+         SH01 SH01_B02       L2      619              103.00           52.868869          45.609079                      0.017148                    -0.361233        1.395148    11.679513
+         SH01 SH01_B02       L3      649              108.33           52.324823          46.410894                      0.014918                    -0.344910        1.400658    11.788568
+         SH01 SH01_B03       L1      713              118.67           50.483100          51.417097                      0.011743                    -0.306654        1.409023    11.722253
+         SH01 SH01_B03       L2      755              125.67           50.023642          52.190079                      0.008444                    -0.284763        1.343502    11.610637
+         SH01 SH01_B03       L3      756              126.00           49.442725          53.838690                      0.009540                    -0.287804        1.407912    11.713747
+         SH01 SH01_B04       L1      577               96.00           53.832981          43.855841                      0.020296                    -0.393824        1.499497    11.759592
+         SH01 SH01_B04       L2      583               97.00           53.317942          45.094751                      0.021372                    -0.396370        1.523849    11.970423
+         SH01 SH01_B04       L3      603              100.33           52.791658          46.300216                      0.019088                    -0.382068        1.446039    11.987436
+         SH01 SH01_B05       L1      757              126.00           49.920304          53.587860                      0.011809                    -0.292400        1.362420    11.873047
+         SH01 SH01_B05       L2      757              126.00           49.374861          54.789115                      0.011552                    -0.289705        1.354007    11.820704
+         SH01 SH01_B05       L3      757              126.00           48.782417          56.399551                      0.011601                    -0.288209        1.358119    11.736702
+         SH01 SH01_B06       L1      646              107.50           52.219489          47.088777                      0.015819                    -0.342865        1.650295    11.743815
+         SH01 SH01_B06       L2      678              112.83           51.822611          47.883230                      0.014206                    -0.330231        1.590000    11.902889
+         SH01 SH01_B06       L3      697              116.00           51.181463          49.148752                      0.014675                    -0.319427        1.542547    11.824309
+         SH02 SH02_B01       L1      624              103.83           52.688558          46.784599                      0.016725                    -0.360667        1.437240    11.765285
+         SH02 SH02_B01       L2      638              106.17           52.172978          47.862367                      0.016234                    -0.351499        1.433904    11.783734
+         SH02 SH02_B01       L3      669              111.33           51.526039          48.970090                      0.014402                    -0.332184        1.441676    11.796605
+         SH02 SH02_B02       L1      748              124.50           48.865053          55.777233                      0.010959                    -0.293487        1.429921    11.800933
+         SH02 SH02_B02       L2      755              126.00           48.372132          56.934265                      0.011354                    -0.288670        1.386338    11.735175
+         SH02 SH02_B02       L3      757              126.00           47.753857          58.602470                      0.012674                    -0.286820        1.450391    11.676723
+         SH02 SH02_B03       L1      639              106.33           51.864601          51.864069                      0.019599                    -0.362605        1.538173    12.085232
+         SH02 SH02_B03       L2      658              109.67           51.392705          52.657584                      0.017833                    -0.347274        1.484175    12.012664
+         SH02 SH02_B03       L3      695              115.67           50.745295          53.704719                      0.013952                    -0.323453        1.462724    11.915075
+         SH02 SH02_B04       L1      588               97.83           53.794728          45.383367                      0.018760                    -0.385576        1.467955    11.749687
+         SH02 SH02_B04       L2      621              103.33           53.293382          46.025620                      0.018033                    -0.365452        1.461762    11.777523
+         SH02 SH02_B04       L3      625              104.00           52.665920          47.624480                      0.018204                    -0.365611        1.438525    11.914953
+         SH02 SH02_B05       L1      669              111.50           50.823229          54.122735                      0.012110                    -0.335032        1.344308    11.763444
+         SH02 SH02_B05       L2      684              113.83           50.271506          55.149006                      0.012266                    -0.322542        1.387262    11.700562
+         SH02 SH02_B05       L3      729              121.50           49.700261          56.051646                      0.010643                    -0.299687        1.388488    11.682317
+         SH02 SH02_B06       L1      617              102.67           52.499206          48.145721                      0.014307                    -0.364045        1.507911    11.866962
+         SH02 SH02_B06       L2      639              106.33           52.025884          49.213412                      0.013644                    -0.348598        1.505295    11.836627
+         SH02 SH02_B06       L3      663              110.33           51.434917          50.601810                      0.011209                    -0.332618        1.454597    11.703760
+
+FIRE-RISK TEMPORAL CONTEXT
+--------------------------
+Fire_Risk_Label  Assessment_Count  Current_Mean_Temperature_C  Current_Mean_Humidity_pct  Mean_Temperature_Change_30m  Mean_Humidity_Change_30m  Mean_Temperature_Change_60m  Mean_Humidity_Change_60m  Median_Elapsed_Hours
+         Normal              3916                   50.774691                  51.911578                     0.027717                 -0.203304                     0.043023                 -0.384374                  55.0
+        Warning               156                   54.509423                  37.930897                     0.010962                 -0.057821                     0.235064                 -0.374808                  69.0
+       Critical                26                   55.266154                  36.379231                     0.875769                 -1.353462                     1.557692                 -2.532692                  73.0
+
+FIRE-RISK TRANSITIONS
+---------------------
+Fire_Risk_Label  Normal  Warning  Critical
+Previous_Label                            
+Normal             3801       67        13
+Warning              71       76         8
+Critical              8       13         5
+Same-label hourly persistence: 95.5687%
+
+INTERPRETATION / STAGE 07 GUIDANCE
+----------------------------------
+- Recent sensor history has measurable temporal dependence.
+- 30- and 60-minute past-only windows are justified candidates for feature engineering.
+- Warning and Critical should not be reduced to a single instantaneous T/RH threshold.
+- Elapsed_Drying_Hours remains available because drying stage is known at runtime.
+- Layer_ID remains a contextual physical feature candidate.
+- Never use Actual_Total_Drying_Time, Batch_ID, or Fire_Risk_Assessment_Timestamp as physical predictors.
+- Do not invent rows for the 12 packet-loss gaps.
+- Stage 07 may create timestamp-aware lags/rolling summaries using current/past data only.
+
+PASS / FAIL CHECKS
+------------------
+                                  Check Status                          Details
+                     Expected row count   PASS                      Rows=24,463
+              Expected 17-column schema   PASS                       Columns=17
+ No missing cells in preprocessed input   PASS                        Missing=0
+      Expected 36 Batch-Layer sequences   PASS                     Sequences=36
+           Sampling intervals preserved   PASS 10-min=24415; 20-min=12; other=0
+      Expected 4,098 hourly assessments   PASS                Assessments=4,098
+10-minute temperature lag coverage >99%   PASS                Coverage=99.8038%
+   10-minute humidity lag coverage >99%   PASS                Coverage=99.8038%
+
+STAGE 06 STATUS: PASS
