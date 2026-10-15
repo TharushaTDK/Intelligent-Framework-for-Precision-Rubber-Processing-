@@ -1,0 +1,8 @@
+pandas
+numpy
+scikit-learn
+matplotlib
+joblib
+shap
+# Optional candidate
+xgboost

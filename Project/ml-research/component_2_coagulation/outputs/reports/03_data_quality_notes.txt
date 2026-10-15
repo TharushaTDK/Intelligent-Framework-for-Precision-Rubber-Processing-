@@ -1,0 +1,14 @@
+STEP 3: DATA QUALITY ANALYSIS
+Input file: latex_coagulation_dataset_final.csv
+Rows checked: 2500
+
+Outputs:
+- 03_data_quality_checks.csv
+- 03_numeric_range_summary.csv
+
+Important:
+- The raw CSV was read only; this script does not edit it.
+- IQR flags identify unusual values for review, not confirmed errors.
+- No rows are automatically deleted or changed.
+- The dataset is synthetic demo data. These checks do not validate
+  real-world chemical amounts or prove scientific accuracy.

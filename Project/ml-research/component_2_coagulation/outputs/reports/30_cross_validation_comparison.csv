@@ -1,0 +1,11 @@
+task,algorithm,mean_CV_MAE,std_CV_MAE,note
+model_1_water_acid,LinearRegression,18.54847513052061,0.6105723896007424,"Synthetic data: CV is pipeline comparison only, not real-world validation."
+model_1_water_acid,Ridge,18.54847840045411,0.6105640243274038,"Synthetic data: CV is pipeline comparison only, not real-world validation."
+model_1_water_acid,RandomForest,2.7970635651941413,0.0773496284083141,"Synthetic data: CV is pipeline comparison only, not real-world validation."
+model_1_water_acid,ExtraTrees,2.1829769080621144,0.04344725104355105,"Synthetic data: CV is pipeline comparison only, not real-world validation."
+model_1_water_acid,HistGradientBoosting,2.9650075593887135,0.13552413236774977,"Synthetic data: CV is pipeline comparison only, not real-world validation."
+model_2_coagulation_time,LinearRegression,0.6323133436733197,0.010898108919420967,"Synthetic data: CV is pipeline comparison only, not real-world validation."
+model_2_coagulation_time,Ridge,0.6323109629224873,0.010897471985998448,"Synthetic data: CV is pipeline comparison only, not real-world validation."
+model_2_coagulation_time,RandomForest,0.6624484154033189,0.023919138030467642,"Synthetic data: CV is pipeline comparison only, not real-world validation."
+model_2_coagulation_time,ExtraTrees,0.6639580028848691,0.023942213678045422,"Synthetic data: CV is pipeline comparison only, not real-world validation."
+model_2_coagulation_time,HistGradientBoosting,0.6661518733184637,0.022601527562084354,"Synthetic data: CV is pipeline comparison only, not real-world validation."
