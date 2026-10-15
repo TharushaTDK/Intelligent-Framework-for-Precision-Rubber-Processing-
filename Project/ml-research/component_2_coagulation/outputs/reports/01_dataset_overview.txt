@@ -1,0 +1,26 @@
+LATEX COAGULATION DATASET OVERVIEW
+========================================
+Rows: 2500
+Columns: 9
+Duplicate batch IDs: 0
+Duplicate complete rows: 0
+Total missing values: 0
+
+Column names and data types:
+batch_id                                     str
+record_date                                  str
+metrolac_reading                         float64
+latex_temperature_C                      float64
+drc                                      float64
+latex_volume_L                           float64
+water_amount_L                           float64
+prepared_1pct_formic_acid_solution_mL    float64
+coagulation_time_hours                   float64
+
+First five records:
+   batch_id record_date  metrolac_reading  latex_temperature_C   drc  latex_volume_L  water_amount_L  prepared_1pct_formic_acid_solution_mL  coagulation_time_hours
+BATCH_00001  2026-09-23              44.5                 30.8 45.20          138.00           21.24                                 690.29                    5.57
+BATCH_00002  2026-09-27              26.6                 31.3 26.58          113.60           13.23                                 315.23                    9.37
+BATCH_00003  2026-09-20              42.7                 28.5 42.68          141.21           20.61                                 671.33                    6.05
+BATCH_00004  2026-09-16              38.9                 26.2 38.57           46.07            6.15                                 193.88                    7.02
+BATCH_00005  2026-09-05              23.2                 24.9 22.64           92.72           10.03                                 214.39                   10.15

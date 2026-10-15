@@ -1,0 +1,8 @@
+{
+  "selected_algorithm": "ExtraTrees",
+  "targets": [
+    "water_amount_L",
+    "prepared_1pct_formic_acid_solution_mL"
+  ],
+  "cv_mae": -2.36127529016722
+}

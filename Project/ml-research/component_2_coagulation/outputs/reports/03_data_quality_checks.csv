@@ -1,0 +1,15 @@
+check,column,result,status,details
+row_count,ALL,2500,INFO,Number of records in the raw dataset.
+duplicate_full_rows,ALL,0,PASS,Exact duplicate rows; records are not removed.
+missing_ids,batch_id,0,PASS,Missing batch identifiers.
+duplicate_ids,batch_id,0,PASS,Repeated batch identifiers.
+unparseable_dates,record_date,0,PASS,Date values that could not be parsed.
+missing_or_non_numeric,drc,0,PASS,Includes blank values and values that cannot be converted to numbers.
+missing_or_non_numeric,latex_volume_L,0,PASS,Includes blank values and values that cannot be converted to numbers.
+missing_or_non_numeric,water_amount_L,0,PASS,Includes blank values and values that cannot be converted to numbers.
+missing_or_non_numeric,prepared_1pct_formic_acid_solution_mL,0,PASS,Includes blank values and values that cannot be converted to numbers.
+missing_or_non_numeric,coagulation_time_hours,0,PASS,Includes blank values and values that cannot be converted to numbers.
+non_positive_latex_volume,latex_volume_L,0,PASS,Latex batch volume should be positive.
+negative_values,water_amount_L,0,PASS,Negative target values need review.
+negative_values,prepared_1pct_formic_acid_solution_mL,0,PASS,Negative target values need review.
+negative_values,coagulation_time_hours,0,PASS,Negative target values need review.
