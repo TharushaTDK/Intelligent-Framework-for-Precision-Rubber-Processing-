@@ -1,0 +1,12 @@
+Check,Status,Details
+Stage-17 shortlist matches expected models,PASS,"Gradient_Boosting, XGBoost"
+Expected Train/Validation shapes,PASS,"Train=(16246, 20); Validation=(4159, 20)"
+All model inputs finite,PASS,No missing/non-finite transformed inputs.
+Expected tuning trial count,PASS,Trials=20; expected=20
+All tuning metrics finite,PASS,"Train/Validation MAE, RMSE and R² verified."
+Best result retained for both shortlisted families,PASS,"Gradient_Boosting, XGBoost"
+Gradient Boosting reference reproduces Stage 13,PASS,Stage13 MAE=4.14971395; GB_01 MAE=4.14971395
+XGBoost reference reproduces Stage 15,PASS,Stage15 MAE=4.47231983; XGB_01 MAE=4.47231983
+All configurations fitted on Train only,PASS,Validation used for tuning evaluation only.
+No Test rows loaded,PASS,Only Component3_Test.csv existence checked.
+Final regression model not declared,PASS,Stage 19 remains responsible for final development selection.

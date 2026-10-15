@@ -1,0 +1,131 @@
+{
+  "component": "Component 3 - Smart Layer-Wise Rubber Smokehouse Drying-Time & Fire-Risk Prediction System",
+  "model_version": "component3-stage33-v1",
+  "stage": 33,
+  "status": "FINAL_RESEARCH_EXPORT",
+  "training_scope": {
+    "fit_data": "Stage-09 Train + Validation (Development)",
+    "development_rows": 20405,
+    "final_test_included_in_fit": false,
+    "note": "Final Test was used only for locked Stage-31 evaluation and Stage-33 artifact reproduction verification, never for fitting/tuning."
+  },
+  "feature_contract": {
+    "raw_selected_feature_count": 17,
+    "selected_features": [
+      "Smokehouse_ID",
+      "Layer_ID",
+      "Temperature_C",
+      "Humidity_%",
+      "Elapsed_Drying_Hours",
+      "Number_of_Sheets",
+      "Layer_Area_m2",
+      "Temperature_Rate_per_10min",
+      "Humidity_Rate_per_10min",
+      "Temperature_Change_30m",
+      "Humidity_Change_30m",
+      "Temperature_Change_60m",
+      "Humidity_Change_60m",
+      "Temperature_RollStd_30m",
+      "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m",
+      "Humidity_RollStd_60m"
+    ],
+    "numeric_features": [
+      "Temperature_C",
+      "Humidity_%",
+      "Elapsed_Drying_Hours",
+      "Number_of_Sheets",
+      "Layer_Area_m2",
+      "Temperature_Rate_per_10min",
+      "Humidity_Rate_per_10min",
+      "Temperature_Change_30m",
+      "Humidity_Change_30m",
+      "Temperature_Change_60m",
+      "Humidity_Change_60m",
+      "Temperature_RollStd_30m",
+      "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m",
+      "Humidity_RollStd_60m"
+    ],
+    "categorical_features": [
+      "Smokehouse_ID",
+      "Layer_ID"
+    ],
+    "transformed_feature_count": 20,
+    "transformed_feature_names": [
+      "Temperature_C",
+      "Humidity_%",
+      "Elapsed_Drying_Hours",
+      "Number_of_Sheets",
+      "Layer_Area_m2",
+      "Temperature_Rate_per_10min",
+      "Humidity_Rate_per_10min",
+      "Temperature_Change_30m",
+      "Humidity_Change_30m",
+      "Temperature_Change_60m",
+      "Humidity_Change_60m",
+      "Temperature_RollStd_30m",
+      "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m",
+      "Humidity_RollStd_60m",
+      "Smokehouse_ID_SH01",
+      "Smokehouse_ID_SH02",
+      "Layer_ID_L1",
+      "Layer_ID_L2",
+      "Layer_ID_L3"
+    ]
+  },
+  "regression": {
+    "pipeline": "D:\\SLIIT\\Research\\Projet Github\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\backend\\app\\ml\\component_3_smokehouse\\drying_time_pipeline.pkl",
+    "model_family": "Gradient_Boosting",
+    "trial": "GB_02",
+    "locked_final_test": {
+      "MAE": 3.756103085785247,
+      "RMSE": 4.299451102402451,
+      "R2": 0.9835396249444973,
+      "negative_predictions": 0
+    },
+    "sha256": "5bc446c3802d3d1d8f4eb997253eee1095410c4ed43edac743990dc8f928fdd6"
+  },
+  "classification": {
+    "pipeline": "D:\\SLIIT\\Research\\Projet Github\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\backend\\app\\ml\\component_3_smokehouse\\fire_risk_pipeline.pkl",
+    "model_family": "XGBoost",
+    "trial": "XGB_03",
+    "class_mapping": {
+      "0": "Normal",
+      "1": "Warning",
+      "2": "Critical"
+    },
+    "locked_final_test": {
+      "Accuracy": 0.9078363725973386,
+      "Balanced_Accuracy": 0.630764826660349,
+      "Macro_F1": 0.5179549048807933,
+      "Warning_Recall": 0.9861111111111112,
+      "Critical_Recall": 0.0
+    },
+    "critical_detection_limitation": "Major limitation: locked final-test Critical Recall did not meet the 0.50 reference. All Critical-risk performance claims must preserve this limitation.",
+    "sha256": "8f375f81b16213e5bde09a6f4519e65db2bb872f4b1f076f4565ae4af6a601aa"
+  },
+  "research_integrity": {
+    "dataset_type": "synthetic/simulated development data",
+    "field_collected_claim": false,
+    "test_based_retuning_after_stage31": false,
+    "stage32_used_for_model_changes": false,
+    "deployment_scope": "Research/prototype decision support pending independent field/expert validation."
+  },
+  "artifact_reproduction": {
+    "research_regression_matches_stage31": true,
+    "research_classification_matches_stage31": true,
+    "backend_regression_reload_matches_stage31": true,
+    "backend_classification_reload_matches_stage31": true
+  },
+  "software_environment": {
+    "python": "3.13.5",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scikit_learn": "1.9.1",
+    "xgboost": "3.4.1",
+    "joblib": "1.6.0"
+  }
+}

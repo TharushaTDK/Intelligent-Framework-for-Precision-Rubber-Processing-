@@ -1,0 +1,15 @@
+Check,Status,Details
+Expected Train/Validation shapes,PASS,"Train=(16246, 20); Validation=(4159, 20)"
+Expected three target classes,PASS,"Normal, Warning, Critical"
+Stage-21 Gradient Boosting strategy verified,PASS,fit with TRAIN-derived sample_weight
+Sample-weight row indices align with Train,PASS,"Rows=16,246"
+Sample-weight labels align with y_train,PASS,Exact row-order label match.
+Sample-weight values reproduce Stage-21 class weights,PASS,"All 16,246 Train weights verified."
+Model fitted on Train only,PASS,Validation used for evaluation only.
+No resampling or SMOTE,PASS,Train-derived sample weighting only.
+No hyperparameter tuning,PASS,One fixed Gradient Boosting configuration.
+All probabilities valid,PASS,"Probabilities finite, within [0,1], sum to 1."
+All overall metrics finite,PASS,Train and Validation metrics verified.
+Feature importances sum to 1,PASS,Sum=1.000000000000
+All three classes predicted on Validation,PASS,"Critical, Normal, Warning"
+Final Test not loaded,PASS,Only Test file existence checked; contents not read.

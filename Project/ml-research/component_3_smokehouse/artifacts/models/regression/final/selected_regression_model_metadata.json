@@ -1,0 +1,62 @@
+{
+  "stage": "19_final_regression_selection",
+  "selection_scope": "DEVELOPMENT_ONLY",
+  "selected_model_family": "Gradient_Boosting",
+  "selected_trial_id": "GB_02",
+  "model_class": "GradientBoostingRegressor",
+  "best_parameters": {
+    "learning_rate": 0.03,
+    "n_estimators": 300,
+    "max_depth": 3,
+    "min_samples_leaf": 1,
+    "subsample": 1.0
+  },
+  "development_validation": {
+    "MAE": 4.102381542885221,
+    "RMSE": 5.162021658710703,
+    "R2": 0.9771461557253884,
+    "Train_MAE": 1.3155543549647253,
+    "MAE_Generalization_Gap": 2.7868271879204958,
+    "Negative_Predictions": 12,
+    "Predictions_Above_126h": 0
+  },
+  "runner_up": {
+    "model_family": "XGBoost",
+    "MAE": 4.274153815207716,
+    "RMSE": 5.304636584420024,
+    "R2": 0.9758659120388172
+  },
+  "selection_rule": {
+    "primary": "Validation_MAE_ascending",
+    "tie_breaker_1": "Validation_RMSE_ascending",
+    "tie_breaker_2": "Validation_R2_descending",
+    "supporting_evidence": [
+      "MAE_Generalization_Gap",
+      "Physical_Range_Violations"
+    ]
+  },
+  "stage17_best_untuned": {
+    "Model": "Gradient_Boosting",
+    "MAE": 4.149713952319344,
+    "RMSE": 5.204994853125832,
+    "R2": 0.9767640609957194
+  },
+  "improvement_vs_stage17_best": {
+    "MAE_percent": 1.1406186059563965,
+    "RMSE_percent": 0.8256145419494878,
+    "R2_change": 0.0003820947296689914
+  },
+  "artifact": {
+    "source_path": "D:\\SLIIT\\Research\\Projet Github\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_3_smokehouse\\artifacts\\models\\regression\\tuned\\gradient_boosting\\tuned_gradient_boosting_regressor.joblib",
+    "final_path": "D:\\SLIIT\\Research\\Projet Github\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_3_smokehouse\\artifacts\\models\\regression\\final\\selected_regression_model.joblib",
+    "source_sha256": "b7f74b428cbba8c5de05405e86327bac8eec6849221e0ae2a279099b74019d64",
+    "final_sha256": "b7f74b428cbba8c5de05405e86327bac8eec6849221e0ae2a279099b74019d64",
+    "copy_identical": true
+  },
+  "test_loaded": false,
+  "test_evaluated": false,
+  "group_cross_validation_stage": 30,
+  "final_test_evaluation_stage": 31,
+  "shap_stage": 32,
+  "export_stage": 33
+}

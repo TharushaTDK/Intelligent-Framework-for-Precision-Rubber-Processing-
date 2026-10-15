@@ -1,0 +1,10 @@
+Check,Status,Details
+Expected row count,PASS,"Rows=24,463"
+Expected 17-column schema,PASS,Columns=17
+Preprocessed dataset has no missing cells,PASS,Missing cells=0
+No exact duplicates,PASS,Duplicate members=0
+No duplicate observation keys,PASS,Extra keys=0
+Expected 36 Batch-Layer sequences,PASS,Sequences=36
+"Expected 4,098 unique hourly fire-risk assessments",PASS,"Assessments=4,098"
+Expected Warning assessment count,PASS,Warning assessments=156
+Expected Critical assessment count,PASS,Critical assessments=26

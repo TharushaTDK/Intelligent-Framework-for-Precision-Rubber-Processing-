@@ -1,0 +1,6 @@
+Column,Observed_Values,Unexpected_Values,Missing_Expected_Values,Valid
+Smokehouse_ID,SH01 | SH02,,,True
+Layer_ID,L1 | L2 | L3,,,True
+Temperature_Trend,Decreasing | Increasing | Stable,,,True
+Humidity_Trend,Decreasing | Increasing | Stable,,,True
+Fire_Risk_Label,Critical | Normal | Warning,,,True

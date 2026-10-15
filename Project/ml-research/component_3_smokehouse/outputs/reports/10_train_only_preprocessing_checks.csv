@@ -1,0 +1,15 @@
+Check,Status,Details
+Frozen Stage-09 Train row count,PASS,"Rows=16,246"
+Frozen Stage-09 Validation row count,PASS,"Rows=4,159"
+Stage-08 selected feature count,PASS,Features=17
+Train-only numeric medians verified,PASS,Max median error=0
+No missing values after Train transformation,PASS,Missing=0
+No missing values after Validation transformation,PASS,Missing=0
+No non-finite Train values,PASS,Non-finite=0
+No non-finite Validation values,PASS,Non-finite=0
+Train scaled numeric means approximately zero,PASS,Max |mean|=1.79144592249e-15
+Train scaled numeric SD approximately one,PASS,Max SD error=2.22044604925e-16
+Validation not independently standardized,PASS,Validation transformed with Train-fitted scaler.
+No unknown Validation categories,PASS,Unknown categories=0
+Targets and row counts preserved,PASS,Train/Validation X-y alignment preserved.
+Final Test not loaded/transformed,PASS,Stage 10 only checked that Component3_Test.csv exists; its contents were not read.

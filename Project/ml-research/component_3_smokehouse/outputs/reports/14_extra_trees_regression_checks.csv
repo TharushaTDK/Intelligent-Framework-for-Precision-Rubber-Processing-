@@ -1,0 +1,11 @@
+Check,Status,Details
+Expected Train shape,PASS,"Shape=(16246, 20)"
+Expected Validation shape,PASS,"Shape=(4159, 20)"
+No missing/non-finite model inputs,PASS,Stage-10 matrices verified.
+Previous validation results loaded,PASS,Linear MAE=7.853900; RF MAE=5.066943; GB MAE=4.149714
+Prediction lengths preserved,PASS,"Train=16,246; Validation=4,159"
+All predictions finite,PASS,No NaN or infinite predictions.
+Feature importances valid,PASS,Features=20; Importance sum=1.000000000000
+Model fitted on Train only,PASS,Validation used only for development evaluation.
+No hyperparameter tuning performed,PASS,Single fixed Extra Trees configuration; Stage 18 reserved for tuning.
+Final Test not loaded,PASS,Only Test file existence checked; contents not read.

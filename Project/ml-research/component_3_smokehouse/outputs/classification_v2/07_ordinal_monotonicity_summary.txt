@@ -1,0 +1,2 @@
+Monotonicity violations (P(Y>=Critical) > P(Y>=Warning) before correction): 580 / 20405 rows (2.8424%)
+Correction applied: p_ge_critical_corrected = min(p_ge_critical, p_ge_warning)

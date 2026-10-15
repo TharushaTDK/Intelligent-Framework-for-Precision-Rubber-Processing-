@@ -1,0 +1,33 @@
+{
+  "stage": "20_classification_baseline",
+  "overall_status": "PASS",
+  "target": "Fire_Risk_Label",
+  "classes": [
+    "Normal",
+    "Warning",
+    "Critical"
+  ],
+  "primary_operational_evaluation_unit": "10-minute sensor row",
+  "ground_truth_assessment_frequency": "hourly keeper/expert assessment carried forward to associated 10-minute rows",
+  "majority_class": "Normal",
+  "majority_class_train_percentage": 96.30678320817432,
+  "most_frequent_validation": {
+    "Accuracy": 0.9552777109882183,
+    "Balanced_Accuracy": 0.3333333333333333,
+    "Macro_F1": 0.32570913264469586,
+    "Warning_Recall": 0.0,
+    "Critical_Recall": 0.0
+  },
+  "stratified_validation": {
+    "Accuracy": 0.9254628516470306,
+    "Balanced_Accuracy": 0.3470650768347723,
+    "Macro_F1": 0.34354995623665036,
+    "Warning_Recall": 0.017857142857142856,
+    "Critical_Recall": 0.05555555555555555
+  },
+  "accuracy_warning_demonstrated": true,
+  "class_weighting_used": false,
+  "resampling_used": false,
+  "test_loaded": false,
+  "next_stage": "21_class_imbalance_analysis"
+}

@@ -1,0 +1,22 @@
+{
+  "stage": "27_classification_model_comparison",
+  "selection_primary_metric": "Validation Macro-F1",
+  "supporting_metrics": [
+    "Validation Balanced Accuracy",
+    "Warning Recall",
+    "Critical Recall",
+    "Warning F1",
+    "Critical F1",
+    "Train-Validation Macro-F1 Gap",
+    "Train-Validation Balanced Accuracy Gap"
+  ],
+  "shortlist_rule": "Top 3 real classifiers by Validation Macro-F1, provided each has non-zero Warning and Critical Validation recall.",
+  "best_untuned_model": "XGBoost",
+  "shortlisted_models": [
+    "XGBoost",
+    "Logistic_Regression",
+    "Gradient_Boosting"
+  ],
+  "stage28_action": "Bounded hyperparameter tuning of shortlisted model families only.",
+  "test_loaded": false
+}

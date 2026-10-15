@@ -1,0 +1,15 @@
+Check,Status,Details
+Frozen raw SHA-256 matches,PASS,229139d2b4413fe15a8d322023b3b42574f9dccd5df6a91550bc72f05faaa5cb
+Row count preserved,PASS,"Rows=24,463"
+17-column schema preserved,PASS,Columns=17
+All sensor missing values were causally imputed,PASS,Temperature imputations=16; Humidity imputations=16
+Imputation used only recent past readings,PASS,Maximum source age=10.0 min
+All preprocessing-stage missing values are resolved,PASS,Remaining missing cells=0
+Originally observed temperature values were preserved,PASS,Changed observed values=0
+Originally observed humidity values were preserved,PASS,Changed observed values=0
+"Identifiers, targets and metadata were preserved",PASS,Changed cells=0
+No duplicate rows introduced,PASS,Duplicate members=0
+No duplicate observation keys introduced,PASS,Extra duplicate keys=0
+Original packet-loss gaps were preserved,PASS,10-min=24415; 20-min=12; other=0
+Regression target remains complete,PASS,Missing=0
+Classification target remains complete,PASS,Missing=0

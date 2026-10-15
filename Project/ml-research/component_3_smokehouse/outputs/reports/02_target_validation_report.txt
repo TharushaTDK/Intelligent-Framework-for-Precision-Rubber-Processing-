@@ -1,0 +1,82 @@
+COMPONENT 3 - STAGE 02: TARGET VALIDATION
+==============================================================================
+
+OVERALL STATUS: PASS
+
+DATASET IDENTITY
+----------------
+SHA-256: 229139d2b4413fe15a8d322023b3b42574f9dccd5df6a91550bc72f05faaa5cb
+Expected frozen hash match: True
+
+REGRESSION TARGET
+-----------------
+Target: Remaining_Drying_Time
+Missing values: 0
+Range: 0.00 to 126.00 h
+Negative values: 0
+Maximum construction-formula discrepancy: 0.010000 h
+Rows above 0.011 h tolerance: 0
+Batch-Layer sequences: 36
+Start elapsed-time violations: 0
+End remaining-time violations: 0
+Final elapsed vs total violations: 0
+Total-time constancy violations: 0
+Elapsed monotonicity violations: 0
+Remaining monotonicity violations: 0
+
+CLASSIFICATION TARGET
+---------------------
+Target: Fire_Risk_Label
+Missing values: 0
+Observed labels: ['Critical', 'Normal', 'Warning']
+Unique hourly assessment events: 4,098
+Assessment-window errors: 0
+Within-assessment label inconsistencies: 0
+Hourly cadence errors: 0
+Batches containing Warning: 7/12
+Batches containing Critical: 7/12
+
+ROW-LEVEL FIRE-RISK DISTRIBUTION
+--------------------------------
+Fire_Risk_Label  Count  Percentage
+         Normal  23371     95.5361
+        Warning    936      3.8262
+       Critical    156      0.6377
+
+UNIQUE HOURLY ASSESSMENT DISTRIBUTION
+-------------------------------------
+Fire_Risk_Label  Assessment_Count  Percentage
+         Normal              3916     95.5588
+        Warning               156      3.8067
+       Critical                26      0.6345
+
+MODEL-LEAKAGE RULES
+-------------------
+- Remaining_Drying_Time is the regression target.
+- Fire_Risk_Label is the classification target.
+- Actual_Total_Drying_Time is retrospective target-construction/reference information and must never be a deployed prediction feature.
+- Fire_Risk_Assessment_Timestamp is ground-truth assessment metadata and must not be used as a physical prediction feature.
+- Batch_ID is required for grouping and future batch-aware splitting, but must not be used as a physical prediction feature.
+- The row-level Fire_Risk_Label is the latest hourly keeper/expert assessment carried forward across the corresponding 10-minute sensor rows. Therefore, repeated rows within an hourly assessment must not be interpreted as independent expert assessments.
+
+PASS / FAIL CHECKS
+------------------
+                                               Check Status                                                          Details
+                      Frozen dataset SHA-256 matches   PASS 229139d2b4413fe15a8d322023b3b42574f9dccd5df6a91550bc72f05faaa5cb
+             Regression target has no missing values   PASS                                                        Missing=0
+             Remaining drying time is never negative   PASS                                                  Negative rows=0
+        Remaining-time construction formula is valid   PASS                 Rows above tolerance=0; Max abs error=0.010000 h
+            All sequences start at elapsed time zero   PASS                                                     Violations=0
+            All sequences end at remaining time zero   PASS                                                     Violations=0
+        Final elapsed time matches total drying time   PASS                                                     Violations=0
+Actual total drying time is constant within sequence   PASS                                                     Violations=0
+     Elapsed time strictly increases within sequence   PASS                                      Sequences with violations=0
+      Remaining time never increases within sequence   PASS                                      Sequences with violations=0
+              Fire-risk target has no missing values   PASS                                                        Missing=0
+Fire-risk labels are exactly Normal/Warning/Critical   PASS                       Observed=['Critical', 'Normal', 'Warning']
+          Sensor and assessment timestamps are valid   PASS           Sensor invalid/missing=0; Assessment invalid/missing=0
+    Each row uses the latest valid hourly assessment   PASS                                                   Invalid rows=0
+Fire-risk label is constant inside assessment window   PASS                                 Inconsistent assessment groups=0
+                  Hourly assessment cadence is valid   PASS                                                 Cadence errors=0
+
+STAGE 02 STATUS: PASS

@@ -1,0 +1,99 @@
+COMPONENT 3 - STAGE 25: WEIGHTED GRADIENT BOOSTING CLASSIFICATION
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 25 evaluates a fixed, untuned Gradient Boosting classifier for Fire_Risk_Label. Because GradientBoostingClassifier does not expose class_weight, the exact Train-only sample weights generated in Stage 21 are supplied to fit(). Validation is used only for development evaluation.
+
+FIXED CONFIGURATION
+-------------------
+loss: log_loss
+learning_rate: 0.05
+n_estimators: 200
+subsample: 1.0
+min_samples_split: 2
+min_samples_leaf: 1
+max_depth: 3
+max_features: None
+random_state: 42
+
+STAGE-21 SAMPLE WEIGHT VERIFICATION
+-----------------------------------
+Weighted Train rows: 16,246
+Row indices aligned: True
+Labels aligned: True
+Weight values reproduce Stage 21: True
+
+OVERALL RESULTS
+---------------
+            Model      Split  Accuracy  Balanced_Accuracy  Macro_Precision  Macro_Recall  Macro_F1  Weighted_F1
+Gradient_Boosting      Train  0.977410           0.992181         0.827980      0.992181  0.890184     0.980243
+Gradient_Boosting Validation  0.939889           0.684836         0.612248      0.684836  0.604880     0.949631
+
+VALIDATION PER-CLASS RESULTS
+----------------------------
+            Model      Split    Class  Precision   Recall       F1  Support
+Gradient_Boosting Validation   Normal   0.994967 0.945381 0.969541     3973
+Gradient_Boosting Validation  Warning   0.397333 0.886905 0.548803      168
+Gradient_Boosting Validation Critical   0.444444 0.222222 0.296296       18
+
+COMPARISON WITH PREVIOUS REAL CLASSIFIERS
+-----------------------------------------
+Logistic Validation Macro-F1: 0.609163
+Random Forest Validation Macro-F1: 0.584926
+Extra Trees Validation Macro-F1: 0.526096
+Gradient Boosting Validation Macro-F1: 0.604880
+Macro-F1 change vs Logistic: -0.004283
+
+SAFETY-SENSITIVE VALIDATION PERFORMANCE
+---------------------------------------
+Warning Recall: 0.886905
+Critical Recall: 0.222222
+Warning F1: 0.548803
+Critical F1: 0.296296
+
+GENERALIZATION
+--------------
+Train Macro-F1 - Validation Macro-F1: +0.285304
+Train Balanced Accuracy - Validation Balanced Accuracy: +0.307345
+
+FEATURE IMPORTANCE NOTE
+-----------------------
+Gradient Boosting impurity-based feature importance is exported only for descriptive inspection. It does not reopen the Stage-08 feature-selection decision. Formal explainability remains reserved for Stage 32.
+
+METHODOLOGY PROTECTION
+----------------------
+- Model fitted on Train only.
+- Exact Stage-21 Train sample weights used.
+- No SMOTE or resampling used.
+- No hyperparameter tuning performed.
+- No threshold tuning performed.
+- Validation used only for development evaluation.
+- Final Test rows were not loaded.
+- Final Test remains frozen until Stage 31.
+
+NEXT STAGE
+----------
+Stage 26 will evaluate weighted XGBoost classification using the same Train-derived Stage-21 sample weights.
+
+PASS / FAIL CHECKS
+------------------
+                                                Check Status                                              Details
+                     Expected Train/Validation shapes   PASS             Train=(16246, 20); Validation=(4159, 20)
+                        Expected three target classes   PASS                            Normal, Warning, Critical
+         Stage-21 Gradient Boosting strategy verified   PASS                 fit with TRAIN-derived sample_weight
+           Sample-weight row indices align with Train   PASS                                          Rows=16,246
+              Sample-weight labels align with y_train   PASS                         Exact row-order label match.
+Sample-weight values reproduce Stage-21 class weights   PASS                   All 16,246 Train weights verified.
+                           Model fitted on Train only   PASS                 Validation used for evaluation only.
+                               No resampling or SMOTE   PASS                 Train-derived sample weighting only.
+                             No hyperparameter tuning   PASS           One fixed Gradient Boosting configuration.
+                              All probabilities valid   PASS        Probabilities finite, within [0,1], sum to 1.
+                           All overall metrics finite   PASS               Train and Validation metrics verified.
+                         Feature importances sum to 1   PASS                                   Sum=1.000000000000
+            All three classes predicted on Validation   PASS                            Critical, Normal, Warning
+                                Final Test not loaded   PASS Only Test file existence checked; contents not read.
+
+STAGE 25 STATUS: PASS

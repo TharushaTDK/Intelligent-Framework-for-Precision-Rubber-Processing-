@@ -1,0 +1,94 @@
+COMPONENT 3 - STAGE 22: WEIGHTED LOGISTIC REGRESSION
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 22 trains the first real Fire-Risk classifier. Weighted multiclass Logistic Regression is fitted on Train only using the class_weight='balanced' strategy established in Stage 21. Validation is used only for development evaluation.
+
+FIXED CONFIGURATION
+-------------------
+penalty: l2
+C: 1.0
+solver: lbfgs
+class_weight: balanced
+max_iter: 5000
+tol: 0.0001
+random_state: 42
+
+TRAIN-ONLY CLASS WEIGHTS
+------------------------
+Normal: 0.34611615
+Warning: 11.28194444
+Critical: 45.12777778
+
+OVERALL RESULTS
+---------------
+              Model      Split  Accuracy  Balanced_Accuracy  Macro_Precision  Macro_Recall  Macro_F1  Weighted_F1
+Logistic_Regression      Train   0.96393           0.895363         0.693631      0.895363  0.765967     0.969827
+Logistic_Regression Validation   0.95672           0.667141         0.831253      0.667141  0.609163     0.960894
+
+VALIDATION PER-CLASS RESULTS
+----------------------------
+              Model      Split    Class  Precision   Recall       F1  Support
+Logistic_Regression Validation   Normal   0.993758 0.961742 0.977488     3973
+Logistic_Regression Validation  Warning   0.500000 0.928571 0.650000      168
+Logistic_Regression Validation Critical   1.000000 0.111111 0.200000       18
+
+BASELINE COMPARISON
+-------------------
+Most-Frequent Validation Macro-F1: 0.325709
+Stratified Validation Macro-F1: 0.343550
+Logistic Regression Validation Macro-F1: 0.609163
+Macro-F1 change vs Most-Frequent: +0.283453
+Macro-F1 change vs Stratified: +0.265613
+
+SAFETY-SENSITIVE VALIDATION PERFORMANCE
+---------------------------------------
+Warning Recall: 0.928571
+Critical Recall: 0.111111
+Warning F1: 0.650000
+Critical F1: 0.200000
+
+GENERALIZATION
+--------------
+Train Macro-F1 - Validation Macro-F1: +0.156805
+Train Balanced Accuracy - Validation Balanced Accuracy: +0.228222
+
+INTERPRETATION
+--------------
+Because the target is severely imbalanced, raw Accuracy must not be used as the main success criterion. Macro-F1 is the primary comparison metric, while Balanced Accuracy and Warning/Critical recall are especially important for fire-risk detection. The model remains an untuned development candidate; later tree-based classifiers may capture nonlinear risk patterns more effectively.
+
+METHODOLOGY PROTECTION
+----------------------
+- Model fitted on Train only.
+- class_weight='balanced' derived from Train only.
+- Stage-21 class weights reproduced exactly.
+- No SMOTE or resampling used.
+- No hyperparameter tuning performed.
+- No decision-threshold tuning performed.
+- Final Test rows were not loaded.
+- Final Test remains frozen until Stage 31.
+
+NEXT STAGE
+----------
+Stage 23 will train a weighted Random Forest classifier using the same frozen features, Train/Validation split, and Train-only imbalance strategy.
+
+PASS / FAIL CHECKS
+------------------
+                                         Check Status                                                                                       Details
+              Expected Train/Validation shapes   PASS                                                      Train=(16246, 20); Validation=(4159, 20)
+                 Expected three target classes   PASS                                                                     Normal, Warning, Critical
+Stage-21 Logistic Regression strategy verified   PASS                                                                       class_weight='balanced'
+           Balanced weights reproduce Stage 21   PASS {'Normal': 0.34611615322340106, 'Warning': 11.281944444444445, 'Critical': 45.12777777777778}
+                    Model fitted on Train only   PASS                                                          Validation used for evaluation only.
+                        No resampling or SMOTE   PASS                                                                 class_weight='balanced' only.
+                      No hyperparameter tuning   PASS                                                  One fixed Logistic Regression configuration.
+               Model converged before max_iter   PASS                                                                 Iterations=380; max_iter=5000
+                       All probabilities valid   PASS                                                 Probabilities finite, within [0,1], sum to 1.
+                    All overall metrics finite   PASS                                                        Train and Validation metrics verified.
+     All three classes predicted on Validation   PASS                                                                     Critical, Normal, Warning
+                         Final Test not loaded   PASS                                          Only Test file existence checked; contents not read.
+
+STAGE 22 STATUS: PASS

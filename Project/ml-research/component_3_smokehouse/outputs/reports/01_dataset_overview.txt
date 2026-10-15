@@ -1,0 +1,62 @@
+COMPONENT 3 - STAGE 01: DATA UNDERSTANDING
+==============================================================================
+
+DATASET IDENTITY
+----------------
+Dataset: Component3_Dataset.csv
+SHA-256: 229139d2b4413fe15a8d322023b3b42574f9dccd5df6a91550bc72f05faaa5cb
+Rows: 24,463
+Columns: 17
+Final schema match: True
+
+CORE STRUCTURE
+--------------
+Smokehouses: 2
+Batches: 12
+Layers: 3
+Batch-Layer sequences: 36
+
+TIME COVERAGE
+-------------
+Sensor data start: 2026-08-10 11:13:00
+Sensor data end: 2026-09-10 21:53:00
+Fire-risk assessment start: 2026-08-10 11:13:00
+Fire-risk assessment end: 2026-09-10 21:53:00
+
+IMPORTANT NUMERIC RANGES
+------------------------
+Temperature_C: min=40.5500, max=59.1900, mean=50.9723
+Humidity_%: min=27.5000, max=90.0000, mean=51.1694
+Elapsed_Drying_Hours: min=0.0000, max=126.0000, mean=57.0167
+Actual_Total_Drying_Time: min=96.0000, max=126.0000, mean=114.0250
+Remaining_Drying_Time: min=0.0000, max=126.0000, mean=57.0088
+Number_of_Sheets: min=120.0000, max=151.0000, mean=137.4583
+Layer_Area_m2: min=10.5000, max=12.0000, mean=11.2369
+
+FIRE-RISK DISTRIBUTION
+----------------------
+Fire_Risk_Label  Count  Percentage
+         Normal  23371     95.5361
+        Warning    936      3.8262
+       Critical    156      0.6377
+
+MISSING VALUES OVERVIEW
+-----------------------
+            Column  Missing_Count  Missing_Percent
+     Temperature_C             16         0.065405
+        Humidity_%             16         0.065405
+Temperature_Change             16         0.065405
+   Humidity_Change             16         0.065405
+ Temperature_Trend             16         0.065405
+    Humidity_Trend             16         0.065405
+
+METHODOLOGY NOTES
+-----------------
+- Stage 01 performs understanding only; no data cleaning or modification is performed.
+- Actual_Total_Drying_Time is a retrospective reference/target-construction field and must not be used as a deployed predictor.
+- Fire_Risk_Assessment_Timestamp records the hourly keeper/expert assessment time and should not be used as a physical ML predictor.
+- Batch_ID is preserved for grouping and future batch-aware validation, not as a physical ML predictor.
+- Missing values are only observed at this stage; handling decisions belong to later data-quality and preprocessing stages.
+- The dataset is synthetic/simulated development data and must not be described as 24,463 physically field-collected sensor measurements.
+
+STAGE 01 STATUS: COMPLETE AFTER REVIEW

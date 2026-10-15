@@ -1,0 +1,9 @@
+Check,Status
+Stage 31 methodological status PASS,PASS
+Regression Stage-31 predictions reproduced,PASS
+Classification Stage-31 predictions reproduced,PASS
+No model tuning in Stage 32,PASS
+No threshold adjustment in Stage 32,PASS
+No resampling in Stage 32,PASS
+Regression SHAP computed,PASS
+Classification SHAP computed,PASS

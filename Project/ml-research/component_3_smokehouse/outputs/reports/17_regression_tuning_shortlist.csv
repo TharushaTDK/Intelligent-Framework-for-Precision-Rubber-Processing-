@@ -1,0 +1,3 @@
+Tuning_Priority,Model,Validation_MAE,Validation_RMSE,Validation_R2,MAE_Generalization_Gap,Total_Physical_Violations,Selection_Rationale
+1,Gradient_Boosting,4.149713952319344,5.204994853125832,0.9767640609957194,2.8798363127134583,12,Top candidate by Validation MAE; advance to Stage 18 tuning.
+2,XGBoost,4.472319829542907,5.408270843401874,0.9749137073460816,3.3896300845459235,57,Top candidate by Validation MAE; advance to Stage 18 tuning.

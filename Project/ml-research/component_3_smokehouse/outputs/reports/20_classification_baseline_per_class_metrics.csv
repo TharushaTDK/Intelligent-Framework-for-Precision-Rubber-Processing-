@@ -1,0 +1,13 @@
+Model,Split,Class,Precision,Recall,F1,Support
+Dummy_Most_Frequent,Train,Normal,0.9630678320817432,1.0,0.9811865044525273,15646
+Dummy_Most_Frequent,Train,Warning,0.0,0.0,0.0,480
+Dummy_Most_Frequent,Train,Critical,0.0,0.0,0.0,120
+Dummy_Most_Frequent,Validation,Normal,0.9552777109882183,1.0,0.9771273979340875,3973
+Dummy_Most_Frequent,Validation,Warning,0.0,0.0,0.0,168
+Dummy_Most_Frequent,Validation,Critical,0.0,0.0,0.0,18
+Dummy_Stratified,Train,Normal,0.9626436781609196,0.9635050492138566,0.9630741710854149,15646
+Dummy_Stratified,Train,Warning,0.030303030303030304,0.029166666666666667,0.029723991507430998,480
+Dummy_Stratified,Train,Critical,0.0,0.0,0.0,120
+Dummy_Stratified,Validation,Normal,0.9550422255340288,0.9677825320916185,0.9613701712714089,3973
+Dummy_Stratified,Validation,Warning,0.027522935779816515,0.017857142857142856,0.021660649819494584,168
+Dummy_Stratified,Validation,Critical,0.041666666666666664,0.05555555555555555,0.047619047619047616,18

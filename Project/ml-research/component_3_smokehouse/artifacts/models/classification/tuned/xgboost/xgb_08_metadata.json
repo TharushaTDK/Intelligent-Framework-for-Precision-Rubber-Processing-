@@ -1,0 +1,38 @@
+{
+  "stage": "28_bounded_classification_tuning",
+  "model_family": "XGBoost",
+  "selected_trial_within_family": "XGB_08",
+  "parameters": {
+    "colsample_bytree": 0.85,
+    "eval_metric": "mlogloss",
+    "gamma": 0.1,
+    "learning_rate": 0.03,
+    "max_depth": 4,
+    "min_child_weight": 2.0,
+    "n_estimators": 350,
+    "n_jobs": -1,
+    "num_class": 3,
+    "objective": "multi:softprob",
+    "random_state": 42,
+    "reg_alpha": 0.05,
+    "reg_lambda": 2.0,
+    "subsample": 0.85,
+    "tree_method": "hist"
+  },
+  "label_mapping": {
+    "Normal": 0,
+    "Warning": 1,
+    "Critical": 2
+  },
+  "validation_macro_f1": 0.7049289504405606,
+  "validation_balanced_accuracy": 0.7289207108298476,
+  "warning_recall": 0.8869047619047619,
+  "critical_recall": 0.3333333333333333,
+  "warning_f1": 0.654945054945055,
+  "critical_f1": 0.48,
+  "macro_f1_gap": 0.21257558996592496,
+  "fit_scope": "TRAIN_ONLY",
+  "validation_role": "BOUNDED_HYPERPARAMETER_SELECTION",
+  "test_loaded": false,
+  "model_sha256": "2d01d24e6f9db96ed22233982e662059b36ba720f28ddf61c4302eb1216a4235"
+}

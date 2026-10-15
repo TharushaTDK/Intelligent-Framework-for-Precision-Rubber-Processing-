@@ -1,0 +1,42 @@
+{
+  "stage": "21_class_imbalance_analysis",
+  "target": "Fire_Risk_Label",
+  "classes": [
+    "Normal",
+    "Warning",
+    "Critical"
+  ],
+  "weight_source": "TRAIN_ROW_DISTRIBUTION_ONLY",
+  "balanced_class_weights": {
+    "Normal": 0.34611615322340106,
+    "Warning": 11.281944444444445,
+    "Critical": 45.12777777777778
+  },
+  "primary_classification_metrics": [
+    "Macro_F1",
+    "Balanced_Accuracy",
+    "Warning_Recall",
+    "Critical_Recall"
+  ],
+  "supporting_metrics": [
+    "Macro_Precision",
+    "Macro_Recall",
+    "Weighted_F1",
+    "Accuracy",
+    "Confusion_Matrix"
+  ],
+  "imbalance_strategy": {
+    "Logistic_Regression": "class_weight='balanced'",
+    "Random_Forest": "class_weight='balanced'",
+    "Extra_Trees": "class_weight='balanced'",
+    "Gradient_Boosting": "fit with TRAIN-derived sample_weight",
+    "XGBoost": "fit with TRAIN-derived sample_weight"
+  },
+  "smote_used": false,
+  "smote_recommended": false,
+  "smote_reason": "Grouped temporal dataset with only 8 Train batches; hourly expert labels are carried over 10-minute rows. Synthetic row generation could violate temporal/process structure and create unrealistic minority observations.",
+  "validation_used_to_compute_weights": false,
+  "test_loaded": false,
+  "row_and_assessment_imbalance_pattern_similar": true,
+  "next_stage": "22_logistic_regression"
+}

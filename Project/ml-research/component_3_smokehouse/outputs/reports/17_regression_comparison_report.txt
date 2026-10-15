@@ -1,0 +1,91 @@
+COMPONENT 3 - STAGE 17: REGRESSION MODEL COMPARISON
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 17 consolidates the completed regression experiments from Stages 11-16. No model is trained and no hyperparameter tuning is performed. Models are compared using the frozen Validation set only. Validation MAE is the primary ranking metric because it directly represents the average absolute error in remaining drying-time hours.
+
+VALIDATION RANKING
+------------------
+ Overall_Validation_Rank                Model  Validation_MAE  Validation_RMSE  Validation_R2  MAE_Generalization_Gap  Total_Physical_Violations
+                       1    Gradient_Boosting        4.149714         5.204995       0.976764                2.879836                         12
+                       2              XGBoost        4.472320         5.408271       0.974914                3.389630                         57
+                       3        Random_Forest        5.066943         6.275698       0.966221                4.947566                          0
+                       4 HistGradientBoosting        5.262355         6.151742       0.967542                4.723940                          1
+                       5          Extra_Trees        6.451669         7.438466       0.952545                6.451669                          0
+                       6          Full_Linear        7.853900         8.874091       0.932459                3.635258                         86
+                       7  Elapsed_Only_Linear        9.972340        10.369823       0.907772                1.951631                        174
+                       8           Dummy_Mean       29.370335        34.175287      -0.001715                0.750309                          0
+
+CURRENT BEST UNTUNED DEVELOPMENT MODEL
+--------------------------------------
+Model: Gradient_Boosting
+Validation MAE: 4.149714 h
+Validation RMSE: 5.204995 h
+Validation R²: 0.976764
+MAE improvement vs Full Linear: 47.163652%
+RMSE improvement vs Full Linear: 41.346166%
+
+GENERALIZATION COMPARISON
+-------------------------
+               Model Model_Type  Train_MAE  Validation_MAE  MAE_Generalization_Gap  Train_RMSE  Validation_RMSE  RMSE_Generalization_Gap  Train_R2  Validation_R2  R2_Generalization_Gap
+   Gradient_Boosting  Candidate   1.269878        4.149714                2.879836    1.623897         5.204995                 3.581098  0.997618       0.976764               0.020854
+             XGBoost  Candidate   1.082690        4.472320                3.389630    1.367090         5.408271                 4.041181  0.998312       0.974914               0.023398
+       Random_Forest  Candidate   0.119377        5.066943                4.947566    0.206784         6.275698                 6.068914  0.999961       0.966221               0.033740
+HistGradientBoosting  Candidate   0.538415        5.262355                4.723940    0.691791         6.151742                 5.459952  0.999568       0.967542               0.032025
+         Extra_Trees  Candidate   0.000000        6.451669                6.451669    0.000000         7.438466                 7.438466  1.000000       0.952545               0.047455
+         Full_Linear   Baseline   4.218642        7.853900                3.635258    5.183677         8.874091                 3.690415  0.975727       0.932459               0.043268
+ Elapsed_Only_Linear   Baseline   8.020709        9.972340                1.951631    9.444957        10.369823                 0.924865  0.919417       0.907772               0.011645
+          Dummy_Mean   Baseline  28.620026       29.370335                0.750309   33.272040        34.175287                 0.903247  0.000000      -0.001715               0.001715
+
+PHYSICAL-RANGE DIAGNOSTICS
+--------------------------
+               Model Model_Type  Negative_Predictions  Predictions_Above_126h  Total_Physical_Violations  Physical_Violation_Rate_pct
+          Dummy_Mean   Baseline                     0                       0                          0                     0.000000
+         Extra_Trees  Candidate                     0                       0                          0                     0.000000
+       Random_Forest  Candidate                     0                       0                          0                     0.000000
+HistGradientBoosting  Candidate                     1                       0                          1                     0.024044
+   Gradient_Boosting  Candidate                    12                       0                         12                     0.288531
+             XGBoost  Candidate                    57                       0                         57                     1.370522
+         Full_Linear   Baseline                    53                      33                         86                     2.067805
+ Elapsed_Only_Linear   Baseline                   174                       0                        174                     4.183698
+
+Physical-range violations are diagnostic only at this stage. Predictions are not clipped because doing so would change the raw model comparison. Deployment-time constraints may be considered only after final model selection.
+
+STAGE 18 TUNING SHORTLIST
+-------------------------
+ Tuning_Priority             Model  Validation_MAE  Validation_RMSE  Validation_R2  MAE_Generalization_Gap  Total_Physical_Violations                                          Selection_Rationale
+               1 Gradient_Boosting        4.149714         5.204995       0.976764                2.879836                         12 Top candidate by Validation MAE; advance to Stage 18 tuning.
+               2           XGBoost        4.472320         5.408271       0.974914                3.389630                         57 Top candidate by Validation MAE; advance to Stage 18 tuning.
+
+The shortlist contains the top two non-baseline candidate model families by Validation MAE. This is a tuning shortlist, not a final model declaration.
+
+MODEL-SELECTION STATUS
+----------------------
+Stage 17 identifies the strongest untuned development candidates. Stage 18 will tune the shortlisted model families. Stage 19 will select the final regression model using development evidence. The frozen Test set will be evaluated only once in Stage 31.
+
+LEAKAGE PROTECTION
+------------------
+- Only completed Train/Validation metric files were read.
+- No model was trained in Stage 17.
+- No hyperparameter tuning was performed.
+- No Test rows were loaded.
+- Final Test remains frozen until Stage 31.
+
+PASS / FAIL CHECKS
+------------------
+                                    Check Status                                                   Details
+   All required regression models present   PASS                                      Models=8; expected=8
+      One unique comparison row per model   PASS                                           Unique models=8
+                Validation metrics finite   PASS                  MAE, RMSE and R² checked for all models.
+             MAE/RMSE values non-negative   PASS                        Validation error metrics verified.
+         Ranking based on Validation only   PASS                   Primary=MAE; tie-breakers=RMSE then R².
+                    No new model training   PASS               Stage 17 reads completed metric files only.
+                 No hyperparameter tuning   PASS                          Tuning is reserved for Stage 18.
+ Tuning shortlist contains two candidates   PASS                                          Shortlist size=2
+Tuning shortlist excludes baseline models   PASS                                Gradient_Boosting, XGBoost
+                    Final Test not loaded   PASS Only Test file existence checked; contents were not read.
+
+STAGE 17 STATUS: PASS

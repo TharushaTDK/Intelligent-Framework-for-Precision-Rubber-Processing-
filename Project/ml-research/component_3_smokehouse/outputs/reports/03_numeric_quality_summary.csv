@@ -1,0 +1,8 @@
+Column,Observed_Min,Observed_Max,Observed_Mean,Allowed_Min,Allowed_Max,Below_Allowed_Count,Above_Allowed_Count,Invalid_Count
+Temperature_C,40.55,59.19,50.97230621344132,0.0,100.0,0,0,0
+Humidity_%,27.5,90.0,51.1694269235489,0.0,100.0,0,0,0
+Elapsed_Drying_Hours,0.0,126.0,57.01665249560561,0.0,200.0,0,0,0
+Number_of_Sheets,120.0,151.0,137.4583248170707,1.0,1000.0,0,0,0
+Layer_Area_m2,10.5,12.0,11.236908801046479,0.01,1000.0,0,0,0
+Actual_Total_Drying_Time,96.0,126.0,114.02504721416015,1.0,200.0,0,0,0
+Remaining_Drying_Time,0.0,126.0,57.0088030903814,0.0,200.0,0,0,0

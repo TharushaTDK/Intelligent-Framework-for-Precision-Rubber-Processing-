@@ -1,0 +1,7 @@
+Level,Comparison,Majority_Count,Minority_Count,Ratio
+Row,Normal_to_Warning,15646,480,32.59583333333333
+Row,Normal_to_Critical,15646,120,130.38333333333333
+Row,Warning_to_Critical,480,120,4.0
+Hourly_Assessment,Normal_to_Warning,2621,80,32.7625
+Hourly_Assessment,Normal_to_Critical,2621,20,131.05
+Hourly_Assessment,Warning_to_Critical,80,20,4.0

@@ -1,0 +1,90 @@
+COMPONENT 3 - STAGE 05: EXPLORATORY DATA ANALYSIS
+==============================================================================
+
+OVERALL STATUS: PASS
+
+INPUT DATASET
+-------------
+Dataset: Component3_Dataset_Preprocessed.csv
+Rows: 24,463
+Columns: 17
+Missing cells: 0
+Processed SHA-256: 957c9c150b4b9a8bd303576473a46feb67ea5415b8a8b7c6dc5304bdb28f59eb
+
+LAYER-LEVEL PATTERN
+-------------------
+Layer_ID  Mean_Temperature_C  Mean_Humidity_pct  Mean_Total_Drying_Hours
+      L1             51.4954            50.0133                 110.4858
+      L2             51.0114            51.0732                 112.9858
+      L3             50.4349            52.3683                 115.9575
+
+SEQUENCE-LEVEL DRYING RELATIONSHIPS
+-----------------------------------
+Mean temperature vs total drying time correlation: -0.957473
+Mean humidity vs total drying time correlation: 0.879702
+Interpretation: these are descriptive associations across the 36 Batch x Layer sequences. They do not establish causation.
+
+REGRESSION-TARGET RELATIONSHIPS
+-------------------------------
+Predictor_For_Exploration  Pearson_Correlation_With_Remaining_Drying_Time  Absolute_Correlation  Observation_Count
+     Elapsed_Drying_Hours                                       -0.955385              0.955385              24463
+               Humidity_%                                        0.884900              0.884900              24463
+            Temperature_C                                       -0.310418              0.310418              24463
+          Humidity_Change                                       -0.158727              0.158727              24463
+       Temperature_Change                                        0.098286              0.098286              24463
+         Number_of_Sheets                                        0.045265              0.045265              24463
+            Layer_Area_m2                                       -0.032782              0.032782              24463
+
+FIRE-RISK CLASS DISTRIBUTION
+----------------------------
+Row-level labels represent the latest hourly assessment carried across 10-minute sensor rows. Therefore, the unique hourly assessment distribution is the more appropriate description of independent keeper/expert ground-truth events.
+
+Fire_Risk_Label  Assessment_Count  Assessment_Percentage
+         Normal              3916              95.558809
+        Warning               156               3.806735
+       Critical                26               0.634456
+
+FIRE-RISK ENVIRONMENTAL SUMMARY
+-------------------------------
+Fire_Risk_Label  Assessment_Count  Mean_Temperature_C  Mean_Humidity_pct  Mean_Elapsed_Hours  Median_Elapsed_Hours  Mean_Temperature_Change  Mean_Humidity_Change
+         Normal              3916           50.810229          51.735105           56.876590             55.416667                 0.013961             -0.073015
+        Warning               156           54.348547          37.944402           65.570513             69.416667                -0.056090              0.010192
+       Critical                26           54.367308          37.934808           67.993590             73.416667                -0.256090              0.475577
+
+EDA INTERPRETATION NOTES
+------------------------
+- L1 is generally warmer and less humid than L2/L3, while L3 shows the longest average sequence-level drying duration.
+- Across the 36 sequences, higher mean temperature is associated with shorter total drying time, while higher mean humidity is associated with longer total drying time.
+- Remaining_Drying_Time is strongly associated with Elapsed_Drying_Hours by construction, but elapsed time alone is not treated as sufficient evidence of final model performance.
+- Fire_Risk_Label is strongly imbalanced. Accuracy alone will therefore be unsuitable for later model evaluation.
+- Warning and Critical assessment conditions must not be interpreted using a single temperature or humidity threshold; later temporal analysis will examine recent behavior and trends.
+- Actual_Total_Drying_Time is inspected descriptively only and remains excluded from deployed predictors.
+- Stage 06 will analyze time dependence, layer-wise trajectories and temporal behavior. No rolling or lag features are created in Stage 05.
+
+FIGURES
+-------
+- 05_01_temperature_distribution.png
+- 05_02_humidity_distribution.png
+- 05_03_remaining_time_distribution.png
+- 05_04_temperature_by_layer.png
+- 05_05_humidity_by_layer.png
+- 05_06_total_drying_time_by_layer.png
+- 05_07_fire_risk_row_distribution.png
+- 05_08_fire_risk_assessment_distribution.png
+- 05_09_temperature_vs_remaining_time.png
+- 05_10_humidity_vs_remaining_time.png
+
+PASS / FAIL CHECKS
+------------------
+                                             Check Status                 Details
+                                Expected row count   PASS             Rows=24,463
+                         Expected 17-column schema   PASS              Columns=17
+         Preprocessed dataset has no missing cells   PASS         Missing cells=0
+                               No exact duplicates   PASS     Duplicate members=0
+                     No duplicate observation keys   PASS            Extra keys=0
+                 Expected 36 Batch-Layer sequences   PASS            Sequences=36
+Expected 4,098 unique hourly fire-risk assessments   PASS       Assessments=4,098
+                 Expected Warning assessment count   PASS Warning assessments=156
+                Expected Critical assessment count   PASS Critical assessments=26
+
+STAGE 05 STATUS: PASS

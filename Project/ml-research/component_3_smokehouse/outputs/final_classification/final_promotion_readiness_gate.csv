@@ -1,0 +1,11 @@
+Criterion,Result
+1. Baseline reproduces Stage-30 reference,True
+2. Ordinal XGBoost reproduces prior development evidence,True
+3. Warning Recall >= 0.80,True
+4. Critical Recall > XGB_03 baseline,True
+5. Critical F2 > XGB_03 baseline,True
+6. Macro F1 > XGB_03 baseline,True
+7. Balanced Accuracy > XGB_03 baseline,True
+8. No dataset changed,True
+9. No batch leakage detected,True
+10. Probability reconstruction passes numerical checks,True

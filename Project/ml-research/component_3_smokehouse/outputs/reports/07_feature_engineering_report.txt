@@ -1,0 +1,96 @@
+COMPONENT 3 - STAGE 07: FEATURE ENGINEERING
+==============================================================================
+
+OVERALL STATUS: PASS
+
+INPUT
+-----
+Dataset: Component3_Dataset_Preprocessed.csv
+Rows: 24,463
+Input SHA-256: 957c9c150b4b9a8bd303576473a46feb67ea5415b8a8b7c6dc5304bdb28f59eb
+
+FEATURE-ENGINEERING PRINCIPLE
+-----------------------------
+All temporal features were created using only the current observation and/or earlier observations from the same Smokehouse x Batch x Layer sequence. No future observation was used.
+
+CANDIDATE FEATURE COUNTS
+------------------------
+Categorical candidates: 4
+Base numeric candidates: 7
+Engineered numeric candidates: 25
+Total candidate features: 36
+
+TEMPORAL FEATURES
+-----------------
+- Actual time since previous available reading.
+- Previous-reading temperature/humidity rate normalized to a 10-minute equivalent.
+- Exact 10-, 30-, and 60-minute temperature/RH lags.
+- Exact 10-, 30-, and 60-minute temperature/RH changes.
+- Timestamp-aware 30- and 60-minute rolling means.
+- Timestamp-aware 30- and 60-minute rolling standard deviations.
+- Actual observation counts inside 30- and 60-minute windows.
+
+EXACT-LAG COVERAGE
+------------------
+ Lag_Minutes  Temperature_Pairs_Available  Temperature_Coverage_Percent  Humidity_Pairs_Available  Humidity_Coverage_Percent
+          10                        24415                     99.803785                     24415                  99.803785
+          30                        24343                     99.509463                     24343                  99.509463
+          60                        24235                     99.067980                     24235                  99.067980
+
+EXPECTED HISTORY-RELATED MISSINGNESS
+------------------------------------
+Exact lag/change features are intentionally missing when the required historical timestamp does not exist (for example, at the beginning of a drying sequence or around a packet-loss gap). These values are NOT filled in Stage 07. Missing-value handling for model pipelines will be fitted on training data only in Stage 10.
+
+                         Column  Missing_Count  Missing_Percent
+Time_Since_Previous_Reading_Min             36         0.147161
+     Temperature_Rate_per_10min             36         0.147161
+        Humidity_Rate_per_10min             36         0.147161
+            Temperature_Lag_10m             48         0.196215
+               Humidity_Lag_10m             48         0.196215
+         Temperature_Change_10m             48         0.196215
+            Humidity_Change_10m             48         0.196215
+            Temperature_Lag_30m            120         0.490537
+               Humidity_Lag_30m            120         0.490537
+         Temperature_Change_30m            120         0.490537
+            Humidity_Change_30m            120         0.490537
+            Temperature_Lag_60m            228         0.932020
+               Humidity_Lag_60m            228         0.932020
+         Temperature_Change_60m            228         0.932020
+            Humidity_Change_60m            228         0.932020
+
+LEAKAGE PROTECTION
+------------------
+- Actual_Total_Drying_Time is deliberately absent from the engineered dataset.
+- Batch_ID remains only for grouped splitting/CV.
+- Fire_Risk_Assessment_Timestamp remains only for ground-truth/evaluation bookkeeping.
+- Remaining_Drying_Time is the regression target.
+- Fire_Risk_Label is the classification target.
+- No previous or future Fire_Risk_Label was engineered as a predictor.
+- No global statistic was learned from the full data.
+- No scaling, encoding, resampling, or model fitting was performed.
+
+OUTPUT
+------
+Dataset: D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\ml-research\component_3_smokehouse\data\processed\Component3_Dataset_FeatureEngineered.csv
+Rows: 24,463
+Columns: 41
+Output SHA-256: 4990acb69da8708a34d403e6fb08440a1bb978fb6dba40e948c12851f5ecdcb7
+
+STAGE 08 NOTE
+-------------
+All candidate features are retained at this stage. Stage 08 will analyze redundancy, target association, feature availability, multicollinearity/correlation, and task-specific usefulness before final candidate sets are frozen for the batch-aware split.
+
+PASS / FAIL CHECKS
+------------------
+                            Check Status                                                    Details
+              Row count preserved   PASS                                                Rows=24,463
+          Targets remain complete   PASS                                     Missing target cells=0
+Actual_Total_Drying_Time excluded   PASS Leakage/reference field must not enter engineered dataset.
+   Metadata and targets preserved   PASS                                            Changed cells=0
+       No future exact-lag values   PASS                                               Violations=0
+          Sampling gaps preserved   PASS                           10-min=24415; 20-min=12; other=0
+    No duplicate observation keys   PASS                                     Extra duplicate keys=0
+Expected 36 Batch-Layer sequences   PASS                                               Sequences=36
+    Candidate feature set created   PASS                                      Candidate features=36
+
+STAGE 07 STATUS: PASS

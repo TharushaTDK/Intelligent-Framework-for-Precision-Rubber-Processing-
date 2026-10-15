@@ -1,0 +1,109 @@
+COMPONENT 3 - STAGE 21: CLASS IMBALANCE ANALYSIS
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 21 quantifies the imbalance in Fire_Risk_Label and defines the imbalance-handling strategy before training real classifiers. No classifier is trained in this stage.
+
+ROW-LEVEL DISTRIBUTION
+----------------------
+     Split    Class  Rows  Percentage
+     Train   Normal 15646   96.306783
+     Train  Warning   480    2.954573
+     Train Critical   120    0.738643
+Validation   Normal  3973   95.527771
+Validation  Warning   168    4.039433
+Validation Critical    18    0.432796
+
+UNIQUE HOURLY ASSESSMENT DISTRIBUTION
+-------------------------------------
+     Split    Class  Unique_Assessments  Percentage
+     Train   Normal                2621   96.324881
+     Train  Warning                  80    2.940096
+     Train Critical                  20    0.735024
+Validation   Normal                 667   95.558739
+Validation  Warning                  28    4.011461
+Validation Critical                   3    0.429799
+
+TRAIN IMBALANCE RATIOS
+----------------------
+            Level          Comparison  Majority_Count  Minority_Count      Ratio
+              Row   Normal_to_Warning           15646             480  32.595833
+              Row  Normal_to_Critical           15646             120 130.383333
+              Row Warning_to_Critical             480             120   4.000000
+Hourly_Assessment   Normal_to_Warning            2621              80  32.762500
+Hourly_Assessment  Normal_to_Critical            2621              20 131.050000
+Hourly_Assessment Warning_to_Critical              80              20   4.000000
+
+TRAIN-ONLY BALANCED CLASS WEIGHTS
+---------------------------------
+   Class  Train_Row_Count  Train_Row_Percentage  Train_Unique_Assessments  Balanced_Class_Weight
+  Normal            15646             96.306783                      2621               0.346116
+ Warning              480              2.954573                        80              11.281944
+Critical              120              0.738643                        20              45.127778
+
+WEIGHT FORMULA
+--------------
+Balanced weight for class c:
+    n_samples / (n_classes * n_samples_c)
+
+Weights are computed from Train only. Validation and Test must not influence class-weight calculation.
+
+WHY CLASS WEIGHTING IS SELECTED
+-------------------------------
+The Train data are strongly imbalanced, especially for the Critical class. However, the observations are grouped and temporal: only 8 complete batches form Train, and fire-risk labels originate from hourly keeper/expert assessments that are carried across 10-minute sensor rows. Synthetic oversampling such as SMOTE could generate artificial feature combinations that do not correspond to valid smokehouse temporal states. Therefore class/sample weighting is selected as the primary imbalance strategy.
+
+MODEL-SPECIFIC STRATEGY
+-----------------------
+Logistic Regression: class_weight='balanced'
+Random Forest: class_weight='balanced'
+Extra Trees: class_weight='balanced'
+Gradient Boosting: TRAIN-derived sample_weight
+XGBoost: TRAIN-derived sample_weight
+SMOTE / synthetic oversampling: not used
+
+EVALUATION PRIORITY
+-------------------
+Primary comparison metric: Macro-F1.
+Also important: Balanced Accuracy.
+Safety-sensitive metrics: Warning Recall and Critical Recall.
+Accuracy is retained only as a supporting metric because the Normal class dominates the dataset.
+
+WEIGHTED CLASS MASS CHECK
+-------------------------
+Normal: 5415.33333333
+Warning: 5415.33333333
+Critical: 5415.33333333
+Equal weighted contribution: True
+
+METHODOLOGY PROTECTION
+----------------------
+- Class weights were calculated from Train only.
+- Validation was used only for descriptive comparison.
+- No Test rows were loaded.
+- No SMOTE or other resampling was performed.
+- No classifier was trained.
+- Final Test remains frozen until Stage 31.
+
+NEXT STAGE
+----------
+Stage 22 will train weighted multinomial Logistic Regression using the Stage-10 model-ready features and the Train-only imbalance strategy defined here.
+
+PASS / FAIL CHECKS
+------------------
+                                          Check Status                                                                                       Details
+       Expected Train and Validation row counts   PASS                                                                Train=16,246; Validation=4,159
+          Expected three classification classes   PASS                                                                     Normal, Warning, Critical
+ Hourly assessment labels internally consistent   PASS                                    One label per Smokehouse/Batch/Layer/assessment timestamp.
+          Class weights derived from Train only   PASS                                           Validation distribution not used in weight formula.
+            All balanced class weights positive   PASS {'Normal': 0.34611615322340106, 'Warning': 11.281944444444445, 'Critical': 45.12777777777778}
+        Minority classes receive larger weights   PASS                                                                  Normal < Warning < Critical.
+Balanced weighting equalizes class contribution   PASS    {'Normal': 5415.333333333334, 'Warning': 5415.333333333333, 'Critical': 5415.333333333333}
+     Every Train row assigned one sample weight   PASS                                                                          Weighted rows=16,246
+               No SMOTE or resampling performed   PASS                                            Weighting selected to preserve temporal structure.
+                          No classifier trained   PASS                                                     Stage 21 performs analysis/strategy only.
+                          Final Test not loaded   PASS                                          Only Test file existence checked; contents not read.
+
+STAGE 21 STATUS: PASS

@@ -1,0 +1,9 @@
+Check,Status,Details
+Expected row count,PASS,"Rows=24,463"
+All 36 Stage-07 candidates present,PASS,Candidates=36
+Regression selected features exist,PASS,Missing=[]
+Classification selected features exist,PASS,Missing=[]
+Regression selected set has no forbidden leakage fields,PASS,Forbidden=[]
+Classification selected set has no forbidden leakage fields,PASS,Forbidden=[]
+Unique hourly fire-risk assessments preserved,PASS,"Assessments=4,098"
+Selection policy did not use target-ranking output,PASS,Feature decisions are hard-coded from structural/runtime/redundancy rules; target tables are descriptive only.

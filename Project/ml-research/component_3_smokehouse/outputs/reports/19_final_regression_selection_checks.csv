@@ -1,0 +1,11 @@
+Check,Status,Details
+Exactly two tuned finalists available,PASS,Finalists=2
+Expected finalist families available,PASS,"Gradient_Boosting, XGBoost"
+Selection metrics finite,PASS,"MAE, RMSE, R² and generalization values verified."
+Selected model has best tuned Validation MAE,PASS,Gradient_Boosting: MAE=4.102382
+Selection matches Stage-18 validation leader,PASS,Stage18=Gradient_Boosting/GB_02; Stage19=Gradient_Boosting/GB_02
+Selected model artifact class valid,PASS,GradientBoostingRegressor
+Selected artifact copied without modification,PASS,SHA256=b7f74b428cbba8c5de05405e86327bac8eec6849221e0ae2a279099b74019d64
+No model training performed,PASS,Stage 19 loads and copies the selected Stage-18 artifact only.
+No hyperparameter tuning performed,PASS,Stage 18 tuning evidence reused.
+Final Test not loaded,PASS,Only Test file existence checked; contents not read.

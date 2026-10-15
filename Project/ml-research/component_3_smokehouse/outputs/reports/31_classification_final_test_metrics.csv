@@ -1,0 +1,2 @@
+Model_Family,Trial,Test_Rows,Test_Batches,Accuracy,Balanced_Accuracy,Macro_Precision,Macro_Recall,Macro_F1,Warning_Recall,Critical_Recall,Warning_Reference_0_80_Pass,Critical_Reference_0_50_Pass
+XGBoost,XGB_03,4058,2,0.9078363725973386,0.630764826660349,0.47791356174071403,0.630764826660349,0.5179549048807933,0.9861111111111112,0.0,True,False

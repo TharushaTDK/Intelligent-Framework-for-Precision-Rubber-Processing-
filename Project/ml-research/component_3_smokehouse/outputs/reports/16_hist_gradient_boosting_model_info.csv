@@ -1,0 +1,6 @@
+Item,Value
+Model,HistGradientBoostingRegressor
+Native impurity feature importance,Not available for HistGradientBoostingRegressor
+Final explainability,Reserved for Stage 32 SHAP
+Iterations fitted,300
+Internal early stopping,False

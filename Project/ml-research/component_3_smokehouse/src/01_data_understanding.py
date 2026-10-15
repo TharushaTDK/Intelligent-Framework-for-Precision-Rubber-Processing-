@@ -1,18 +1,35 @@
 from pathlib import Path
+import hashlib
 import pandas as pd
-import numpy as np
 
 
-# COMPONENT 3 - STAGE 1: DATA UNDERSTANDING
-# Smart Layer-Wise Rubber Smokehouse Drying-Time &
-# Fire-Risk Prediction System
+# ============================================================
+# COMPONENT 3 - STAGE 01: DATA UNDERSTANDING
+# ============================================================
+#
+# Purpose:
+#   Understand the FINAL FROZEN raw dataset before any
+#   validation, cleaning, preprocessing, feature engineering,
+#   splitting or model training.
+#
+# Important:
+#   - This script DOES NOT modify the raw dataset.
+#   - This script DOES NOT fill missing values.
+#   - This script DOES NOT remove duplicates.
+#   - This script DOES NOT validate targets mathematically.
+#   - This script DOES NOT create ML features.
+#   - Actual_Total_Drying_Time is inspected here only as a
+#     dataset field; it must not become a live model feature.
+#   - Fire_Risk_Assessment_Timestamp is metadata for the
+#     hourly keeper/expert assessment and must not become a
+#     physical ML predictor.
+# ============================================================
 
 
+# ============================================================
 # 1. PROJECT PATHS
+# ============================================================
 
-
-# Expected location of this script:
-# ml-research/component_3_smokehouse/src/01_data_understanding.py
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 DATA_PATH = (
@@ -22,35 +39,63 @@ DATA_PATH = (
     / "Component3_Dataset.csv"
 )
 
-REPORT_DIR = PROJECT_ROOT / "outputs" / "reports"
-REPORT_DIR.mkdir(parents=True, exist_ok=True)
+REPORT_DIR = (
+    PROJECT_ROOT
+    / "outputs"
+    / "reports"
+)
 
-SUMMARY_PATH = REPORT_DIR / "01_data_understanding_summary.txt"
-BATCH_OVERVIEW_PATH = REPORT_DIR / "01_batch_overview.csv"
-
-
-# 2. LOAD DATASET
-
-
-print("=" * 72)
-print("COMPONENT 3 - STAGE 1: DATA UNDERSTANDING")
-print("=" * 72)
-
-if not DATA_PATH.exists():
-    raise FileNotFoundError(
-        f"\nDataset not found:\n{DATA_PATH}\n\n"
-        "Expected location:\n"
-        "ml-research/component_3_smokehouse/data/raw/Component3_Dataset.csv"
-    )
-
-df = pd.read_csv(DATA_PATH)
-print("\nDataset loaded successfully.")
+REPORT_DIR.mkdir(
+    parents=True,
+    exist_ok=True,
+)
 
 
-# 3. EXPECTED DATASET STRUCTURE
+# ============================================================
+# 2. OUTPUT FILES
+# ============================================================
+
+OVERVIEW_PATH = (
+    REPORT_DIR
+    / "01_dataset_overview.txt"
+)
+
+COLUMN_SUMMARY_PATH = (
+    REPORT_DIR
+    / "01_column_summary.csv"
+)
+
+SMOKEHOUSE_SUMMARY_PATH = (
+    REPORT_DIR
+    / "01_smokehouse_summary.csv"
+)
+
+BATCH_SUMMARY_PATH = (
+    REPORT_DIR
+    / "01_batch_summary.csv"
+)
+
+LAYER_SUMMARY_PATH = (
+    REPORT_DIR
+    / "01_layer_summary.csv"
+)
+
+FIRE_RISK_PATH = (
+    REPORT_DIR
+    / "01_fire_risk_distribution.csv"
+)
+
+BATCH_LAYER_PATH = (
+    REPORT_DIR
+    / "01_batch_layer_structure.csv"
+)
 
 
-expected_columns = [
+# ============================================================
+# 3. EXPECTED FINAL SCHEMA
+# ============================================================
+
+EXPECTED_COLUMNS = [
     "Smokehouse_ID",
     "Timestamp",
     "Batch_ID",
@@ -67,204 +112,95 @@ expected_columns = [
     "Actual_Total_Drying_Time",
     "Remaining_Drying_Time",
     "Fire_Risk_Label",
+    "Fire_Risk_Assessment_Timestamp",
 ]
 
-missing_columns = [c for c in expected_columns if c not in df.columns]
-unexpected_columns = [c for c in df.columns if c not in expected_columns]
 
+# ============================================================
+# 4. LOAD RAW DATASET
+# ============================================================
 
-# 4. BASIC STRUCTURE
+print("=" * 78)
+print("COMPONENT 3 - STAGE 01: DATA UNDERSTANDING")
+print("=" * 78)
 
-
-rows, columns = df.shape
-
-print("\n--- DATASET SHAPE ---")
-print(f"Rows    : {rows:,}")
-print(f"Columns : {columns}")
-
-print("\n--- COLUMN NAMES ---")
-for index, column in enumerate(df.columns, start=1):
-    print(f"{index:02d}. {column}")
-
-print("\n--- EXPECTED COLUMN CHECK ---")
-print(f"Missing expected columns : {missing_columns}")
-print(f"Unexpected columns       : {unexpected_columns}")
-
-if missing_columns:
-    raise ValueError(
-        "The dataset is missing required columns. "
-        f"Missing: {missing_columns}"
+if not DATA_PATH.exists():
+    raise FileNotFoundError(
+        f"\nFinal frozen dataset not found:\n{DATA_PATH}\n\n"
+        "Place Component3_Dataset.csv inside:\n"
+        "ml-research/component_3_smokehouse/data/raw/"
     )
 
-print("\n--- DATA TYPES ---")
-print(df.dtypes)
+df = pd.read_csv(
+    DATA_PATH
+)
+
+print("\nRaw dataset loaded successfully.")
 
 
-# 5. TIMESTAMP UNDERSTANDING
+# ============================================================
+# 5. DATASET FINGERPRINT
+# ============================================================
+
+with open(
+    DATA_PATH,
+    "rb",
+) as file:
+    dataset_sha256 = hashlib.sha256(
+        file.read()
+    ).hexdigest()
 
 
-# Converted only in memory for analysis. The raw CSV is not changed.
-df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors="coerce")
+# ============================================================
+# 6. BASIC STRUCTURE
+# ============================================================
 
-invalid_timestamps = int(df["Timestamp"].isna().sum())
-start_time = df["Timestamp"].min()
-end_time = df["Timestamp"].max()
+rows = len(df)
+columns = len(df.columns)
 
-if pd.notna(start_time) and pd.notna(end_time):
-    collection_duration = end_time - start_time
-    coverage_days = collection_duration.total_seconds() / 86400
-else:
-    coverage_days = np.nan
+actual_columns = list(
+    df.columns
+)
 
-print("\n--- TIME COVERAGE ---")
-print(f"Start              : {start_time}")
-print(f"End                : {end_time}")
-print(f"Calendar coverage  : {coverage_days:.2f} days")
-print(f"Invalid timestamps : {invalid_timestamps}")
+schema_matches = (
+    actual_columns
+    == EXPECTED_COLUMNS
+)
 
-
-# 6. UNIQUE ENTITIES
-
-
-smokehouses = sorted(
-    df["Smokehouse_ID"].dropna().astype(str).unique().tolist())
-layers = sorted(df["Layer_ID"].dropna().astype(str).unique().tolist())
-risk_classes = sorted(
-    df["Fire_Risk_Label"].dropna().astype(str).unique().tolist())
-
-print("\n--- UNIQUE VALUES ---")
-print(f"Smokehouses       : {smokehouses}")
-print(f"Number of batches : {df['Batch_ID'].nunique()}")
-print(f"Layers            : {layers}")
-print(f"Fire-risk classes : {risk_classes}")
-
-
-# 7. MISSING VALUES
-
-
-missing_values = df.isnull().sum()
-total_missing_values = int(missing_values.sum())
-
-print("\n--- MISSING VALUES ---")
-print(missing_values)
-print(f"\nTotal missing values: {total_missing_values}")
-
-
-# 8. DUPLICATE ANALYSIS
-
-
-duplicate_rows = int(df.duplicated().sum())
-
-observation_key_columns = [
-    "Smokehouse_ID",
-    "Batch_ID",
-    "Layer_ID",
-    "Timestamp",
+missing_expected_columns = [
+    column
+    for column in EXPECTED_COLUMNS
+    if column not in actual_columns
 ]
 
-duplicate_observation_keys = int(
-    df.duplicated(subset=observation_key_columns).sum()
-)
-
-print("\n--- DUPLICATES ---")
-print(f"Duplicate complete rows    : {duplicate_rows}")
-print(f"Duplicate observation keys : {duplicate_observation_keys}")
-
-
-# 9. 10-MINUTE SAMPLING INTERVAL CHECK
-
-
-interval_errors = 0
-interval_values = []
-
-group_columns = [
-    "Smokehouse_ID",
-    "Batch_ID",
-    "Layer_ID",
+unexpected_columns = [
+    column
+    for column in actual_columns
+    if column not in EXPECTED_COLUMNS
 ]
 
-for _, group in df.groupby(group_columns, dropna=False):
-    group = group.sort_values("Timestamp")
 
-    differences = (
-        group["Timestamp"]
-        .diff()
-        .dropna()
-        .dt.total_seconds()
-        / 60
-    )
+# ============================================================
+# 7. SAFE TYPE CONVERSION FOR UNDERSTANDING
+# ============================================================
 
-    interval_values.extend(differences.tolist())
-    interval_errors += int((~np.isclose(differences, 10.0)).sum())
+# Work on a copy so the raw file is untouched.
 
-print("\n--- SAMPLING INTERVAL CHECK ---")
-if interval_values:
-    print(f"Minimum interval : {min(interval_values):.2f} minutes")
-    print(f"Maximum interval : {max(interval_values):.2f} minutes")
-else:
-    print("No interval values available.")
+analysis_df = df.copy()
 
-print(f"Intervals different from 10 minutes: {interval_errors}")
-
-
-# 10. INITIAL REGRESSION TARGET FORMULA CHECK
-
-
-# Remaining_Drying_Time should equal:
-# Actual_Total_Drying_Time - Elapsed_Drying_Hours
-# A small tolerance is allowed for values rounded in the CSV.
-calculated_remaining = (
-    df["Actual_Total_Drying_Time"]
-    - df["Elapsed_Drying_Hours"]
+analysis_df["Timestamp"] = pd.to_datetime(
+    analysis_df["Timestamp"],
+    errors="coerce",
 )
 
-formula_difference = (
-    calculated_remaining
-    - df["Remaining_Drying_Time"]
-).abs()
-
-formula_tolerance = 0.011
-formula_errors = int((formula_difference > formula_tolerance).sum())
-maximum_formula_difference = float(formula_difference.max())
-
-print("\n--- INITIAL REMAINING-TIME FORMULA CHECK ---")
-print(
-    "Maximum absolute difference : "
-    f"{maximum_formula_difference:.6f} hours"
+analysis_df[
+    "Fire_Risk_Assessment_Timestamp"
+] = pd.to_datetime(
+    analysis_df[
+        "Fire_Risk_Assessment_Timestamp"
+    ],
+    errors="coerce",
 )
-print(f"Rows outside tolerance      : {formula_errors}")
-
-
-# 11. FIRE-RISK TARGET DISTRIBUTION
-
-
-risk_counts = df["Fire_Risk_Label"].value_counts(dropna=False)
-risk_percentages = (
-    df["Fire_Risk_Label"]
-    .value_counts(normalize=True, dropna=False)
-    .mul(100)
-)
-
-risk_distribution = pd.DataFrame({
-    "Count": risk_counts,
-    "Percentage": risk_percentages,
-})
-
-print("\n--- FIRE-RISK CLASS DISTRIBUTION ---")
-print(risk_distribution)
-
-
-# 12. REGRESSION TARGET SUMMARY
-
-
-remaining_time_summary = df["Remaining_Drying_Time"].describe()
-
-print("\n--- REMAINING DRYING TIME TARGET ---")
-print(remaining_time_summary)
-
-
-# 13. IMPORTANT NUMERIC VARIABLES
-
 
 numeric_columns = [
     "Temperature_C",
@@ -278,135 +214,813 @@ numeric_columns = [
     "Remaining_Drying_Time",
 ]
 
-numeric_summary = df[numeric_columns].describe().T
-
-print("\n--- NUMERIC SUMMARY ---")
-print(numeric_summary)
-
-
-# 14. RECORD COUNTS
+for column in numeric_columns:
+    analysis_df[column] = pd.to_numeric(
+        analysis_df[column],
+        errors="coerce",
+    )
 
 
-records_by_smokehouse = df["Smokehouse_ID"].value_counts().sort_index()
-records_by_layer = df["Layer_ID"].value_counts().sort_index()
-records_by_batch = df["Batch_ID"].value_counts().sort_index()
+# ============================================================
+# 8. CORE ENTITY COUNTS
+# ============================================================
 
-print("\n--- RECORDS BY SMOKEHOUSE ---")
-print(records_by_smokehouse)
+smokehouse_count = (
+    analysis_df[
+        "Smokehouse_ID"
+    ].nunique(
+        dropna=True
+    )
+)
 
-print("\n--- RECORDS BY LAYER ---")
-print(records_by_layer)
+batch_count = (
+    analysis_df[
+        "Batch_ID"
+    ].nunique(
+        dropna=True
+    )
+)
 
-print("\n--- RECORDS BY BATCH ---")
-print(records_by_batch)
+layer_count = (
+    analysis_df[
+        "Layer_ID"
+    ].nunique(
+        dropna=True
+    )
+)
+
+batch_layer_count = (
+    analysis_df.groupby(
+        [
+            "Smokehouse_ID",
+            "Batch_ID",
+            "Layer_ID",
+        ],
+        dropna=False,
+    ).ngroups
+)
 
 
-# 15. BATCH + LAYER OVERVIEW
+# ============================================================
+# 9. TIME COVERAGE
+# ============================================================
+
+timestamp_start = (
+    analysis_df[
+        "Timestamp"
+    ].min()
+)
+
+timestamp_end = (
+    analysis_df[
+        "Timestamp"
+    ].max()
+)
+
+assessment_start = (
+    analysis_df[
+        "Fire_Risk_Assessment_Timestamp"
+    ].min()
+)
+
+assessment_end = (
+    analysis_df[
+        "Fire_Risk_Assessment_Timestamp"
+    ].max()
+)
 
 
-batch_overview = (
-    df
-    .groupby(
-        ["Smokehouse_ID", "Batch_ID", "Layer_ID"],
+# ============================================================
+# 10. COLUMN SUMMARY
+# ============================================================
+
+column_rows = []
+
+for column in analysis_df.columns:
+
+    series = analysis_df[column]
+
+    column_rows.append({
+        "Column": column,
+        "Pandas_Dtype": str(
+            series.dtype
+        ),
+        "Non_Missing_Count": int(
+            series.notna().sum()
+        ),
+        "Missing_Count": int(
+            series.isna().sum()
+        ),
+        "Missing_Percent": round(
+            series.isna().mean()
+            * 100,
+            6,
+        ),
+        "Unique_Count": int(
+            series.nunique(
+                dropna=True
+            )
+        ),
+    })
+
+column_summary = pd.DataFrame(
+    column_rows
+)
+
+column_summary.to_csv(
+    COLUMN_SUMMARY_PATH,
+    index=False,
+)
+
+
+# ============================================================
+# 11. SMOKEHOUSE SUMMARY
+# ============================================================
+
+smokehouse_summary = (
+    analysis_df.groupby(
+        "Smokehouse_ID",
         dropna=False,
     )
     .agg(
-        Start_Time=("Timestamp", "min"),
-        End_Time=("Timestamp", "max"),
-        Records=("Timestamp", "size"),
-        Temp_Min=("Temperature_C", "min"),
-        Temp_Max=("Temperature_C", "max"),
-        Temp_Mean=("Temperature_C", "mean"),
-        Humidity_Min=("Humidity_%", "min"),
-        Humidity_Max=("Humidity_%", "max"),
-        Humidity_Mean=("Humidity_%", "mean"),
-        Actual_Total_Drying_Time=("Actual_Total_Drying_Time", "first"),
+        Records=(
+            "Timestamp",
+            "size",
+        ),
+        Batches=(
+            "Batch_ID",
+            "nunique",
+        ),
+        Layers=(
+            "Layer_ID",
+            "nunique",
+        ),
+        Start_Timestamp=(
+            "Timestamp",
+            "min",
+        ),
+        End_Timestamp=(
+            "Timestamp",
+            "max",
+        ),
+        Mean_Temperature_C=(
+            "Temperature_C",
+            "mean",
+        ),
+        Mean_Humidity_pct=(
+            "Humidity_%",
+            "mean",
+        ),
     )
     .reset_index()
 )
 
-batch_overview["Observed_Duration_Hours"] = (
-    batch_overview["End_Time"]
-    - batch_overview["Start_Time"]
-).dt.total_seconds() / 3600
+smokehouse_summary.to_csv(
+    SMOKEHOUSE_SUMMARY_PATH,
+    index=False,
+)
 
 
-# 16. SAVE BATCH OVERVIEW
+# ============================================================
+# 12. BATCH SUMMARY
+# ============================================================
 
-
-batch_overview.to_csv(BATCH_OVERVIEW_PATH, index=False)
-
-
-# 17. SAVE TEXT SUMMARY
-
-
-with open(SUMMARY_PATH, "w", encoding="utf-8") as report:
-    report.write("COMPONENT 3 - DATA UNDERSTANDING SUMMARY\n")
-    report.write("=" * 72 + "\n\n")
-
-    report.write(f"Dataset: {DATA_PATH.name}\n\n")
-    report.write(f"Rows: {rows:,}\n")
-    report.write(f"Columns: {columns}\n\n")
-
-    report.write("Columns:\n")
-    for column in df.columns:
-        report.write(f"- {column}\n")
-
-    report.write("\nMissing expected columns:\n")
-    report.write(str(missing_columns) + "\n")
-
-    report.write("\nUnexpected columns:\n")
-    report.write(str(unexpected_columns) + "\n")
-
-    report.write(f"\nStart timestamp: {start_time}\n")
-    report.write(f"End timestamp: {end_time}\n")
-    report.write(f"Calendar coverage: {coverage_days:.2f} days\n")
-    report.write(f"Invalid timestamps: {invalid_timestamps}\n")
-
-    report.write(f"\nSmokehouses: {df['Smokehouse_ID'].nunique()}\n")
-    report.write(f"Batches: {df['Batch_ID'].nunique()}\n")
-    report.write(f"Layers: {df['Layer_ID'].nunique()}\n")
-
-    report.write(f"\nTotal missing values: {total_missing_values}\n")
-    report.write(f"Duplicate rows: {duplicate_rows}\n")
-    report.write(
-        f"Duplicate observation keys: {duplicate_observation_keys}\n"
+batch_summary = (
+    analysis_df.groupby(
+        [
+            "Smokehouse_ID",
+            "Batch_ID",
+        ],
+        dropna=False,
     )
-    report.write(f"10-minute interval errors: {interval_errors}\n")
-
-    report.write("\nRemaining-time formula check:\n")
-    report.write(
-        "Maximum absolute difference: "
-        f"{maximum_formula_difference:.6f} hours\n"
+    .agg(
+        Records=(
+            "Timestamp",
+            "size",
+        ),
+        Layers=(
+            "Layer_ID",
+            "nunique",
+        ),
+        Batch_Start=(
+            "Timestamp",
+            "min",
+        ),
+        Batch_End=(
+            "Timestamp",
+            "max",
+        ),
+        Min_Total_Drying_Hours=(
+            "Actual_Total_Drying_Time",
+            "min",
+        ),
+        Max_Total_Drying_Hours=(
+            "Actual_Total_Drying_Time",
+            "max",
+        ),
     )
-    report.write(f"Rows outside tolerance: {formula_errors}\n")
+    .reset_index()
+)
 
-    report.write("\nFire-Risk Distribution:\n")
-    report.write(risk_distribution.to_string())
-
-    report.write("\n\nRemaining Drying Time Summary:\n")
-    report.write(remaining_time_summary.to_string())
-
-    report.write("\n\nNumeric Summary:\n")
-    report.write(numeric_summary.to_string())
-
-    report.write("\n\nRecords by Smokehouse:\n")
-    report.write(records_by_smokehouse.to_string())
-
-    report.write("\n\nRecords by Layer:\n")
-    report.write(records_by_layer.to_string())
-
-    report.write("\n\nRecords by Batch:\n")
-    report.write(records_by_batch.to_string())
+batch_summary.to_csv(
+    BATCH_SUMMARY_PATH,
+    index=False,
+)
 
 
-# 18. COMPLETE
+# ============================================================
+# 13. LAYER SUMMARY
+# ============================================================
+
+# Environmental means below are row-level descriptive statistics.
+# Drying-duration statistics are calculated once per Batch x Layer
+# sequence so longer sequences do not receive extra weight.
+
+layer_environment_summary = (
+    analysis_df.groupby(
+        "Layer_ID",
+        dropna=False,
+    )
+    .agg(
+        Records=(
+            "Timestamp",
+            "size",
+        ),
+        Smokehouses=(
+            "Smokehouse_ID",
+            "nunique",
+        ),
+        Batches=(
+            "Batch_ID",
+            "nunique",
+        ),
+        Mean_Temperature_C=(
+            "Temperature_C",
+            "mean",
+        ),
+        Min_Temperature_C=(
+            "Temperature_C",
+            "min",
+        ),
+        Max_Temperature_C=(
+            "Temperature_C",
+            "max",
+        ),
+        Mean_Humidity_pct=(
+            "Humidity_%",
+            "mean",
+        ),
+        Min_Humidity_pct=(
+            "Humidity_%",
+            "min",
+        ),
+        Max_Humidity_pct=(
+            "Humidity_%",
+            "max",
+        ),
+    )
+    .reset_index()
+)
+
+sequence_durations = (
+    analysis_df[
+        [
+            "Smokehouse_ID",
+            "Batch_ID",
+            "Layer_ID",
+            "Actual_Total_Drying_Time",
+        ]
+    ]
+    .drop_duplicates(
+        subset=[
+            "Smokehouse_ID",
+            "Batch_ID",
+            "Layer_ID",
+        ]
+    )
+)
+
+layer_duration_summary = (
+    sequence_durations.groupby(
+        "Layer_ID",
+        dropna=False,
+    )
+    .agg(
+        Mean_Total_Drying_Hours=(
+            "Actual_Total_Drying_Time",
+            "mean",
+        ),
+        Min_Total_Drying_Hours=(
+            "Actual_Total_Drying_Time",
+            "min",
+        ),
+        Max_Total_Drying_Hours=(
+            "Actual_Total_Drying_Time",
+            "max",
+        ),
+    )
+    .reset_index()
+)
+
+layer_summary = layer_environment_summary.merge(
+    layer_duration_summary,
+    on="Layer_ID",
+    how="left",
+)
+
+layer_summary.to_csv(
+    LAYER_SUMMARY_PATH,
+    index=False,
+)
 
 
-print("\n" + "=" * 72)
-print("STAGE 1 COMPLETE")
-print("=" * 72)
+# ============================================================
+# 14. BATCH x LAYER STRUCTURE
+# ============================================================
 
-print(f"\nSummary saved to:\n{SUMMARY_PATH}")
-print(f"\nBatch overview saved to:\n{BATCH_OVERVIEW_PATH}")
-print("\nIMPORTANT: No raw dataset values were modified.")
+batch_layer_summary = (
+    analysis_df.groupby(
+        [
+            "Smokehouse_ID",
+            "Batch_ID",
+            "Layer_ID",
+        ],
+        dropna=False,
+    )
+    .agg(
+        Records=(
+            "Timestamp",
+            "size",
+        ),
+        Start_Timestamp=(
+            "Timestamp",
+            "min",
+        ),
+        End_Timestamp=(
+            "Timestamp",
+            "max",
+        ),
+        Total_Drying_Hours=(
+            "Actual_Total_Drying_Time",
+            "first",
+        ),
+        Start_Remaining_Hours=(
+            "Remaining_Drying_Time",
+            "first",
+        ),
+        End_Remaining_Hours=(
+            "Remaining_Drying_Time",
+            "last",
+        ),
+    )
+    .reset_index()
+)
+
+batch_layer_summary.to_csv(
+    BATCH_LAYER_PATH,
+    index=False,
+)
+
+
+# ============================================================
+# 15. FIRE-RISK DISTRIBUTION
+# ============================================================
+
+fire_risk_distribution = (
+    analysis_df[
+        "Fire_Risk_Label"
+    ]
+    .value_counts(
+        dropna=False
+    )
+    .rename_axis(
+        "Fire_Risk_Label"
+    )
+    .reset_index(
+        name="Count"
+    )
+)
+
+fire_risk_distribution[
+    "Percentage"
+] = (
+    fire_risk_distribution[
+        "Count"
+    ]
+    / rows
+    * 100
+)
+
+fire_risk_distribution.to_csv(
+    FIRE_RISK_PATH,
+    index=False,
+)
+
+
+# ============================================================
+# 16. IMPORTANT NUMERIC RANGES
+# ============================================================
+
+important_numeric_ranges = {}
+
+for column in [
+    "Temperature_C",
+    "Humidity_%",
+    "Elapsed_Drying_Hours",
+    "Actual_Total_Drying_Time",
+    "Remaining_Drying_Time",
+    "Number_of_Sheets",
+    "Layer_Area_m2",
+]:
+    important_numeric_ranges[
+        column
+    ] = {
+        "min": (
+            analysis_df[
+                column
+            ].min()
+        ),
+        "max": (
+            analysis_df[
+                column
+            ].max()
+        ),
+        "mean": (
+            analysis_df[
+                column
+            ].mean()
+        ),
+    }
+
+
+# ============================================================
+# 17. CONSOLE OUTPUT
+# ============================================================
+
+print("\n--- DATASET STRUCTURE ---")
+
+print(
+    f"Rows                 : "
+    f"{rows:,}"
+)
+
+print(
+    f"Columns              : "
+    f"{columns}"
+)
+
+print(
+    f"Schema matches final : "
+    f"{schema_matches}"
+)
+
+print(
+    f"SHA-256              : "
+    f"{dataset_sha256}"
+)
+
+print(
+    f"Smokehouses          : "
+    f"{smokehouse_count}"
+)
+
+print(
+    f"Batches              : "
+    f"{batch_count}"
+)
+
+print(
+    f"Layers               : "
+    f"{layer_count}"
+)
+
+print(
+    f"Batch-Layer sequences: "
+    f"{batch_layer_count}"
+)
+
+
+print("\n--- TIME COVERAGE ---")
+
+print(
+    f"Sensor data start     : "
+    f"{timestamp_start}"
+)
+
+print(
+    f"Sensor data end       : "
+    f"{timestamp_end}"
+)
+
+print(
+    f"Risk assessment start : "
+    f"{assessment_start}"
+)
+
+print(
+    f"Risk assessment end   : "
+    f"{assessment_end}"
+)
+
+
+print(
+    "\n--- FIRE-RISK DISTRIBUTION ---"
+)
+
+print(
+    fire_risk_distribution
+    .round(
+        {
+            "Percentage": 4
+        }
+    )
+    .to_string(
+        index=False
+    )
+)
+
+
+print(
+    "\n--- LAYER SUMMARY ---"
+)
+
+print(
+    layer_summary[
+        [
+            "Layer_ID",
+            "Records",
+            "Mean_Temperature_C",
+            "Mean_Humidity_pct",
+            "Mean_Total_Drying_Hours",
+        ]
+    ]
+    .round(3)
+    .to_string(
+        index=False
+    )
+)
+
+
+print(
+    "\n--- MISSING VALUES OVERVIEW ---"
+)
+
+missing_display = (
+    column_summary[
+        column_summary[
+            "Missing_Count"
+        ] > 0
+    ][
+        [
+            "Column",
+            "Missing_Count",
+            "Missing_Percent",
+        ]
+    ]
+)
+
+if len(
+    missing_display
+) == 0:
+    print(
+        "No missing values."
+    )
+else:
+    print(
+        missing_display
+        .to_string(
+            index=False
+        )
+    )
+
+
+# ============================================================
+# 18. HUMAN-READABLE OVERVIEW REPORT
+# ============================================================
+
+with open(
+    OVERVIEW_PATH,
+    "w",
+    encoding="utf-8",
+) as report:
+
+    report.write(
+        "COMPONENT 3 - STAGE 01: DATA UNDERSTANDING\n"
+    )
+
+    report.write(
+        "=" * 78
+        + "\n\n"
+    )
+
+    report.write(
+        "DATASET IDENTITY\n"
+        "----------------\n"
+    )
+
+    report.write(
+        "Dataset: "
+        "Component3_Dataset.csv\n"
+    )
+
+    report.write(
+        f"SHA-256: "
+        f"{dataset_sha256}\n"
+    )
+
+    report.write(
+        f"Rows: {rows:,}\n"
+    )
+
+    report.write(
+        f"Columns: {columns}\n"
+    )
+
+    report.write(
+        f"Final schema match: "
+        f"{schema_matches}\n\n"
+    )
+
+    report.write(
+        "CORE STRUCTURE\n"
+        "--------------\n"
+    )
+
+    report.write(
+        f"Smokehouses: "
+        f"{smokehouse_count}\n"
+    )
+
+    report.write(
+        f"Batches: "
+        f"{batch_count}\n"
+    )
+
+    report.write(
+        f"Layers: "
+        f"{layer_count}\n"
+    )
+
+    report.write(
+        f"Batch-Layer sequences: "
+        f"{batch_layer_count}\n\n"
+    )
+
+    report.write(
+        "TIME COVERAGE\n"
+        "-------------\n"
+    )
+
+    report.write(
+        f"Sensor data start: "
+        f"{timestamp_start}\n"
+    )
+
+    report.write(
+        f"Sensor data end: "
+        f"{timestamp_end}\n"
+    )
+
+    report.write(
+        f"Fire-risk assessment start: "
+        f"{assessment_start}\n"
+    )
+
+    report.write(
+        f"Fire-risk assessment end: "
+        f"{assessment_end}\n\n"
+    )
+
+    report.write(
+        "IMPORTANT NUMERIC RANGES\n"
+        "------------------------\n"
+    )
+
+    for (
+        column,
+        statistics,
+    ) in important_numeric_ranges.items():
+
+        report.write(
+            f"{column}: "
+            f"min={statistics['min']:.4f}, "
+            f"max={statistics['max']:.4f}, "
+            f"mean={statistics['mean']:.4f}\n"
+        )
+
+    report.write(
+        "\nFIRE-RISK DISTRIBUTION\n"
+        "----------------------\n"
+    )
+
+    report.write(
+        fire_risk_distribution
+        .round(
+            {
+                "Percentage": 4
+            }
+        )
+        .to_string(
+            index=False
+        )
+    )
+
+    report.write(
+        "\n\n"
+    )
+
+    report.write(
+        "MISSING VALUES OVERVIEW\n"
+        "-----------------------\n"
+    )
+
+    if len(
+        missing_display
+    ) == 0:
+
+        report.write(
+            "No missing values.\n"
+        )
+
+    else:
+
+        report.write(
+            missing_display
+            .to_string(
+                index=False
+            )
+        )
+
+        report.write(
+            "\n"
+        )
+
+    report.write(
+        "\nMETHODOLOGY NOTES\n"
+        "-----------------\n"
+    )
+
+    report.write(
+        "- Stage 01 performs understanding only; "
+        "no data cleaning or modification is performed.\n"
+    )
+
+    report.write(
+        "- Actual_Total_Drying_Time is a retrospective "
+        "reference/target-construction field and must not be "
+        "used as a deployed predictor.\n"
+    )
+
+    report.write(
+        "- Fire_Risk_Assessment_Timestamp records the hourly "
+        "keeper/expert assessment time and should not be used "
+        "as a physical ML predictor.\n"
+    )
+
+    report.write(
+        "- Batch_ID is preserved for grouping and future "
+        "batch-aware validation, not as a physical ML predictor.\n"
+    )
+
+    report.write(
+        "- Missing values are only observed at this stage; "
+        "handling decisions belong to later data-quality and "
+        "preprocessing stages.\n"
+    )
+
+    report.write(
+        "- The dataset is synthetic/simulated development data "
+        "and must not be described as 24,463 physically "
+        "field-collected sensor measurements.\n"
+    )
+
+    report.write(
+        "\nSTAGE 01 STATUS: COMPLETE AFTER REVIEW\n"
+    )
+
+
+# ============================================================
+# 19. COMPLETE
+# ============================================================
+
+print(
+    "\n"
+    + "=" * 78
+)
+
+print(
+    "STAGE 01 DATA UNDERSTANDING COMPLETE"
+)
+
+print(
+    "=" * 78
+)
+
+print(
+    f"\nReports saved in:\n"
+    f"{REPORT_DIR}"
+)
+
+print(
+    "\nNo raw data was modified."
+)
