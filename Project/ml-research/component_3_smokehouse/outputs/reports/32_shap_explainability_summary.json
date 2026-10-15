@@ -1,0 +1,242 @@
+{
+  "stage": 32,
+  "purpose": "Post-hoc SHAP explainability of frozen Stage-31 models",
+  "methodological_status": "PASS",
+  "stage31_predictions_reproduced": {
+    "regression": true,
+    "classification": true
+  },
+  "data_explained": {
+    "source": "Locked Stage-31 Final Test",
+    "rows": 4058,
+    "batches": [
+      "SH01_B03",
+      "SH02_B04"
+    ],
+    "actual_critical_rows": 18,
+    "actual_critical_predicted_labels": {
+      "Warning": 18
+    }
+  },
+  "regression": {
+    "model_family": "Gradient_Boosting",
+    "trial": "GB_02",
+    "top_transformed_features": [
+      {
+        "Transformed_Feature": "Elapsed_Drying_Hours",
+        "Mean_Absolute_SHAP": 21.111829324017116
+      },
+      {
+        "Transformed_Feature": "Humidity_%",
+        "Mean_Absolute_SHAP": 10.731251273903494
+      },
+      {
+        "Transformed_Feature": "Number_of_Sheets",
+        "Mean_Absolute_SHAP": 2.057591215705614
+      },
+      {
+        "Transformed_Feature": "Temperature_C",
+        "Mean_Absolute_SHAP": 0.9584320105137818
+      },
+      {
+        "Transformed_Feature": "Humidity_Change_60m",
+        "Mean_Absolute_SHAP": 0.42973564840859396
+      },
+      {
+        "Transformed_Feature": "Smokehouse_ID_SH01",
+        "Mean_Absolute_SHAP": 0.22809317398877973
+      },
+      {
+        "Transformed_Feature": "Smokehouse_ID_SH02",
+        "Mean_Absolute_SHAP": 0.18990435883874324
+      },
+      {
+        "Transformed_Feature": "Layer_Area_m2",
+        "Mean_Absolute_SHAP": 0.1621529812054006
+      },
+      {
+        "Transformed_Feature": "Layer_ID_L1",
+        "Mean_Absolute_SHAP": 0.1346950643344912
+      },
+      {
+        "Transformed_Feature": "Temperature_Change_60m",
+        "Mean_Absolute_SHAP": 0.031063792556585524
+      }
+    ],
+    "top_raw_features": [
+      {
+        "Raw_Feature": "Elapsed_Drying_Hours",
+        "Mean_Absolute_SHAP": 21.111829324017116
+      },
+      {
+        "Raw_Feature": "Humidity_%",
+        "Mean_Absolute_SHAP": 10.731251273903494
+      },
+      {
+        "Raw_Feature": "Number_of_Sheets",
+        "Mean_Absolute_SHAP": 2.057591215705614
+      },
+      {
+        "Raw_Feature": "Temperature_C",
+        "Mean_Absolute_SHAP": 0.9584320105137818
+      },
+      {
+        "Raw_Feature": "Humidity_Change_60m",
+        "Mean_Absolute_SHAP": 0.42973564840859396
+      },
+      {
+        "Raw_Feature": "Smokehouse_ID",
+        "Mean_Absolute_SHAP": 0.41799753282752294
+      },
+      {
+        "Raw_Feature": "Layer_Area_m2",
+        "Mean_Absolute_SHAP": 0.1621529812054006
+      },
+      {
+        "Raw_Feature": "Layer_ID",
+        "Mean_Absolute_SHAP": 0.1617781277669005
+      },
+      {
+        "Raw_Feature": "Temperature_Change_60m",
+        "Mean_Absolute_SHAP": 0.031063792556585524
+      },
+      {
+        "Raw_Feature": "Humidity_RollStd_60m",
+        "Mean_Absolute_SHAP": 0.027904799989488114
+      }
+    ]
+  },
+  "classification": {
+    "model_family": "XGBoost",
+    "trial": "XGB_03",
+    "top_features_by_class": {
+      "Normal": [
+        {
+          "Transformed_Feature": "Temperature_C",
+          "Mean_Absolute_SHAP": 1.6178593635559082
+        },
+        {
+          "Transformed_Feature": "Humidity_%",
+          "Mean_Absolute_SHAP": 0.7639157772064209
+        },
+        {
+          "Transformed_Feature": "Humidity_RollStd_60m",
+          "Mean_Absolute_SHAP": 0.3356603980064392
+        },
+        {
+          "Transformed_Feature": "Temperature_RollStd_60m",
+          "Mean_Absolute_SHAP": 0.3192891776561737
+        },
+        {
+          "Transformed_Feature": "Number_of_Sheets",
+          "Mean_Absolute_SHAP": 0.24757955968379974
+        },
+        {
+          "Transformed_Feature": "Temperature_Change_30m",
+          "Mean_Absolute_SHAP": 0.22814440727233887
+        },
+        {
+          "Transformed_Feature": "Elapsed_Drying_Hours",
+          "Mean_Absolute_SHAP": 0.11709528416395187
+        },
+        {
+          "Transformed_Feature": "Humidity_Change_60m",
+          "Mean_Absolute_SHAP": 0.07694488763809204
+        },
+        {
+          "Transformed_Feature": "Temperature_Change_60m",
+          "Mean_Absolute_SHAP": 0.07371946424245834
+        },
+        {
+          "Transformed_Feature": "Temperature_RollStd_30m",
+          "Mean_Absolute_SHAP": 0.048672620207071304
+        }
+      ],
+      "Warning": [
+        {
+          "Transformed_Feature": "Temperature_C",
+          "Mean_Absolute_SHAP": 1.4567525386810303
+        },
+        {
+          "Transformed_Feature": "Temperature_Change_60m",
+          "Mean_Absolute_SHAP": 0.17542286217212677
+        },
+        {
+          "Transformed_Feature": "Temperature_Change_30m",
+          "Mean_Absolute_SHAP": 0.16917960345745087
+        },
+        {
+          "Transformed_Feature": "Humidity_RollStd_60m",
+          "Mean_Absolute_SHAP": 0.13024240732192993
+        },
+        {
+          "Transformed_Feature": "Number_of_Sheets",
+          "Mean_Absolute_SHAP": 0.11234386265277863
+        },
+        {
+          "Transformed_Feature": "Humidity_%",
+          "Mean_Absolute_SHAP": 0.11229682713747025
+        },
+        {
+          "Transformed_Feature": "Elapsed_Drying_Hours",
+          "Mean_Absolute_SHAP": 0.07594935595989227
+        },
+        {
+          "Transformed_Feature": "Temperature_Rate_per_10min",
+          "Mean_Absolute_SHAP": 0.059755049645900726
+        },
+        {
+          "Transformed_Feature": "Temperature_RollStd_60m",
+          "Mean_Absolute_SHAP": 0.03205990418791771
+        },
+        {
+          "Transformed_Feature": "Humidity_Change_60m",
+          "Mean_Absolute_SHAP": 0.021956639364361763
+        }
+      ],
+      "Critical": [
+        {
+          "Transformed_Feature": "Humidity_RollStd_60m",
+          "Mean_Absolute_SHAP": 0.7532323002815247
+        },
+        {
+          "Transformed_Feature": "Humidity_%",
+          "Mean_Absolute_SHAP": 0.6496509909629822
+        },
+        {
+          "Transformed_Feature": "Temperature_RollStd_60m",
+          "Mean_Absolute_SHAP": 0.43833768367767334
+        },
+        {
+          "Transformed_Feature": "Number_of_Sheets",
+          "Mean_Absolute_SHAP": 0.36484888195991516
+        },
+        {
+          "Transformed_Feature": "Elapsed_Drying_Hours",
+          "Mean_Absolute_SHAP": 0.31267958879470825
+        },
+        {
+          "Transformed_Feature": "Humidity_Change_60m",
+          "Mean_Absolute_SHAP": 0.28184574842453003
+        },
+        {
+          "Transformed_Feature": "Temperature_C",
+          "Mean_Absolute_SHAP": 0.22598154842853546
+        },
+        {
+          "Transformed_Feature": "Humidity_Change_30m",
+          "Mean_Absolute_SHAP": 0.15446333587169647
+        },
+        {
+          "Transformed_Feature": "Layer_ID_L1",
+          "Mean_Absolute_SHAP": 0.09486255049705505
+        },
+        {
+          "Transformed_Feature": "Temperature_RollStd_30m",
+          "Mean_Absolute_SHAP": 0.07954414188861847
+        }
+      ]
+    }
+  },
+  "research_note": "SHAP explanations are post-hoc model explanations. They do not establish causality and were not used to retune or reselect the models."
+}

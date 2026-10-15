@@ -1,0 +1,11 @@
+Check,Status,Details
+All required regression models present,PASS,Models=8; expected=8
+One unique comparison row per model,PASS,Unique models=8
+Validation metrics finite,PASS,"MAE, RMSE and R² checked for all models."
+MAE/RMSE values non-negative,PASS,Validation error metrics verified.
+Ranking based on Validation only,PASS,Primary=MAE; tie-breakers=RMSE then R².
+No new model training,PASS,Stage 17 reads completed metric files only.
+No hyperparameter tuning,PASS,Tuning is reserved for Stage 18.
+Tuning shortlist contains two candidates,PASS,Shortlist size=2
+Tuning shortlist excludes baseline models,PASS,"Gradient_Boosting, XGBoost"
+Final Test not loaded,PASS,Only Test file existence checked; contents were not read.

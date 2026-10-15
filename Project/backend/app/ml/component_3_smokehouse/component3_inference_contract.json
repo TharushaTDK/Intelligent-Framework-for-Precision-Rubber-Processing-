@@ -1,0 +1,121 @@
+{
+  "component": "component_3_smokehouse",
+  "model_version": "component3-classification-v2-ordinal",
+  "input_contract": {
+    "description": "The backend must construct these 17 post-feature-engineering inputs before calling either exported pipeline (regression or classification). Identical feature contract to the prior XGB_03 export - unchanged.",
+    "feature_count": 17,
+    "ordered_features": [
+      "Smokehouse_ID",
+      "Layer_ID",
+      "Temperature_C",
+      "Humidity_%",
+      "Elapsed_Drying_Hours",
+      "Number_of_Sheets",
+      "Layer_Area_m2",
+      "Temperature_Rate_per_10min",
+      "Humidity_Rate_per_10min",
+      "Temperature_Change_30m",
+      "Humidity_Change_30m",
+      "Temperature_Change_60m",
+      "Humidity_Change_60m",
+      "Temperature_RollStd_30m",
+      "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m",
+      "Humidity_RollStd_60m"
+    ],
+    "features": [
+      {"name": "Smokehouse_ID", "type": "categorical", "required": true},
+      {"name": "Layer_ID", "type": "categorical", "required": true},
+      {"name": "Temperature_C", "type": "numeric", "required": true},
+      {"name": "Humidity_%", "type": "numeric", "required": true},
+      {"name": "Elapsed_Drying_Hours", "type": "numeric", "required": true},
+      {"name": "Number_of_Sheets", "type": "numeric", "required": true},
+      {"name": "Layer_Area_m2", "type": "numeric", "required": true},
+      {"name": "Temperature_Rate_per_10min", "type": "numeric", "required": true},
+      {"name": "Humidity_Rate_per_10min", "type": "numeric", "required": true},
+      {"name": "Temperature_Change_30m", "type": "numeric", "required": true},
+      {"name": "Humidity_Change_30m", "type": "numeric", "required": true},
+      {"name": "Temperature_Change_60m", "type": "numeric", "required": true},
+      {"name": "Humidity_Change_60m", "type": "numeric", "required": true},
+      {"name": "Temperature_RollStd_30m", "type": "numeric", "required": true},
+      {"name": "Humidity_RollStd_30m", "type": "numeric", "required": true},
+      {"name": "Temperature_RollStd_60m", "type": "numeric", "required": true},
+      {"name": "Humidity_RollStd_60m", "type": "numeric", "required": true}
+    ],
+    "categorical_features": ["Smokehouse_ID", "Layer_ID"],
+    "numeric_features": [
+      "Temperature_C", "Humidity_%", "Elapsed_Drying_Hours", "Number_of_Sheets",
+      "Layer_Area_m2", "Temperature_Rate_per_10min", "Humidity_Rate_per_10min",
+      "Temperature_Change_30m", "Humidity_Change_30m", "Temperature_Change_60m",
+      "Humidity_Change_60m", "Temperature_RollStd_30m", "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m", "Humidity_RollStd_60m"
+    ],
+    "missing_value_expectations": "Numeric features may legitimately be missing near sequence starts or around packet-loss gaps (history-dependent engineered features); the pipeline's internal median imputer (fitted on Development only) handles this. Categorical features must not be missing - OneHotEncoder(handle_unknown='ignore') handles only previously-unseen category VALUES, not missing/null entries.",
+    "excluded_runtime_fields": [
+      "Batch_ID", "Timestamp", "Actual_Total_Drying_Time",
+      "Remaining_Drying_Time", "Fire_Risk_Label"
+    ],
+    "note": "Batch_ID/Timestamp may be needed by the backend to construct temporal context, but they are not passed as physical model predictors unless they appear through an explicitly engineered selected feature.",
+    "temporal_feature_construction_requirement": "CRITICAL DEPLOYMENT NOTE: neither the regression pipeline nor the classification pipeline performs Stage-07 temporal feature engineering (exact-timestamp lags, Temperature_Rate_per_10min/Humidity_Rate_per_10min, *_Change_30m/60m, *_RollStd_30m/60m). The backend MUST construct these 7 engineered numeric features from historical sensor readings, using the EXACT same definitions as src/07_feature_engineering.py, before calling either pipeline. Do NOT claim the serialized estimators perform this history-dependent feature engineering themselves - they do not."
+  },
+  "preprocessing_inside_pipeline": {
+    "numeric": "SimpleImputer(strategy='median') + StandardScaler",
+    "categorical": "OneHotEncoder(handle_unknown='ignore')",
+    "fit_scope": "Fitted on Development (Train+Validation, 20,405 rows) only - identical recipe/scope to the prior XGB_03 export.",
+    "transformed_feature_count": 20,
+    "transformed_feature_order": [
+      "Temperature_C", "Humidity_%", "Elapsed_Drying_Hours", "Number_of_Sheets",
+      "Layer_Area_m2", "Temperature_Rate_per_10min", "Humidity_Rate_per_10min",
+      "Temperature_Change_30m", "Humidity_Change_30m", "Temperature_Change_60m",
+      "Humidity_Change_60m", "Temperature_RollStd_30m", "Humidity_RollStd_30m",
+      "Temperature_RollStd_60m", "Humidity_RollStd_60m",
+      "Smokehouse_ID_SH01", "Smokehouse_ID_SH02",
+      "Layer_ID_L1", "Layer_ID_L2", "Layer_ID_L3"
+    ]
+  },
+  "regression_output": {
+    "pipeline_file": "drying_time_pipeline.pkl",
+    "target": "Remaining_Drying_Time",
+    "unit": "hours",
+    "model_family": "Gradient_Boosting",
+    "selected_trial": "GB_02",
+    "status": "UNCHANGED - not touched during classification finalization",
+    "postprocessing_note": "Do not silently alter research evaluation outputs. For runtime UI safety, a separate service-layer rule may clamp impossible negative displayed time to zero if explicitly documented."
+  },
+  "classification_output": {
+    "pipeline_file": "fire_risk_pipeline.pkl",
+    "pipeline_module": "backend/app/ml/component_3_smokehouse/ordinal_fire_risk_pipeline.py",
+    "pipeline_class": "OrdinalFireRiskPipeline",
+    "model_name": "Ordinal XGBoost Classifier with Argmax Decision Rule",
+    "target": "Fire_Risk_Label",
+    "architecture": "Two cumulative binary XGBoost estimators (O1: P(Y>=Warning), O2: P(Y>=Critical)) + deterministic monotonicity correction + probability reconstruction + argmax decision rule. This is NOT a single ordinary multiclass estimator.",
+    "load_instructions": "import sys; sys.path.insert(0, '<path to backend/app/ml/component_3_smokehouse>'); import ordinal_fire_risk_pipeline; import joblib; model = joblib.load('fire_risk_pipeline.pkl'). The module must be imported BEFORE joblib.load() so the pickled class can be resolved.",
+    "predict_proba_contract": {
+      "shape": "(n_samples, 3)",
+      "column_order": [
+        {"column_index": 0, "label": "Normal"},
+        {"column_index": 1, "label": "Warning"},
+        {"column_index": 2, "label": "Critical"}
+      ],
+      "row_sum_guarantee": "Each row sums to 1 within numerical tolerance (verified <= 1e-6 on all 20,405 Development rows; observed max 1.19e-07)."
+    },
+    "predict_contract": {
+      "returns": "array of string labels: 'Normal' / 'Warning' / 'Critical'",
+      "decision_rule": "argmax(predict_proba(X)) - no hidden thresholding, no probability override",
+      "note_vs_prior_xgb03_contract": "XGB_03's predict() returned an integer class id (0/1/2). The Ordinal pipeline's predict() returns STRING labels directly; use predict_int(X) for the equivalent 0/1/2 integer encoding used throughout the research pipeline (Stage 20-33, classification_v2)."
+    },
+    "class_id_to_label": {"0": "Normal", "1": "Warning", "2": "Critical"},
+    "development_groupkfold_evidence": {
+      "methodology": "5-fold GroupKFold by Batch_ID, Development (Train+Validation) only, Test never loaded",
+      "Accuracy": 0.966135751,
+      "Balanced_Accuracy": 0.740494748,
+      "Macro_F1": 0.6747922679,
+      "Warning_Recall": 0.8117283951,
+      "Critical_Recall": 0.4347826087,
+      "Critical_Precision": 0.4026845638,
+      "Critical_F2": 0.4279600571
+    },
+    "safety_limitation": "Critical-class generalization remains limited and batch-sensitive: 2 of 6 Critical-containing development batches produced zero Critical Recall under every method tested across two rounds of controlled experimentation. This classifier is a research/prototype decision-support model and must NOT be treated as a certified fire alarm, guaranteed fire detector, or production safety device. A separate domain-validated physical safety backstop may be appropriate in the future but is NOT part of this ML artifact.",
+    "historical_note": "The prior classifier (XGBoost XGB_03) and its Stage-31 locked-test evaluation (Warning Recall 0.986, Critical Recall 0.0) remain preserved, unmodified, as historical evidence at backend/app/ml/component_3_smokehouse/archive/. That Stage-31 evaluation was NOT rerun for the Ordinal classifier because the Test set has already been observed historically and cannot be presented as an untouched independent test for a newly promoted model. The Ordinal classifier's promotion decision is based entirely on development-only GroupKFold evidence."
+  }
+}

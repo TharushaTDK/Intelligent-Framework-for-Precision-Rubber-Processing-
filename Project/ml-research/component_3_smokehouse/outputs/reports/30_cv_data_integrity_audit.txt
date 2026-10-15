@@ -1,0 +1,11 @@
+COMPONENT 3 - STAGE 30 CV DATA INTEGRITY AUDIT
+==============================================================================
+
+Model-ready Train rows: 16,246
+Model-ready Validation rows: 4,159
+Final Test contents loaded: False
+
+Validation target unchanged: True
+Training target unchanged: True
+Audit status: NO RESAMPLING DETECTED
+Model-ready Train and Validation class counts match the original batch-aware split.

@@ -1,0 +1,12 @@
+Check,Status,Details
+Expected Train and Validation row counts,PASS,"Train=16,246; Validation=4,159"
+Expected three classification classes,PASS,"Normal, Warning, Critical"
+Hourly assessment labels internally consistent,PASS,One label per Smokehouse/Batch/Layer/assessment timestamp.
+Class weights derived from Train only,PASS,Validation distribution not used in weight formula.
+All balanced class weights positive,PASS,"{'Normal': 0.34611615322340106, 'Warning': 11.281944444444445, 'Critical': 45.12777777777778}"
+Minority classes receive larger weights,PASS,Normal < Warning < Critical.
+Balanced weighting equalizes class contribution,PASS,"{'Normal': 5415.333333333334, 'Warning': 5415.333333333333, 'Critical': 5415.333333333333}"
+Every Train row assigned one sample weight,PASS,"Weighted rows=16,246"
+No SMOTE or resampling performed,PASS,Weighting selected to preserve temporal structure.
+No classifier trained,PASS,Stage 21 performs analysis/strategy only.
+Final Test not loaded,PASS,Only Test file existence checked; contents not read.

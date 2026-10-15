@@ -1,0 +1,43 @@
+Column,Role,Data_Type,Available_At_Runtime,Description
+Timestamp,Metadata,datetime,Yes,"Sensor observation timestamp; used for ordering and temporal feature construction, not as a raw predictor by default."
+Batch_ID,Group_Only,categorical,Yes,Batch grouping identifier for batch-aware splitting/CV; never a physical predictor.
+Fire_Risk_Assessment_Timestamp,Target_Metadata,datetime,No for prediction,Hourly keeper/expert ground-truth assessment timestamp; used for evaluation bookkeeping only.
+Smokehouse_ID,Candidate_Feature,categorical,Yes,Known smokehouse/site identity; retained as a contextual candidate pending Stage 08 analysis.
+Layer_ID,Candidate_Feature,categorical,Yes,Physical smokehouse layer L1/L2/L3.
+Temperature_Trend,Candidate_Feature,categorical,Yes,Past/current temperature trend category from the source dataset.
+Humidity_Trend,Candidate_Feature,categorical,Yes,Past/current humidity trend category from the source dataset.
+Temperature_C,Candidate_Feature,numeric,Yes,Current layer temperature.
+Humidity_%,Candidate_Feature,numeric,Yes,Current layer relative humidity.
+Elapsed_Drying_Hours,Candidate_Feature,numeric,Yes,Elapsed drying time known at runtime.
+Number_of_Sheets,Candidate_Feature,numeric,Yes,Batch sheet load.
+Layer_Area_m2,Candidate_Feature,numeric,Yes,Physical layer area.
+Temperature_Change,Candidate_Feature,numeric,Yes,Source short-term temperature change value.
+Humidity_Change,Candidate_Feature,numeric,Yes,Source short-term humidity change value.
+Time_Since_Previous_Reading_Min,Candidate_Feature,numeric,Yes,Actual minutes since previous available observation in the same sequence.
+Temperature_Rate_per_10min,Candidate_Feature,numeric,Yes,Change from previous available reading normalized to a 10-minute equivalent using the actual timestamp interval.
+Humidity_Rate_per_10min,Candidate_Feature,numeric,Yes,Change from previous available reading normalized to a 10-minute equivalent using the actual timestamp interval.
+Temperature_Lag_10m,Candidate_Feature,numeric,Yes,Exact timestamp-matched historical sensor value; missing when the required past timestamp does not exist.
+Humidity_Lag_10m,Candidate_Feature,numeric,Yes,Exact timestamp-matched historical sensor value; missing when the required past timestamp does not exist.
+Temperature_Change_10m,Candidate_Feature,numeric,Yes,Current value minus exact historical value at the named lag; uses current/past data only.
+Humidity_Change_10m,Candidate_Feature,numeric,Yes,Current value minus exact historical value at the named lag; uses current/past data only.
+Temperature_Lag_30m,Candidate_Feature,numeric,Yes,Exact timestamp-matched historical sensor value; missing when the required past timestamp does not exist.
+Humidity_Lag_30m,Candidate_Feature,numeric,Yes,Exact timestamp-matched historical sensor value; missing when the required past timestamp does not exist.
+Temperature_Change_30m,Candidate_Feature,numeric,Yes,Current value minus exact historical value at the named lag; uses current/past data only.
+Humidity_Change_30m,Candidate_Feature,numeric,Yes,Current value minus exact historical value at the named lag; uses current/past data only.
+Temperature_Lag_60m,Candidate_Feature,numeric,Yes,Exact timestamp-matched historical sensor value; missing when the required past timestamp does not exist.
+Humidity_Lag_60m,Candidate_Feature,numeric,Yes,Exact timestamp-matched historical sensor value; missing when the required past timestamp does not exist.
+Temperature_Change_60m,Candidate_Feature,numeric,Yes,Current value minus exact historical value at the named lag; uses current/past data only.
+Humidity_Change_60m,Candidate_Feature,numeric,Yes,Current value minus exact historical value at the named lag; uses current/past data only.
+Temperature_RollMean_30m,Candidate_Feature,numeric,Yes,Timestamp-aware rolling mean using current and previous observations inside the named time window.
+Humidity_RollMean_30m,Candidate_Feature,numeric,Yes,Timestamp-aware rolling mean using current and previous observations inside the named time window.
+Temperature_RollStd_30m,Candidate_Feature,numeric,Yes,Timestamp-aware rolling population standard deviation using current and previous observations inside the named time window.
+Humidity_RollStd_30m,Candidate_Feature,numeric,Yes,Timestamp-aware rolling population standard deviation using current and previous observations inside the named time window.
+Observation_Count_30m,Candidate_Feature,numeric,Yes,Number of actual available observations in the timestamp-aware rolling window; reflects sequence start and packet-loss availability.
+Temperature_RollMean_60m,Candidate_Feature,numeric,Yes,Timestamp-aware rolling mean using current and previous observations inside the named time window.
+Humidity_RollMean_60m,Candidate_Feature,numeric,Yes,Timestamp-aware rolling mean using current and previous observations inside the named time window.
+Temperature_RollStd_60m,Candidate_Feature,numeric,Yes,Timestamp-aware rolling population standard deviation using current and previous observations inside the named time window.
+Humidity_RollStd_60m,Candidate_Feature,numeric,Yes,Timestamp-aware rolling population standard deviation using current and previous observations inside the named time window.
+Observation_Count_60m,Candidate_Feature,numeric,Yes,Number of actual available observations in the timestamp-aware rolling window; reflects sequence start and packet-loss availability.
+Remaining_Drying_Time,Regression_Target,numeric,No,Target for remaining drying-time regression.
+Fire_Risk_Label,Classification_Target,categorical,No,Target for Normal/Warning/Critical fire-risk classification.
+Actual_Total_Drying_Time,EXCLUDED_LEAKAGE_REFERENCE,numeric,No,Retrospective total drying duration used only for target construction/reference; intentionally absent from engineered dataset.

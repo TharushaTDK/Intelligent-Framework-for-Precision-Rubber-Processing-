@@ -1,0 +1,139 @@
+COMPONENT 3 - STAGE 10: TRAIN-ONLY PREPROCESSING
+==============================================================================
+
+OVERALL STATUS: PASS
+
+METHODOLOGY
+-----------
+All learned preprocessing was fitted using the Stage-09 TRAIN split only. Validation was transformed with the already-fitted Train transformer. Final Test was not opened or transformed and remains frozen until Stage 31.
+
+Numeric preprocessing: Train-only median imputation followed by Train-only StandardScaler.
+Categorical preprocessing: Train-only OneHotEncoder with handle_unknown='ignore'.
+
+INPUT SPLITS
+------------
+Train rows: 16,246
+Validation rows: 4,159
+Selected raw input features: 17
+Numeric features: 15
+Categorical features: 2
+Train SHA-256: de9beb79de7ad9abc898d69b20f0aed585702dcaf6cc61f09a1049ab6ae9ddf2
+Validation SHA-256: 25fa37e1516f080dddd58124d6322bc438401bc70f3daefda01655f15310586c
+
+SELECTED INPUT FEATURES
+-----------------------
+- Smokehouse_ID
+- Layer_ID
+- Temperature_C
+- Humidity_%
+- Elapsed_Drying_Hours
+- Number_of_Sheets
+- Layer_Area_m2
+- Temperature_Rate_per_10min
+- Humidity_Rate_per_10min
+- Temperature_Change_30m
+- Humidity_Change_30m
+- Temperature_Change_60m
+- Humidity_Change_60m
+- Temperature_RollStd_30m
+- Humidity_RollStd_30m
+- Temperature_RollStd_60m
+- Humidity_RollStd_60m
+
+TRAIN-FITTED NUMERIC STATISTICS
+-------------------------------
+                   Feature  Train_Median_Imputation_Value  Scaler_Train_Mean_After_Imputation  Scaler_Train_Scale
+             Temperature_C                      51.200000                           51.000990            2.079050
+                Humidity_%                      47.880000                           51.386467           12.427196
+      Elapsed_Drying_Hours                      56.330000                           56.753120           33.273024
+          Number_of_Sheets                     138.000000                          136.475871            9.457434
+             Layer_Area_m2                      10.500000                           11.231626            0.749775
+Temperature_Rate_per_10min                       0.010000                            0.009949            0.213494
+   Humidity_Rate_per_10min                      -0.070000                           -0.066422            0.363250
+    Temperature_Change_30m                       0.030000                            0.028915            0.504443
+       Humidity_Change_30m                      -0.200000                           -0.198311            0.800268
+    Temperature_Change_60m                       0.050000                            0.055658            0.797378
+       Humidity_Change_60m                      -0.380000                           -0.394650            1.258659
+   Temperature_RollStd_30m                       0.137295                            0.164687            0.120053
+      Humidity_RollStd_30m                       0.229619                            0.271895            0.201435
+   Temperature_RollStd_60m                       0.218553                            0.258723            0.177810
+      Humidity_RollStd_60m                       0.347692                            0.417299            0.302000
+
+TRAIN-FITTED CATEGORICAL LEVELS
+-------------------------------
+      Feature Train_Fitted_Categories  Category_Count Unknown_Validation_Categories  Unknown_Validation_Category_Count
+Smokehouse_ID             SH01 | SH02               2                                                                0
+     Layer_ID            L1 | L2 | L3               3                                                                0
+
+TRANSFORMED FEATURE SPACE
+-------------------------
+Transformed feature count: 20
+- Temperature_C
+- Humidity_%
+- Elapsed_Drying_Hours
+- Number_of_Sheets
+- Layer_Area_m2
+- Temperature_Rate_per_10min
+- Humidity_Rate_per_10min
+- Temperature_Change_30m
+- Humidity_Change_30m
+- Temperature_Change_60m
+- Humidity_Change_60m
+- Temperature_RollStd_30m
+- Humidity_RollStd_30m
+- Temperature_RollStd_60m
+- Humidity_RollStd_60m
+- Smokehouse_ID_SH01
+- Smokehouse_ID_SH02
+- Layer_ID_L1
+- Layer_ID_L2
+- Layer_ID_L3
+
+MISSINGNESS
+-----------
+Train selected-feature missing cells before: 508
+Train transformed missing cells after: 0
+Validation selected-feature missing cells before: 136
+Validation transformed missing cells after: 0
+
+LEAKAGE PROTECTION
+------------------
+- Median imputation statistics learned from Train only.
+- StandardScaler statistics learned from Train only.
+- OneHotEncoder categories learned from Train only.
+- Validation was transformed, never refitted.
+- Test file contents were not loaded or transformed.
+- No target values were used to fit preprocessing.
+- No class balancing or SMOTE was performed.
+- No regression/classification model was trained.
+
+ARTIFACTS
+---------
+Fitted preprocessor: D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\ml-research\component_3_smokehouse\artifacts\preprocessing\component3_feature_preprocessor.joblib
+Preprocessor metadata: D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\ml-research\component_3_smokehouse\artifacts\preprocessing\component3_feature_preprocessor_metadata.json
+Model-ready Train X: D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\ml-research\component_3_smokehouse\data\model_ready\Component3_X_Train.csv
+Model-ready Validation X: D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\ml-research\component_3_smokehouse\data\model_ready\Component3_X_Validation.csv
+
+IMPORTANT NEXT-STAGE RULE
+-------------------------
+Stages 11-29 may use TRAIN and VALIDATION only. Component3_Test.csv remains untouched. At Stage 31, the already-fitted Stage-10 preprocessor will be loaded and applied to the frozen Test split exactly once for final evaluation.
+
+PASS / FAIL CHECKS
+------------------
+                                            Check Status                                                                            Details
+                  Frozen Stage-09 Train row count   PASS                                                                        Rows=16,246
+             Frozen Stage-09 Validation row count   PASS                                                                         Rows=4,159
+                  Stage-08 selected feature count   PASS                                                                        Features=17
+              Train-only numeric medians verified   PASS                                                                 Max median error=0
+     No missing values after Train transformation   PASS                                                                          Missing=0
+No missing values after Validation transformation   PASS                                                                          Missing=0
+                       No non-finite Train values   PASS                                                                       Non-finite=0
+                  No non-finite Validation values   PASS                                                                       Non-finite=0
+    Train scaled numeric means approximately zero   PASS                                                       Max |mean|=1.79144592249e-15
+        Train scaled numeric SD approximately one   PASS                                                     Max SD error=2.22044604925e-16
+        Validation not independently standardized   PASS                                   Validation transformed with Train-fitted scaler.
+                 No unknown Validation categories   PASS                                                               Unknown categories=0
+                 Targets and row counts preserved   PASS                                          Train/Validation X-y alignment preserved.
+                Final Test not loaded/transformed   PASS Stage 10 only checked that Component3_Test.csv exists; its contents were not read.
+
+STAGE 10 STATUS: PASS

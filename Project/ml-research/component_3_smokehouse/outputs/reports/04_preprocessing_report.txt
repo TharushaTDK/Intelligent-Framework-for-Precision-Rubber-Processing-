@@ -1,0 +1,81 @@
+COMPONENT 3 - STAGE 04: PREPROCESSING
+==============================================================================
+
+OVERALL STATUS: PASS
+
+RAW DATASET PRESERVATION
+------------------------
+Raw dataset: Component3_Dataset.csv
+Raw SHA-256: 229139d2b4413fe15a8d322023b3b42574f9dccd5df6a91550bc72f05faaa5cb
+Raw rows: 24,463
+Raw columns: 17
+
+VALIDATED (PRE-IMPUTATION) SNAPSHOT
+------------------------------------
+A structurally validated snapshot is saved after raw-identity verification, type parsing, chronological sorting, and initial missingness recording, but BEFORE LOCF sensor imputation or derived-field reconstruction. It is a traceability artifact only and is not consumed by Stage 07+.
+Path: D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\ml-research\component_3_smokehouse\data\validated\Component3_Dataset_Validated.csv
+Validated rows: 24,463
+Validated columns: 17
+Validated missing cells (pre-imputation, expected > 0): 96
+Validated SHA-256: 229139d2b4413fe15a8d322023b3b42574f9dccd5df6a91550bc72f05faaa5cb
+
+MISSING-SENSOR STRATEGY
+-----------------------
+Method: last observation carried forward (LOCF) inside the same Smokehouse x Batch x Layer sequence.
+Reason: missing sensor events are extremely rare, isolated, and the previous valid observation is available. This approach uses past information only and can be reproduced in deployment.
+No future observation was used for imputation.
+Rows with any sensor missing before: 24
+Temperature values imputed: 16
+Humidity values imputed: 16
+Maximum age of imputation source: 10.0 minutes
+Remaining missing cells after preprocessing: 0
+
+DERIVED FIELDS
+--------------
+Only Temperature_Change, Humidity_Change, Temperature_Trend and Humidity_Trend values that were missing because of a missing sensor reading were reconstructed. Existing non-missing derived values were preserved.
+
+PACKET LOSS
+-----------
+10-minute intervals preserved: 24,415
+20-minute packet-loss gaps preserved: 12
+Other interval lengths: 0
+No synthetic raw sensor rows were inserted.
+
+LEAKAGE PROTECTION
+------------------
+- No scaling was performed.
+- No one-hot encoding was performed.
+- No global-statistic imputation was performed.
+- No model was fitted.
+- No train/validation/test split was performed.
+- Actual_Total_Drying_Time remains reference/target-construction information and is not a future physical predictor.
+- Fire_Risk_Assessment_Timestamp remains ground-truth metadata and is not a future physical predictor.
+- Batch_ID remains a grouping identifier rather than a physical model predictor.
+- Learned preprocessing will be fitted on training data only after the batch-aware split in Stage 10.
+
+OUTPUT DATASET
+--------------
+Path: D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\ml-research\component_3_smokehouse\data\processed\Component3_Dataset_Preprocessed.csv
+Rows: 24,463
+Columns: 17
+Processed SHA-256: 957c9c150b4b9a8bd303576473a46feb67ea5415b8a8b7c6dc5304bdb28f59eb
+
+PASS / FAIL CHECKS
+------------------
+                                                Check Status                                                          Details
+                           Frozen raw SHA-256 matches   PASS 229139d2b4413fe15a8d322023b3b42574f9dccd5df6a91550bc72f05faaa5cb
+                                  Row count preserved   PASS                                                      Rows=24,463
+                           17-column schema preserved   PASS                                                       Columns=17
+      All sensor missing values were causally imputed   PASS              Temperature imputations=16; Humidity imputations=16
+            Imputation used only recent past readings   PASS                                      Maximum source age=10.0 min
+  All preprocessing-stage missing values are resolved   PASS                                        Remaining missing cells=0
+Originally observed temperature values were preserved   PASS                                        Changed observed values=0
+   Originally observed humidity values were preserved   PASS                                        Changed observed values=0
+     Identifiers, targets and metadata were preserved   PASS                                                  Changed cells=0
+                         No duplicate rows introduced   PASS                                              Duplicate members=0
+             No duplicate observation keys introduced   PASS                                           Extra duplicate keys=0
+             Original packet-loss gaps were preserved   PASS                                 10-min=24415; 20-min=12; other=0
+                   Regression target remains complete   PASS                                                        Missing=0
+               Classification target remains complete   PASS                                                        Missing=0
+
+STAGE 04 STATUS: PASS

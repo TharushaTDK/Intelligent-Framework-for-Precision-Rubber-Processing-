@@ -1,0 +1,82 @@
+COMPONENT 3 - STAGE 20: CLASSIFICATION BASELINE
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 20 establishes naive baselines for the three-class Fire_Risk_Label target before class-imbalance handling or real classifiers are introduced. The baselines are Dummy_Most_Frequent and Dummy_Stratified.
+
+TARGET SEMANTICS
+----------------
+The target classes are Normal, Warning, and Critical. The source labels represent hourly keeper/expert fire-risk assessments carried forward across the associated 10-minute sensor rows. The operational classifier will produce a prediction every 10 minutes, so primary classification metrics are reported at row level. Unique hourly assessment counts are separately documented to avoid treating every 10-minute row as an independent keeper decision.
+
+ROW-LEVEL CLASS DISTRIBUTION
+----------------------------
+     Split    Class  Rows  Percentage
+     Train   Normal 15646   96.306783
+     Train  Warning   480    2.954573
+     Train Critical   120    0.738643
+Validation   Normal  3973   95.527771
+Validation  Warning   168    4.039433
+Validation Critical    18    0.432796
+
+UNIQUE HOURLY ASSESSMENT DISTRIBUTION
+-------------------------------------
+     Split    Class  Unique_Assessments  Percentage
+     Train   Normal                2621   96.324881
+     Train  Warning                  80    2.940096
+     Train Critical                  20    0.735024
+Validation   Normal                 667   95.558739
+Validation  Warning                  28    4.011461
+Validation Critical                   3    0.429799
+
+BASELINE RESULTS
+----------------
+              Model      Split  Accuracy  Balanced_Accuracy  Macro_Precision  Macro_Recall  Macro_F1  Weighted_F1
+Dummy_Most_Frequent      Train  0.963068           0.333333         0.321023      0.333333  0.327062     0.944949
+Dummy_Most_Frequent Validation  0.955278           0.333333         0.318426      0.333333  0.325709     0.933428
+   Dummy_Stratified      Train  0.928782           0.330891         0.330982      0.330891  0.330933     0.928384
+   Dummy_Stratified Validation  0.925463           0.347065         0.341411      0.347065  0.343550     0.919457
+
+WHY ACCURACY IS NOT ENOUGH
+--------------------------
+The majority class in Train is Normal, representing approximately 96.3068% of Train rows. A Most-Frequent classifier can therefore obtain high raw Accuracy while producing zero recall for Warning and Critical. For this research task, Balanced Accuracy, Macro-F1, and especially Warning/Critical recall are more informative than Accuracy alone.
+
+MOST-FREQUENT VALIDATION DETAILS
+--------------------------------
+Accuracy: 0.955278
+Balanced Accuracy: 0.333333
+Macro-F1: 0.325709
+Warning Recall: 0.000000
+Critical Recall: 0.000000
+
+METHODOLOGY PROTECTION
+----------------------
+- Baselines fitted using Train only.
+- Validation used only for development evaluation.
+- No class weighting was used.
+- No SMOTE or other resampling was used.
+- No threshold tuning was performed.
+- Final Test rows were not loaded.
+- Final Test remains frozen until Stage 31.
+
+NEXT STAGE
+----------
+Stage 21 will formally analyze class imbalance and define the scientifically appropriate imbalance-handling strategy before Logistic Regression is trained in Stage 22.
+
+PASS / FAIL CHECKS
+------------------
+                                    Check Status                                                    Details
+         Expected Train/Validation shapes   PASS                   Train=(16246, 20); Validation=(4159, 20)
+          Expected classification classes   PASS                                  Normal, Warning, Critical
+        Row-level distributions generated   PASS                          Train and Validation × 3 classes.
+Unique assessment distributions generated   PASS               Hourly keeper/expert assessments documented.
+           Both baseline models evaluated   PASS                              Most-Frequent and Stratified.
+   Train and Validation metrics generated   PASS                                 No Test metrics generated.
+        All classification metrics finite   PASS                   zero_division=0 applied where necessary.
+             No class balancing performed   PASS                    No weights, SMOTE, over/under-sampling.
+               No real classifier trained   PASS Dummy baselines only; Logistic Regression starts Stage 22.
+                    Final Test not loaded   PASS       Only Test file existence checked; contents not read.
+
+STAGE 20 STATUS: PASS

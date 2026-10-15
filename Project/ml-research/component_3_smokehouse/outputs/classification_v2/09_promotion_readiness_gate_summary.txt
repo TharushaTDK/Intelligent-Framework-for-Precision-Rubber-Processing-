@@ -1,0 +1,18 @@
+PROMOTION-READINESS GATE - ORDINAL XGBOOST CLASSIFIER
+==============================================================================
+
+[PASS] 1. Baseline reproduces Stage-30 reference
+[PASS] 2. Ordinal XGBoost reproduces prior development evidence
+[PASS] 3. Warning Recall >= 0.80
+[PASS] 4. Critical Recall > XGB_03 baseline
+[PASS] 5. Critical F2 > XGB_03 baseline
+[PASS] 6. Macro F1 > XGB_03 baseline
+[PASS] 7. Balanced Accuracy > XGB_03 baseline
+[PASS] 8. No dataset changed
+[PASS] 9. No batch leakage detected
+[PASS] 10. Probability reconstruction passes numerical checks
+
+All checkable items (1-10) pass: True
+Item 11 (backend packaging reproduction) verified separately during export.
+
+NOTE: Accuracy reproduces at 0.966136, not the approximately 0.9645 informally cited in prior chat narrative. All 6 gate-relevant metrics above (Balanced Accuracy, Macro F1, Warning Recall, Critical Recall/Precision/F2) and the full confusion matrix match their previously-reported values to reporting precision -- this is a correction of an imprecise verbal citation, not a non-reproducibility finding. The corrected Accuracy (0.9661) is still higher than XGB_03's (0.9558).

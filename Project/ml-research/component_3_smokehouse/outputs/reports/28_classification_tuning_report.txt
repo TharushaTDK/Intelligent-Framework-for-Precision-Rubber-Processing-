@@ -1,0 +1,70 @@
+COMPONENT 3 - STAGE 28: BOUNDED CLASSIFICATION HYPERPARAMETER TUNING
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 28 performs bounded hyperparameter tuning on the three model families formally shortlisted in Stage 27: XGBoost, Logistic Regression, and Gradient Boosting. Every trial is fitted on Train only and evaluated on Validation only. Final Test remains untouched.
+
+WHY BOUNDED TUNING
+------------------
+The search is intentionally limited to a small, predefined set of scientifically reasonable nearby configurations. This avoids an uncontrolled search over the same Validation set while still allowing each shortlisted family to improve its development-stage configuration.
+
+SELECTION RULE WITHIN EACH FAMILY
+---------------------------------
+Primary: Validation Macro-F1.
+Tie breakers: Validation Balanced Accuracy, Critical Recall, Warning Recall, then smaller Train-to-Validation Macro-F1 gap.
+
+BEST TUNED CONFIGURATION BY FAMILY
+----------------------------------
+ Family_Rank        Model_Family  Trial  Validation_Macro_F1  Validation_Balanced_Accuracy  Warning_Recall  Critical_Recall  Warning_F1  Critical_F1  Macro_F1_Gap  Macro_F1_Change_vs_Untuned
+           1             XGBoost XGB_08             0.704929                      0.728921        0.886905         0.333333    0.654945     0.480000      0.212576                    0.039161
+           2 Logistic_Regression  LR_02             0.628428                      0.708029        0.964286         0.222222    0.555746     0.363636      0.106370                    0.019265
+           3   Gradient_Boosting  GB_02             0.605135                      0.686736        0.892857         0.222222    0.549451     0.296296      0.278404                    0.000255
+
+PROVISIONAL TUNING LEADER
+-------------------------
+Family: XGBoost
+Trial: XGB_08
+Validation Macro-F1: 0.704929
+Validation Balanced Accuracy: 0.728921
+Warning Recall: 0.886905
+Critical Recall: 0.333333
+
+IMPORTANT: This is not yet the formal final classifier. Stage 29 performs final development-stage selection using the tuned evidence across all three shortlisted families.
+
+METHODOLOGY PROTECTION
+----------------------
+- Only Stage-27 shortlisted families were tuned.
+- Every trial fitted on Train only.
+- Validation used for bounded hyperparameter selection.
+- Logistic Regression used class_weight='balanced'.
+- Gradient Boosting and XGBoost used exact Stage-21 Train-only sample weights.
+- No SMOTE or resampling performed.
+- No decision-threshold tuning performed.
+- No group cross-validation performed yet; reserved for Stage 30.
+- Final Test rows were not loaded.
+- Final Test remains frozen until Stage 31.
+
+NEXT STAGE
+----------
+Stage 29 will formally select the final development-stage classification model from the three best tuned family configurations. It will not use Final Test data.
+
+PASS / FAIL CHECKS
+------------------
+                                               Check Status                                              Details
+               Stage-27 shortlist exactly reproduced   PASS      Gradient_Boosting, Logistic_Regression, XGBoost
+              Stage-21 Train sample weights verified   PASS                   Indices, labels, and values match.
+                        Expected bounded trial count   PASS                                            Trials=24
+                           All tuning metrics finite   PASS                   Train/Validation metrics verified.
+Best configuration identified for all three families   PASS      XGBoost, Logistic_Regression, Gradient_Boosting
+          LR_01 reproduces Stage-22 untuned Macro-F1   PASS                     LR_01=0.609163; Stage22=0.609163
+          GB_01 reproduces Stage-25 untuned Macro-F1   PASS                     GB_01=0.604880; Stage25=0.604880
+         XGB_01 reproduces Stage-26 untuned Macro-F1   PASS                    XGB_01=0.665767; Stage26=0.665767
+     Best tuned model artifact saved for each family   PASS      XGBoost, Logistic_Regression, Gradient_Boosting
+                              No SMOTE or resampling   PASS                    Only class/sample weighting used.
+                                 No threshold tuning   PASS           Default multiclass decision rule retained.
+                               Final Test not loaded   PASS Only Test file existence checked; contents not read.
+
+STAGE 28 STATUS: PASS

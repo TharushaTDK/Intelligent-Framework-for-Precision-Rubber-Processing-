@@ -1,0 +1,50 @@
+{
+  "stage": "14_extra_trees_regression",
+  "model": "ExtraTreesRegressor",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "EVALUATION_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "n_estimators": 500,
+    "criterion": "squared_error",
+    "max_depth": null,
+    "min_samples_split": 2,
+    "min_samples_leaf": 1,
+    "max_features": 1.0,
+    "bootstrap": false,
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "train_rows": 16246,
+  "validation_rows": 4159,
+  "feature_count": 20,
+  "previous_validation_results": {
+    "Full_Linear": {
+      "MAE": 7.853899987686481,
+      "RMSE": 8.87409146031323,
+      "R2": 0.9324590103592484
+    },
+    "Random_Forest": {
+      "MAE": 5.066943169031026,
+      "RMSE": 6.275697800104681,
+      "R2": 0.966221243037028
+    },
+    "Gradient_Boosting": {
+      "MAE": 4.149713952319344,
+      "RMSE": 5.204994853125832,
+      "R2": 0.9767640609957194
+    }
+  },
+  "extra_trees_validation": {
+    "MAE": 6.451669420533786,
+    "RMSE": 7.43846593807779,
+    "R2": 0.9525445193753843
+  },
+  "beats_gradient_boosting_by_mae": false,
+  "x_train_sha256": "2380a386f68d6bdf2be112c8ac0fac5c7365e19be8a8e74cbdd8dc94c8c0ab80",
+  "x_validation_sha256": "2de960e1ea7d3fbbfe4ac59c955829eb3d3d043cabd6b0ada8382c7eb5749e3c",
+  "y_train_sha256": "bcd135b03af81e68c1af5eae31519075089e1c1540ae7733757ba0d78bfe3df1",
+  "y_validation_sha256": "88017e275b84848b9a61052a2b2f89f88b1291b6627f10341e076e18b1fe0db9",
+  "model_sha256": "19c51c770a0ef7a30363084c34bdde702b29d143c413c8d8338fc1694bce2b36"
+}

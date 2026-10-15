@@ -1,0 +1,54 @@
+COMPONENT 3 - STAGE 31: LOCKED FINAL TEST EVALUATION
+==============================================================================
+
+METHODOLOGY
+-----------
+Train and Validation were combined into the full development dataset.
+Median imputation, StandardScaler and OneHotEncoder were fitted on Development only.
+Frozen Stage-19 and Stage-29 model configurations were refitted on Development only.
+The locked Final Test was opened only after all fitting steps were complete.
+No Test row was used for preprocessing fit, model fit, weighting, tuning or reselection.
+
+DATA ISOLATION
+--------------
+Development rows: 20,405
+Development batches: 10
+Final-Test rows: 4,058
+Final-Test batches: 2
+Batch overlap: 0
+Observation-key overlap: 0
+
+REGRESSION FINAL TEST
+---------------------
+Model: Gradient_Boosting / GB_02
+MAE: 3.756103 h
+RMSE: 4.299451 h
+R2: 0.983540
+Negative predictions: 0
+Predictions above Development target max: 0
+
+CLASSIFICATION FINAL TEST
+-------------------------
+Model: XGBoost / XGB_03
+Accuracy: 0.907836
+Balanced Accuracy: 0.630765
+Macro Precision: 0.477914
+Macro Recall: 0.630765
+Macro F1: 0.517955
+Warning Recall: 0.986111
+Critical Recall: 0.000000
+Warning >= 0.80 reference: PASS
+Critical >= 0.50 reference: BELOW REFERENCE
+
+CONFUSION MATRIX
+----------------
+                 Predicted_Normal  Predicted_Warning  Predicted_Critical
+Actual_Normal                3400                351                   1
+Actual_Warning                  4                284                   0
+Actual_Critical                 0                 18                   0
+
+FINAL STATUS
+------------
+STAGE 31 LOCKED FINAL TEST EVALUATION: COMPLETE
+Methodological status: PASS
+No tuning, model reselection or threshold adjustment is permitted from these test results.

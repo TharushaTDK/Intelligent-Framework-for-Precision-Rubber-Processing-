@@ -1,0 +1,68 @@
+COMPONENT 3 - STAGE 11: REGRESSION BASELINE
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 11 establishes simple regression reference models before stronger tree-based ensembles are trained. This prevents later models from being judged without a meaningful benchmark.
+
+BASELINES
+---------
+1. Dummy_Mean: predicts the Train target mean.
+2. Elapsed_Only_Linear: linear regression using only Elapsed_Drying_Hours.
+3. Full_Linear: linear regression using all 20 Stage-10 transformed predictors.
+
+VALIDATION RESULTS
+------------------
+              Model       MAE      RMSE        R2  Negative_Predictions  Predictions_Above_126h
+         Dummy_Mean 29.370335 34.175287 -0.001715                     0                       0
+Elapsed_Only_Linear  9.972340 10.369823  0.907772                   174                       0
+        Full_Linear  7.853900  8.874091  0.932459                    53                      33
+
+VALIDATION MAE IMPROVEMENTS
+---------------------------
+Elapsed-only vs Dummy: 66.0462%
+Full Linear vs Elapsed-only: 21.2432%
+Full Linear vs Dummy: 73.2591%
+
+BENCHMARK FOR LATER MODEL COMPARISON
+------------------------------------
+Model: Full_Linear
+Validation MAE: 7.853900 h
+Validation RMSE: 8.874091 h
+Validation R²: 0.932459
+
+INTERPRETATION NOTE
+-------------------
+Row-level validation metrics measure prediction error across 10-minute observations, but observations are nested within complete drying batches. Therefore Stage 11 also reports Layer_ID and Batch_ID metrics, and Stage 30 will provide GroupKFold robustness analysis across batches.
+
+LEAKAGE PROTECTION
+------------------
+- Only Stage-10 Train and Validation matrices were used.
+- No model was fitted on Validation.
+- No hyperparameter tuning was performed.
+- Final Test contents were not loaded.
+- Final Test remains frozen until Stage 31.
+
+INPUT FINGERPRINTS
+------------------
+X Train SHA-256: 2380a386f68d6bdf2be112c8ac0fac5c7365e19be8a8e74cbdd8dc94c8c0ab80
+X Validation SHA-256: 2de960e1ea7d3fbbfe4ac59c955829eb3d3d043cabd6b0ada8382c7eb5749e3c
+y Train SHA-256: bcd135b03af81e68c1af5eae31519075089e1c1540ae7733757ba0d78bfe3df1
+y Validation SHA-256: 88017e275b84848b9a61052a2b2f89f88b1291b6627f10341e076e18b1fe0db9
+
+PASS / FAIL CHECKS
+------------------
+                                    Check Status                                                                          Details
+                     Expected Train shape   PASS                                                                Shape=(16246, 20)
+                Expected Validation shape   PASS                                                                 Shape=(4159, 20)
+       No missing/non-finite model inputs   PASS                                          Stage-10 model-ready matrices verified.
+Dummy prediction equals Train target mean   PASS                                                      Train target mean=56.752155
+All validation prediction lengths correct   PASS                                                                    Expected=4159
+                   All predictions finite   PASS                                                  No NaN or infinite predictions.
+            All regression metrics finite   PASS                                                            MAE/RMSE/R² verified.
+            Validation metadata alignment   PASS                                                                       Rows=4,159
+                    Final Test not loaded   PASS Stage 11 checks only that Component3_Test.csv exists; its contents are not read.
+
+STAGE 11 STATUS: PASS

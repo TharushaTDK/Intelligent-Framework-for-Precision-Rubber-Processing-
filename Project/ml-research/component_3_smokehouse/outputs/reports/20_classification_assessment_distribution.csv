@@ -1,0 +1,7 @@
+Split,Class,Unique_Assessments,Percentage
+Train,Normal,2621,96.32488055861815
+Train,Warning,80,2.940095553105476
+Train,Critical,20,0.735023888276369
+Validation,Normal,667,95.55873925501433
+Validation,Warning,28,4.011461318051576
+Validation,Critical,3,0.42979942693409745

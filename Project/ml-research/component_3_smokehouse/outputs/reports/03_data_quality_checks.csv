@@ -1,0 +1,20 @@
+Check,Status,Details
+Frozen dataset SHA-256 matches,PASS,229139d2b4413fe15a8d322023b3b42574f9dccd5df6a91550bc72f05faaa5cb
+Expected row count is preserved,PASS,"Rows=24,463"
+Expected 17-column schema is preserved,PASS,Columns=17
+Mandatory identifiers/targets/metadata are complete,PASS,Missing mandatory cells=0
+No exact duplicate rows,PASS,Duplicate-row members=0
+No duplicate observation keys,PASS,Extra duplicate keys=0
+Sensor missingness is low and documented,PASS,Rows=24; Percent=0.0981%
+Sensor/derived-field missingness is logically consistent,PASS,Mismatches=0
+Sensor missing events are isolated,PASS,Longest consecutive missing run=1
+Missing sensor events are not packet-loss endpoints,PASS,Overlap rows=0
+Timestamp order is strictly increasing by sequence,PASS,Non-positive intervals=0
+Only expected 10/20-minute sampling intervals occur,PASS,10-min=24415; 20-min=12; other=0
+Expected packet-loss count is preserved,PASS,20-min gaps=12; estimated missed packets=12
+Expected 36 Batch-Layer sequences exist,PASS,Sequences=36
+Each batch contains all 3 layers,PASS,Violating batches=0
+Each smokehouse contains 6 batches,PASS,Total batches=12; violating smokehouses=0
+Categorical values match expected domains,PASS,Invalid categorical domains=0
+Numeric values pass broad physical/domain plausibility,PASS,Impossible/out-of-domain values=0
+Layer area is internally consistent per smokehouse,PASS,Violating smokehouses=0

@@ -1,0 +1,2 @@
+Model_Family,Trial,Test_Rows,Test_Batches,MAE,RMSE,R2,Negative_Predictions,Predictions_Above_Development_Target_Max,Development_Target_Max
+Gradient_Boosting,GB_02,4058,2,3.756103085785247,4.299451102402451,0.9835396249444973,0,0,126.0

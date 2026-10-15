@@ -1,0 +1,10 @@
+Check,Status,Details
+Expected Train shape,PASS,"Shape=(16246, 20)"
+Expected Validation shape,PASS,"Shape=(4159, 20)"
+No missing/non-finite model inputs,PASS,Stage-10 model-ready matrices verified.
+Dummy prediction equals Train target mean,PASS,Train target mean=56.752155
+All validation prediction lengths correct,PASS,Expected=4159
+All predictions finite,PASS,No NaN or infinite predictions.
+All regression metrics finite,PASS,MAE/RMSE/R² verified.
+Validation metadata alignment,PASS,"Rows=4,159"
+Final Test not loaded,PASS,Stage 11 checks only that Component3_Test.csv exists; its contents are not read.

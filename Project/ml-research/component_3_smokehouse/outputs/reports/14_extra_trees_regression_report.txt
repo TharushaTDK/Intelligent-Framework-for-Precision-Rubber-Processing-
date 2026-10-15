@@ -1,0 +1,87 @@
+COMPONENT 3 - STAGE 14: EXTRA TREES REGRESSION
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 14 trains a fixed, untuned Extra Trees regressor. Extra Trees increases tree-level randomness by selecting random candidate split thresholds. The model is fitted on Train only and evaluated on Validation only.
+
+FIXED CONFIGURATION
+-------------------
+n_estimators: 500
+criterion: squared_error
+max_depth: None
+min_samples_split: 2
+min_samples_leaf: 1
+max_features: 1.0
+bootstrap: False
+random_state: 42
+n_jobs: -1
+
+RESULTS
+-------
+     Split      MAE     RMSE       R2  Negative_Predictions  Predictions_Above_126h
+     Train 0.000000 0.000000 1.000000                     0                       0
+Validation 6.451669 7.438466 0.952545                     0                       0
+
+COMPARISON WITH PREVIOUS MODELS
+-------------------------------
+Full Linear Validation MAE: 7.853900 h
+Random Forest Validation MAE: 5.066943 h
+Gradient Boosting Validation MAE: 4.149714 h
+Extra Trees Validation MAE: 6.451669 h
+MAE improvement vs Full Linear: 17.853940%
+MAE improvement vs Random Forest: -27.328632%
+MAE improvement vs Gradient Boosting: -55.472630%
+RMSE improvement vs Gradient Boosting: -42.910150%
+R² change vs Gradient Boosting: -0.024220
+Beats Gradient Boosting by Validation MAE: False
+
+GENERALIZATION GAP
+------------------
+Validation MAE - Train MAE: 6.451669 h
+Validation RMSE - Train RMSE: 7.438466 h
+Train R² - Validation R²: 0.047455
+
+TOP 10 FEATURE IMPORTANCES
+--------------------------
+ Rank              Feature  Importance
+    1 Elapsed_Drying_Hours    0.656872
+    2           Humidity_%    0.306970
+    3        Temperature_C    0.012672
+    4     Number_of_Sheets    0.009093
+    5   Smokehouse_ID_SH01    0.003650
+    6   Smokehouse_ID_SH02    0.003302
+    7        Layer_Area_m2    0.003275
+    8          Layer_ID_L3    0.002326
+    9          Layer_ID_L1    0.000558
+   10  Humidity_Change_60m    0.000391
+
+INTERPRETATION CAUTION
+----------------------
+Impurity-based Extra Trees importance is a preliminary interpretation only. Correlated predictors can share importance. Final explainability is reserved for Stage 32 using SHAP.
+
+LEAKAGE PROTECTION
+------------------
+- Extra Trees fitted on Train only.
+- Validation used only for development evaluation.
+- No hyperparameter search was performed.
+- Final Test rows were not loaded.
+- Final Test remains frozen until Stage 31.
+
+PASS / FAIL CHECKS
+------------------
+                             Check Status                                                               Details
+              Expected Train shape   PASS                                                     Shape=(16246, 20)
+         Expected Validation shape   PASS                                                      Shape=(4159, 20)
+No missing/non-finite model inputs   PASS                                           Stage-10 matrices verified.
+Previous validation results loaded   PASS                 Linear MAE=7.853900; RF MAE=5.066943; GB MAE=4.149714
+      Prediction lengths preserved   PASS                                        Train=16,246; Validation=4,159
+            All predictions finite   PASS                                       No NaN or infinite predictions.
+         Feature importances valid   PASS                            Features=20; Importance sum=1.000000000000
+        Model fitted on Train only   PASS                      Validation used only for development evaluation.
+No hyperparameter tuning performed   PASS Single fixed Extra Trees configuration; Stage 18 reserved for tuning.
+             Final Test not loaded   PASS                  Only Test file existence checked; contents not read.
+
+STAGE 14 STATUS: PASS

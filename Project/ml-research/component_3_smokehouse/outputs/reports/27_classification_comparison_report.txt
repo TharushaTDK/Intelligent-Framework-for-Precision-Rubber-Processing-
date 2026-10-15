@@ -1,0 +1,72 @@
+COMPONENT 3 - STAGE 27: CLASSIFICATION MODEL COMPARISON & SHORTLISTING
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 27 formally compares the completed classification experiments from Stages 20 and 22-26. No classifier is trained or tuned here. Validation Macro-F1 is the primary ranking metric because the target is severely imbalanced. Balanced Accuracy and minority-class performance are used as supporting evidence.
+
+SELECTION HIERARCHY
+-------------------
+Primary metric: Validation Macro-F1.
+Supporting metrics: Validation Balanced Accuracy, Warning Recall, Critical Recall, Warning F1, Critical F1, and Train-to-Validation generalization gaps.
+
+REAL CLASSIFIER RANKING
+-----------------------
+ Real_Model_Rank               Model  Validation_Macro_F1  Validation_Balanced_Accuracy  Warning_Recall  Critical_Recall  Warning_F1  Critical_F1  Macro_F1_Gap
+               1             XGBoost             0.665767                      0.710037        0.892857         0.277778    0.621118     0.400000      0.235310
+               2 Logistic_Regression             0.609163                      0.667141        0.928571         0.111111    0.650000     0.200000      0.156805
+               3   Gradient_Boosting             0.604880                      0.684836        0.886905         0.222222    0.548803     0.296296      0.285304
+               4       Random_Forest             0.584926                      0.512463        0.375000         0.166667    0.484615     0.285714      0.407358
+               5         Extra_Trees             0.526096                      0.499329        0.000000         0.500000    0.000000     0.600000      0.473904
+
+BASELINE REFERENCE
+------------------
+              Model  Validation_Accuracy  Validation_Balanced_Accuracy  Validation_Macro_F1  Warning_Recall  Critical_Recall
+   Dummy_Stratified             0.925463                      0.347065             0.343550        0.017857         0.055556
+Dummy_Most_Frequent             0.955278                      0.333333             0.325709        0.000000         0.000000
+
+STAGE-28 SHORTLIST RULE
+-----------------------
+The top three real classifiers by Validation Macro-F1 are retained provided each has non-zero Warning and Critical Validation recall. This preserves the strongest overall candidates while keeping meaningful minority-class coverage for bounded tuning.
+
+SHORTLIST
+---------
+ Shortlist_Rank               Model  Validation_Macro_F1  Validation_Balanced_Accuracy  Warning_Recall  Critical_Recall  Macro_F1_Gap
+              1             XGBoost             0.665767                      0.710037        0.892857         0.277778      0.235310
+              2 Logistic_Regression             0.609163                      0.667141        0.928571         0.111111      0.156805
+              3   Gradient_Boosting             0.604880                      0.684836        0.886905         0.222222      0.285304
+
+INTERPRETATION
+--------------
+The strongest untuned development-stage classifier is XGBoost, with Validation Macro-F1 0.665767. The shortlist does not represent final model selection. Stage 28 will perform bounded tuning of shortlisted model families only, and Stage 29 will make the final development-stage classifier selection.
+
+METHODOLOGY PROTECTION
+----------------------
+- No classifier was trained in Stage 27.
+- No hyperparameter tuning was performed.
+- No decision-threshold tuning was performed.
+- Ranking is based on saved development results only.
+- Validation remains development data.
+- Final Test rows were not loaded.
+- Final Test remains frozen until Stage 31.
+
+NEXT STAGE
+----------
+Stage 28 will perform bounded hyperparameter tuning on the three shortlisted classifier families only. The same Train and Validation split will be preserved, and Final Test will remain untouched.
+
+PASS / FAIL CHECKS
+------------------
+                                             Check Status                                                                     Details
+                 All five real classifiers present   PASS XGBoost, Logistic_Regression, Gradient_Boosting, Random_Forest, Extra_Trees
+                 All classification metrics finite   PASS                          Baseline + real-model comparison metrics verified.
+Validation class supports consistent across models   PASS                             Expected Normal=3973, Warning=168, Critical=18.
+    Best real classifier beats best dummy baseline   PASS                         Best real Macro-F1=0.665767; best baseline=0.343550
+           Shortlist contains exactly three models   PASS                             XGBoost, Logistic_Regression, Gradient_Boosting
+   Shortlisted models detect both minority classes   PASS                                 Warning Recall > 0 and Critical Recall > 0.
+                       No model training performed   PASS                              Stage 27 reads saved development metrics only.
+                No hyperparameter tuning performed   PASS                                               Tuning reserved for Stage 28.
+                             Final Test not loaded   PASS                        Only Test file existence checked; contents not read.
+
+STAGE 27 STATUS: PASS

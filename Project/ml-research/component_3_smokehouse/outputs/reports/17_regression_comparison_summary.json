@@ -1,0 +1,38 @@
+{
+  "stage": "17_regression_model_comparison",
+  "overall_status": "PASS",
+  "primary_ranking_metric": "Validation_MAE",
+  "secondary_metrics": [
+    "Validation_RMSE",
+    "Validation_R2"
+  ],
+  "models_compared": [
+    "Gradient_Boosting",
+    "XGBoost",
+    "Random_Forest",
+    "HistGradientBoosting",
+    "Extra_Trees",
+    "Full_Linear",
+    "Elapsed_Only_Linear",
+    "Dummy_Mean"
+  ],
+  "current_best_validation_model": {
+    "Model": "Gradient_Boosting",
+    "MAE": 4.149713952319344,
+    "RMSE": 5.204994853125832,
+    "R2": 0.9767640609957194
+  },
+  "improvement_vs_full_linear": {
+    "MAE_percent": 47.163651703925986,
+    "RMSE_percent": 41.346166236806944,
+    "R2_change": 0.044305050636471055
+  },
+  "stage18_tuning_shortlist": [
+    "Gradient_Boosting",
+    "XGBoost"
+  ],
+  "test_loaded": false,
+  "final_model_selected": false,
+  "final_model_selection_stage": 19,
+  "final_test_evaluation_stage": 31
+}

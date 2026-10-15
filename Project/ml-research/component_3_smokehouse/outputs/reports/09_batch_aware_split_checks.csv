@@ -1,0 +1,11 @@
+Check,Status,Details
+All original rows assigned exactly once,PASS,"Original=24,463; Train+Val+Test=24,463; Observation overlap=0"
+No batch-group overlap,PASS,Train-Val=0; Train-Test=0; Val-Test=0
+Expected 8/2/2 whole-batch split,PASS,Train=8; Validation=2; Test=2
+Both smokehouses represented in every split,PASS,Each split must include SH01 and SH02.
+All three layers represented in every split,PASS,Each split must include L1/L2/L3.
+All three fire-risk classes represented in every split,PASS,Checked on unique hourly keeper/expert assessments.
+Regression target complete in all splits,PASS,Remaining_Drying_Time contains no missing target values.
+Stage-07 columns preserved without transformation,PASS,No scaling/imputation/encoding is fitted in Stage 09.
+Stage-08 regression feature list loaded,PASS,Features=17
+Stage-08 classification feature list loaded,PASS,Features=17

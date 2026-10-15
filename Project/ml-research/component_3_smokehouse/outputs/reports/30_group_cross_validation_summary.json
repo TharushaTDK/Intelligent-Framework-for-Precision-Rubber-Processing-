@@ -1,0 +1,90 @@
+{
+  "stage": 30,
+  "method": "5-fold GroupKFold by Batch_ID with fold-local Stage-10 preprocessing",
+  "development_rows": 20405,
+  "development_batches": [
+    "SH01_B01",
+    "SH01_B02",
+    "SH01_B04",
+    "SH01_B05",
+    "SH01_B06",
+    "SH02_B01",
+    "SH02_B02",
+    "SH02_B03",
+    "SH02_B05",
+    "SH02_B06"
+  ],
+  "selected_features": [
+    "Smokehouse_ID",
+    "Layer_ID",
+    "Temperature_C",
+    "Humidity_%",
+    "Elapsed_Drying_Hours",
+    "Number_of_Sheets",
+    "Layer_Area_m2",
+    "Temperature_Rate_per_10min",
+    "Humidity_Rate_per_10min",
+    "Temperature_Change_30m",
+    "Humidity_Change_30m",
+    "Temperature_Change_60m",
+    "Humidity_Change_60m",
+    "Temperature_RollStd_30m",
+    "Humidity_RollStd_30m",
+    "Temperature_RollStd_60m",
+    "Humidity_RollStd_60m"
+  ],
+  "numeric_features": [
+    "Temperature_C",
+    "Humidity_%",
+    "Elapsed_Drying_Hours",
+    "Number_of_Sheets",
+    "Layer_Area_m2",
+    "Temperature_Rate_per_10min",
+    "Humidity_Rate_per_10min",
+    "Temperature_Change_30m",
+    "Humidity_Change_30m",
+    "Temperature_Change_60m",
+    "Humidity_Change_60m",
+    "Temperature_RollStd_30m",
+    "Humidity_RollStd_30m",
+    "Temperature_RollStd_60m",
+    "Humidity_RollStd_60m"
+  ],
+  "categorical_features": [
+    "Smokehouse_ID",
+    "Layer_ID"
+  ],
+  "preprocessing": {
+    "numeric": "Median imputation + StandardScaler fitted inside each fold",
+    "categorical": "OneHotEncoder(handle_unknown='ignore') fitted inside each fold",
+    "fold_local_fit": true
+  },
+  "regression": {
+    "selected_family": "Gradient_Boosting",
+    "selected_trial": "GB_02",
+    "pooled_oof_mae": 3.1283152553831814,
+    "pooled_oof_rmse": 3.955783716566967,
+    "pooled_oof_r2": 0.9860204176075086,
+    "negative_predictions": 1,
+    "predictions_above_development_target_max": 0
+  },
+  "classification": {
+    "selected_family": "XGBoost",
+    "selected_trial": "XGB_03",
+    "training_imbalance_recipe": "balanced sample weights computed inside each fold from fold-training labels",
+    "pooled_oof_accuracy": 0.9558441558441558,
+    "pooled_oof_balanced_accuracy": 0.7249685993484523,
+    "pooled_oof_macro_f1": 0.6452671121687584,
+    "pooled_oof_warning_recall": 0.8564814814814815,
+    "pooled_oof_critical_recall": 0.35507246376811596,
+    "warning_reference_0_80_pass": true,
+    "critical_reference_0_50_pass": false,
+    "folds_with_warning": 5,
+    "folds_with_critical": 4
+  },
+  "methodological_checks": {
+    "batch_overlap_folds": 0,
+    "all_fold_preprocessors_fit_train_only": true,
+    "final_test_content_read": false
+  }
+}

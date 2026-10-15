@@ -1,0 +1,14 @@
+SERIALIZATION RELOAD + FULL DEVELOPMENT REPRODUCTION TEST
+==============================================================================
+
+Artifact: D:\SLIIT\Research\Projet Github\Intelligent-Framework-for-Precision-Rubber-Processing-\Project\backend\app\ml\component_3_smokehouse\fire_risk_pipeline.pkl
+Reload test - correct class instance: True
+Development rows: 20,405
+Row count match: True
+Class-label mismatches (string): 0
+Class-label mismatches (int): 0
+Maximum absolute probability difference: 2.979965e-08
+Mean absolute probability difference: 3.445150e-09
+Reloaded-model in-sample accuracy: 0.963244
+
+TEST RESULT: PASS

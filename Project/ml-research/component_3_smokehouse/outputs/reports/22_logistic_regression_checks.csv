@@ -1,0 +1,13 @@
+Check,Status,Details
+Expected Train/Validation shapes,PASS,"Train=(16246, 20); Validation=(4159, 20)"
+Expected three target classes,PASS,"Normal, Warning, Critical"
+Stage-21 Logistic Regression strategy verified,PASS,class_weight='balanced'
+Balanced weights reproduce Stage 21,PASS,"{'Normal': 0.34611615322340106, 'Warning': 11.281944444444445, 'Critical': 45.12777777777778}"
+Model fitted on Train only,PASS,Validation used for evaluation only.
+No resampling or SMOTE,PASS,class_weight='balanced' only.
+No hyperparameter tuning,PASS,One fixed Logistic Regression configuration.
+Model converged before max_iter,PASS,Iterations=380; max_iter=5000
+All probabilities valid,PASS,"Probabilities finite, within [0,1], sum to 1."
+All overall metrics finite,PASS,Train and Validation metrics verified.
+All three classes predicted on Validation,PASS,"Critical, Normal, Warning"
+Final Test not loaded,PASS,Only Test file existence checked; contents not read.

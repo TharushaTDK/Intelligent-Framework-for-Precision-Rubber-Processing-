@@ -1,0 +1,93 @@
+COMPONENT 3 - STAGE 15: XGBOOST REGRESSION
+==============================================================================
+
+OVERALL STATUS: PASS
+
+PURPOSE
+-------
+Stage 15 trains a fixed, untuned XGBoost regressor. XGBoost is a regularized gradient-boosted tree method that sequentially corrects residual error while using row/feature subsampling and explicit regularization. The model is fitted on Train only and evaluated on Validation only.
+
+FIXED CONFIGURATION
+-------------------
+objective: reg:squarederror
+eval_metric: rmse
+n_estimators: 300
+learning_rate: 0.05
+max_depth: 3
+min_child_weight: 1.0
+subsample: 0.9
+colsample_bytree: 0.9
+reg_alpha: 0.0
+reg_lambda: 1.0
+gamma: 0.0
+tree_method: hist
+random_state: 42
+n_jobs: -1
+
+RESULTS
+-------
+     Split     MAE     RMSE       R2  Negative_Predictions  Predictions_Above_126h
+     Train 1.08269 1.367090 0.998312                     3                       0
+Validation 4.47232 5.408271 0.974914                    57                       0
+
+COMPARISON WITH PREVIOUS MODELS
+-------------------------------
+Full Linear Validation MAE: 7.853900 h
+Random Forest Validation MAE: 5.066943 h
+Gradient Boosting Validation MAE: 4.149714 h
+Extra Trees Validation MAE: 6.451669 h
+XGBoost Validation MAE: 4.472320 h
+MAE improvement vs Full Linear: 43.056063%
+MAE improvement vs Random Forest: 11.735347%
+MAE improvement vs Gradient Boosting: -7.774171%
+RMSE improvement vs Gradient Boosting: -3.905402%
+R² change vs Gradient Boosting: -0.001850
+Beats Gradient Boosting by Validation MAE: False
+
+GENERALIZATION GAP
+------------------
+Validation MAE - Train MAE: 3.389630 h
+Validation RMSE - Train RMSE: 4.041181 h
+Train R² - Validation R²: 0.023398
+
+TOP 10 FEATURE IMPORTANCES
+--------------------------
+ Rank                 Feature  Importance
+    1    Elapsed_Drying_Hours    0.622763
+    2              Humidity_%    0.284288
+    3           Temperature_C    0.041434
+    4        Number_of_Sheets    0.022827
+    5           Layer_Area_m2    0.006682
+    6             Layer_ID_L1    0.005428
+    7      Smokehouse_ID_SH01    0.004186
+    8     Humidity_Change_60m    0.004024
+    9 Temperature_RollStd_60m    0.001817
+   10  Temperature_Change_60m    0.001473
+
+INTERPRETATION CAUTION
+----------------------
+XGBoost feature importance is useful for preliminary inspection but should not be interpreted as causal importance. Final explainability is reserved for Stage 32 using SHAP.
+
+LEAKAGE PROTECTION
+------------------
+- XGBoost fitted on Train only.
+- Validation used only for development evaluation.
+- No hyperparameter search was performed.
+- Final Test rows were not loaded.
+- Final Test remains frozen until Stage 31.
+
+PASS / FAIL CHECKS
+------------------
+                             Check Status                                                           Details
+              Expected Train shape   PASS                                                 Shape=(16246, 20)
+         Expected Validation shape   PASS                                                  Shape=(4159, 20)
+No missing/non-finite model inputs   PASS                                       Stage-10 matrices verified.
+Previous validation results loaded   PASS            Linear=7.853900; RF=5.066943; GB=4.149714; ET=6.451669
+      Prediction lengths preserved   PASS                                    Train=16,246; Validation=4,159
+            All predictions finite   PASS                                   No NaN or infinite predictions.
+         Feature importances valid   PASS                        Features=20; Importance sum=1.000000000000
+        Model fitted on Train only   PASS                  Validation used only for development evaluation.
+No hyperparameter tuning performed   PASS Single fixed XGBoost configuration; Stage 18 reserved for tuning.
+             Final Test not loaded   PASS              Only Test file existence checked; contents not read.
+
+STAGE 15 STATUS: PASS

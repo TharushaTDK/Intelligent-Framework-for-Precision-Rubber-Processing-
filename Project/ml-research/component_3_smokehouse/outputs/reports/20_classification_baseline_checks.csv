@@ -1,0 +1,11 @@
+Check,Status,Details
+Expected Train/Validation shapes,PASS,"Train=(16246, 20); Validation=(4159, 20)"
+Expected classification classes,PASS,"Normal, Warning, Critical"
+Row-level distributions generated,PASS,Train and Validation × 3 classes.
+Unique assessment distributions generated,PASS,Hourly keeper/expert assessments documented.
+Both baseline models evaluated,PASS,Most-Frequent and Stratified.
+Train and Validation metrics generated,PASS,No Test metrics generated.
+All classification metrics finite,PASS,zero_division=0 applied where necessary.
+No class balancing performed,PASS,"No weights, SMOTE, over/under-sampling."
+No real classifier trained,PASS,Dummy baselines only; Logistic Regression starts Stage 22.
+Final Test not loaded,PASS,Only Test file existence checked; contents not read.

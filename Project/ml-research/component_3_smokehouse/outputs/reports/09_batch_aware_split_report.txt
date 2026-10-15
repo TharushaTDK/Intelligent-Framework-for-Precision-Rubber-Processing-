@@ -1,0 +1,92 @@
+COMPONENT 3 - STAGE 09: BATCH-AWARE TRAIN/VAL/TEST SPLIT
+==============================================================================
+
+OVERALL STATUS: PASS
+
+METHODOLOGY
+-----------
+The 24,463 rows are repeated 10-minute observations nested inside 12 complete drying batches. Therefore individual rows are not treated as independent units for splitting. Complete Smokehouse_ID + Batch_ID groups are assigned to Train, Validation, or Test.
+
+A purely chronological 8/2/2 batch split was rejected because the corresponding B05 validation batches contain no Warning/Critical hourly assessment events. A fixed group-stratified split is therefore used to retain both smokehouses, all three layers, and all three fire-risk classes in every split while keeping whole batches isolated.
+
+The TEST split is now frozen and must not be used for model selection, hyperparameter tuning, preprocessing fitting, class-weight decisions, feature decisions, or threshold decisions.
+
+FIXED BATCH ASSIGNMENT
+----------------------
+TRAIN:
+- SH01_B01
+- SH01_B04
+- SH01_B05
+- SH01_B06
+- SH02_B01
+- SH02_B03
+- SH02_B05
+- SH02_B06
+
+VALIDATION:
+- SH01_B02
+- SH02_B02
+
+TEST:
+- SH01_B03
+- SH02_B04
+
+SPLIT SUMMARY
+-------------
+     Split  Rows  Row_Percentage  Batches  Batch_Percentage  Smokehouses  Layers  Batch_Layer_Sequences
+     Train 16246       66.410497        8         66.666667            2       3                     24
+Validation  4159       17.001185        2         16.666667            2       3                      6
+      Test  4058       16.588317        2         16.666667            2       3                      6
+
+UNIQUE HOURLY FIRE-RISK ASSESSMENTS
+-----------------------------------
+     Split Fire_Risk_Label  Unique_Hourly_Assessment_Count  Assessment_Percentage
+     Train          Normal                            2621              96.324881
+     Train         Warning                              80               2.940096
+     Train        Critical                              20               0.735024
+Validation          Normal                             667              95.558739
+Validation         Warning                              28               4.011461
+Validation        Critical                               3               0.429799
+      Test          Normal                             628              92.488954
+      Test         Warning                              48               7.069219
+      Test        Critical                               3               0.441826
+
+REGRESSION TARGET COVERAGE
+--------------------------
+     Split  Rows  Target_Min_Hours  Target_Max_Hours  Target_Mean_Hours  Target_SD_Hours  Sequence_Count  Mean_Sequence_Total_Drying_Hours  Min_Sequence_Total_Drying_Hours  Max_Sequence_Total_Drying_Hours
+     Train 16246               0.0             126.0          56.752155        33.273065              24                        112.700833                            96.00                            126.0
+Validation  4159               0.0             126.0          58.166025        34.150134               6                        115.471667                           103.00                            126.0
+      Test  4058               0.0             126.0          56.850256        33.515575               6                        112.583333                            97.83                            126.0
+
+LEAKAGE PROTECTION
+------------------
+- No complete batch appears in more than one split.
+- No Smokehouse+Batch+Layer+Timestamp observation appears in more than one split.
+- Stage-09 does not impute engineered missing values.
+- Stage-09 does not fit scaling or encoding.
+- Stage-09 does not perform SMOTE/resampling.
+- Stage-09 does not train any model.
+- Stage-10 will fit preprocessing using TRAIN only and then apply those fitted transformations to Validation/Test.
+- Final Test must remain untouched until Stage 31.
+
+SPLIT FILE FINGERPRINTS
+-----------------------
+Train SHA-256: de9beb79de7ad9abc898d69b20f0aed585702dcaf6cc61f09a1049ab6ae9ddf2
+Validation SHA-256: 25fa37e1516f080dddd58124d6322bc438401bc70f3daefda01655f15310586c
+Test SHA-256: 2ff12dc0ff30b673b6ad26cafc03cda8d9d665425c2eb2381f793991fbed8c80
+
+PASS / FAIL CHECKS
+------------------
+                                                 Check Status                                                       Details
+               All original rows assigned exactly once   PASS Original=24,463; Train+Val+Test=24,463; Observation overlap=0
+                                No batch-group overlap   PASS                         Train-Val=0; Train-Test=0; Val-Test=0
+                      Expected 8/2/2 whole-batch split   PASS                                 Train=8; Validation=2; Test=2
+           Both smokehouses represented in every split   PASS                        Each split must include SH01 and SH02.
+           All three layers represented in every split   PASS                             Each split must include L1/L2/L3.
+All three fire-risk classes represented in every split   PASS           Checked on unique hourly keeper/expert assessments.
+              Regression target complete in all splits   PASS      Remaining_Drying_Time contains no missing target values.
+     Stage-07 columns preserved without transformation   PASS         No scaling/imputation/encoding is fitted in Stage 09.
+               Stage-08 regression feature list loaded   PASS                                                   Features=17
+           Stage-08 classification feature list loaded   PASS                                                   Features=17
+
+STAGE 09 STATUS: PASS

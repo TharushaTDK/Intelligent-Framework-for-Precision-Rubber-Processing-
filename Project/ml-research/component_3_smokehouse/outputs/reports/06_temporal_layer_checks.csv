@@ -1,0 +1,9 @@
+Check,Status,Details
+Expected row count,PASS,"Rows=24,463"
+Expected 17-column schema,PASS,Columns=17
+No missing cells in preprocessed input,PASS,Missing=0
+Expected 36 Batch-Layer sequences,PASS,Sequences=36
+Sampling intervals preserved,PASS,10-min=24415; 20-min=12; other=0
+"Expected 4,098 hourly assessments",PASS,"Assessments=4,098"
+10-minute temperature lag coverage >99%,PASS,Coverage=99.8038%
+10-minute humidity lag coverage >99%,PASS,Coverage=99.8038%
