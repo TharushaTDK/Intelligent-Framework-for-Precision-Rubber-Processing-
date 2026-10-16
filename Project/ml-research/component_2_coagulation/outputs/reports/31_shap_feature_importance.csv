@@ -1,6 +1,6 @@
 model,feature,mean_absolute_shap
 model_1_water_acid_best.joblib,drc,39.90255712862131
-model_1_water_acid_best.joblib,latex_volume_L,87.0609724329661
+model_1_water_acid_best.joblib,latex_volume_L,87.06097243296612
 model_2_coagulation_time_best.joblib,drc,1.1538319307473766
 model_2_coagulation_time_best.joblib,latex_volume_L,0.14218553011022986
 model_2_coagulation_time_best.joblib,water_amount_L,0.21830410505365574

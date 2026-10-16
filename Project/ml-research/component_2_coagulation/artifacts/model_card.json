@@ -1,0 +1,90 @@
+{
+  "component": "Component 2 - latex coagulation",
+  "exported_on": "2026-10-16",
+  "environment": {
+    "python": "3.13.5",
+    "scikit-learn": "1.7.2",
+    "pandas": "3.0.6",
+    "numpy": "2.3.3",
+    "joblib": "1.5.2"
+  },
+  "data": {
+    "train_rows": 1750,
+    "validation_rows": 375,
+    "test_rows": 375,
+    "train_file_sha256": "2bf24786ee1a198e4085caf43cc337ab27dbe85780cba33db4b213c64ef063ad"
+  },
+  "models": {
+    "model_1_water_acid_best.joblib": {
+      "description": "Water and prepared 1% formic acid solution recommendation",
+      "algorithm": "ExtraTrees",
+      "input_features": [
+        "drc",
+        "latex_volume_L"
+      ],
+      "targets": [
+        "water_amount_L",
+        "prepared_1pct_formic_acid_solution_mL"
+      ],
+      "cv_mae_train_5fold": 2.36127529016722,
+      "file_sha256": "b67b79a644ffe1c236c5713ebba0e244acda37123a49bebb6ceb250904bd0e7a",
+      "metrics": {
+        "validation": {
+          "water_amount_L": {
+            "MAE": 0.3217170853208731,
+            "RMSE": 0.4162085531676631,
+            "R2": 0.9967627755366056
+          },
+          "prepared_1pct_formic_acid_solution_mL": {
+            "MAE": 4.451824078103949,
+            "RMSE": 6.469168164731482,
+            "R2": 0.9991603106061975
+          }
+        },
+        "test": {
+          "water_amount_L": {
+            "MAE": 0.3126773626737249,
+            "RMSE": 0.38356391963866177,
+            "R2": 0.9970171131307042
+          },
+          "prepared_1pct_formic_acid_solution_mL": {
+            "MAE": 4.24347514973883,
+            "RMSE": 5.528636092827137,
+            "R2": 0.9993140693528956
+          }
+        }
+      }
+    },
+    "model_2_coagulation_time_best.joblib": {
+      "description": "Coagulation time prediction",
+      "algorithm": "Ridge",
+      "input_features": [
+        "drc",
+        "latex_volume_L",
+        "water_amount_L",
+        "prepared_1pct_formic_acid_solution_mL"
+      ],
+      "targets": [
+        "coagulation_time_hours"
+      ],
+      "cv_mae_train_5fold": 0.6279441662686931,
+      "file_sha256": "581dd60842dafbc8fb351a5b591193f6900a97fbbf856404e805970031cff15c",
+      "metrics": {
+        "validation": {
+          "coagulation_time_hours": {
+            "MAE": 0.6439689327893724,
+            "RMSE": 0.7988932180881119,
+            "R2": 0.7264504252721189
+          }
+        },
+        "test": {
+          "coagulation_time_hours": {
+            "MAE": 0.6404760993469131,
+            "RMSE": 0.8131733445032227,
+            "R2": 0.7043124027098009
+          }
+        }
+      }
+    }
+  }
+}
