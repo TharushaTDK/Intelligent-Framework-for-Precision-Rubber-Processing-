@@ -1,8 +1,0 @@
-{
-  "model_1_water_acid_best.joblib": {
-    "description": "Water and prepared 1% formic acid solution recommendation"
-  },
-  "model_2_coagulation_time_best.joblib": {
-    "description": "Coagulation time prediction"
-  }
-}

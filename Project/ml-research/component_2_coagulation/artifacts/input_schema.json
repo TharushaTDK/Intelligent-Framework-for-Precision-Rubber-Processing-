@@ -1,0 +1,30 @@
+{
+  "drc": {
+    "type": "float",
+    "min": 19.4,
+    "max": 45.56,
+    "mean": 32.81529142857143,
+    "median": 32.980000000000004
+  },
+  "latex_volume_L": {
+    "type": "float",
+    "min": 5.13,
+    "max": 199.92,
+    "mean": 103.22846285714286,
+    "median": 104.97
+  },
+  "water_amount_L": {
+    "type": "float",
+    "min": 0.0,
+    "max": 28.95,
+    "mean": 12.96914857142857,
+    "median": 13.035
+  },
+  "prepared_1pct_formic_acid_solution_mL": {
+    "type": "float",
+    "min": 3.76,
+    "max": 957.36,
+    "mean": 364.96173714285715,
+    "median": 344.53499999999997
+  }
+}

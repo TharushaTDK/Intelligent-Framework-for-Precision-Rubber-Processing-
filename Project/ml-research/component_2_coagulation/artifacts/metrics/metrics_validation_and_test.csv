@@ -1,0 +1,7 @@
+model,split,target,MAE,RMSE,R2
+model_1_water_acid_best.joblib,validation,water_amount_L,0.3217170853208731,0.4162085531676631,0.9967627755366056
+model_1_water_acid_best.joblib,validation,prepared_1pct_formic_acid_solution_mL,4.451824078103949,6.469168164731482,0.9991603106061975
+model_1_water_acid_best.joblib,test,water_amount_L,0.3126773626737249,0.38356391963866177,0.9970171131307042
+model_1_water_acid_best.joblib,test,prepared_1pct_formic_acid_solution_mL,4.24347514973883,5.528636092827137,0.9993140693528956
+model_2_coagulation_time_best.joblib,validation,coagulation_time_hours,0.6439689327893724,0.7988932180881119,0.7264504252721189
+model_2_coagulation_time_best.joblib,test,coagulation_time_hours,0.6404760993469131,0.8131733445032227,0.7043124027098009
