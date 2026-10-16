@@ -23,3 +23,8 @@ model features directly; the models consume `drc` itself.
 | water_amount_L | 0.31 | 0.38 | **0.997** |
 | prepared_1pct_formic_acid_solution_mL | 4.24 | 5.53 | **0.999** |
 | coagulation_time_hours | 0.64 | 0.81 | **0.704** |
+
+## Artifacts
+
+The trained models, model card, input schema, metrics and plots are in `artifacts/`.
+See `artifacts/README.md` for details and how to run a prediction.

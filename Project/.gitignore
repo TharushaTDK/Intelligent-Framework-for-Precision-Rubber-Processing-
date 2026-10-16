@@ -25,3 +25,9 @@ Thumbs.db
 # regenerable by rerunning their research stage script against the frozen dataset.
 ml-research/component_3_smokehouse/artifacts/models/regression/extra_trees/extra_trees_regressor.joblib
 ml-research/component_3_smokehouse/artifacts/models/regression/random_forest/random_forest_regressor.joblib
+
+# React Native / Expo mobile frontend
+Project/apps/mobile/node_modules/
+Project/apps/mobile/.expo/
+Project/apps/mobile/dist/
+Project/apps/mobile/web-build/

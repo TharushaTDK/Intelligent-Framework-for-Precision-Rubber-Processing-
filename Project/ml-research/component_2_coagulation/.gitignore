@@ -1,2 +1,3 @@
 __pycache__/
 *.pyc
+outputs/models/model_*_best.joblib
