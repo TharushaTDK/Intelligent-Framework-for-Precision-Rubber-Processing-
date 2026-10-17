@@ -1,0 +1,95 @@
+{
+  "stage": "18_regression_tuning",
+  "task": "price_estimation",
+  "target": "price_lkr_per_kg",
+  "model_family": "random_forest",
+  "model_name": "tuned_random_forest",
+  "role": "tuned",
+  "model_class": "RandomForestRegressor",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": true,
+  "search": {
+    "method": "GridSearchCV",
+    "cv_folds": 3,
+    "scoring": "neg_root_mean_squared_error",
+    "grid": {
+      "model__n_estimators": [
+        100
+      ],
+      "model__max_depth": [
+        null,
+        8
+      ],
+      "model__min_samples_leaf": [
+        2,
+        4
+      ]
+    }
+  },
+  "best_params": {
+    "model__max_depth": null,
+    "model__min_samples_leaf": 4,
+    "model__n_estimators": 100
+  },
+  "best_search_score_cv_rmse": 7.666557536456419,
+  "cv": {
+    "folds": 5,
+    "primary_metric": "RMSE",
+    "MAE": {
+      "mean": 5.956389207733297,
+      "std": 0.3255409691830207
+    },
+    "RMSE": {
+      "mean": 7.485478222429592,
+      "std": 0.44764462519889797
+    },
+    "R2": {
+      "mean": 0.6961121219085528,
+      "std": 0.042479181193558924
+    },
+    "within_tolerance_pct": {
+      "mean": 77.91666666666667,
+      "std": 4.340138886666596
+    }
+  },
+  "parameters": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "criterion": "squared_error",
+    "max_depth": null,
+    "max_features": 1.0,
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 4,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 100,
+    "n_jobs": 1,
+    "oob_score": false,
+    "random_state": 340,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "tolerance": 9.0,
+  "train_rows": 480,
+  "feature_names": [
+    "latex_drc_pct",
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "soil_moisture_pct",
+    "soil_ph",
+    "tree_count",
+    "tapping_system",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "x_train_sha256": "0831054f39c82ef09bade4804ab4ad7804703af2c52f7c6004ef08d675587ff6",
+  "y_train_sha256": "19b380b45a29becfe7dd62a0aa2d305c3c7e2e4f0a17e4d6ea4170d57fca91cc",
+  "model_sha256": "341df031b5fed3743311be05441e483afba909d02ad51a92dc000c05af4de0ff"
+}

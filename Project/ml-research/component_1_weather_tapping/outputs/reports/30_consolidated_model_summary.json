@@ -1,0 +1,63 @@
+{
+  "project": "RubberSense Component 1",
+  "stage": "30_consolidated_model_summary",
+  "dataset_provenance": "Synthetic raw-style dataset with simulated target relationships; no metric in this project is real-world evidence.",
+  "selection_basis": "Cross-validation on the training partition (k-fold regression RMSE; stratified macro-F1 classification). The held-out test set is used once, in stage 31.",
+  "regression_accuracy_definition": "Percentage of predictions whose absolute error falls within a declared illustrative tolerance (DRC +/-1.0 pp; price +/-LKR 9/kg). This is NOT accuracy and NOT R-squared.",
+  "candidates": {
+    "regression": "dummy_mean, linear_regression, random_forest, extra_trees, gradient_boosting, hist_gradient_boosting, xgboost (when installed), plus tuned shortlist",
+    "classification": "dummy_most_frequent, logistic_regression, random_forest, extra_trees, gradient_boosting, xgboost (when installed), plus tuned shortlist"
+  },
+  "cv_regression_ranking_top": {
+    "drc_prediction": {
+      "model": "xgboost",
+      "cv_RMSE_mean": 0.8611230881935086,
+      "cv_MAE_mean": 0.6796216117540419,
+      "cv_R2_mean": 0.7924051080119158
+    },
+    "price_estimation": {
+      "model": "linear_regression",
+      "cv_RMSE_mean": 7.534710854219045,
+      "cv_MAE_mean": 6.109395179089601,
+      "cv_R2_mean": 0.6911630899085605
+    }
+  },
+  "cv_classification_ranking_top": {
+    "tapping_advisory": {
+      "model": "gradient_boosting",
+      "cv_macro_f1_mean": 0.6464353773099825,
+      "cv_accuracy_mean": 0.6541666666666667
+    }
+  },
+  "selected": {
+    "drc_prediction": {
+      "selected_model": "tuned_gradient_boosting",
+      "selected_role": "tuned",
+      "cv_RMSE_mean": 0.8480759229299946,
+      "cv_MAE_mean": 0.6733332620463139,
+      "cv_R2_mean": 0.7983481581936641,
+      "candidates_considered": 10
+    },
+    "price_estimation": {
+      "selected_model": "tuned_random_forest",
+      "selected_role": "tuned",
+      "cv_RMSE_mean": 7.485478222429592,
+      "cv_MAE_mean": 5.956389207733297,
+      "cv_R2_mean": 0.6961121219085528,
+      "candidates_considered": 10
+    },
+    "tapping_advisory": {
+      "selected_model": "tuned_gradient_boosting",
+      "selected_role": "tuned",
+      "cv_macro_f1_mean": 0.6610312235260597,
+      "cv_accuracy_mean": 0.6666666666666667
+    }
+  },
+  "limitations": [
+    "Synthetic DRC and price targets are not measured ground truth.",
+    "Collection-time prediction is excluded; no collection-time training data exists.",
+    "Tapping suitability labels are rule-derived with ~30% simulated label noise (seed 340); they are not expert labels or validated agronomic advice.",
+    "The stored split is row-wise, so most test estates also appear in training; see the estate-grouped CV for the unseen-estate estimate.",
+    "Within-tolerance percentage is not the same as classification accuracy or R-squared."
+  ]
+}

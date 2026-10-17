@@ -1,0 +1,76 @@
+{
+  "stage": "27_logistic_regression_classification",
+  "task": "tapping_advisory",
+  "target": "tapping_suitability_proxy",
+  "model_family": "logistic_regression",
+  "model_class": "LogisticRegression",
+  "role": "candidates",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "C": 1.0,
+    "class_weight": "balanced",
+    "dual": false,
+    "fit_intercept": true,
+    "intercept_scaling": 1,
+    "l1_ratio": null,
+    "max_iter": 2000,
+    "multi_class": "deprecated",
+    "n_jobs": null,
+    "penalty": "l2",
+    "random_state": null,
+    "solver": "lbfgs",
+    "tol": 0.0001,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "cv": {
+    "folds": 5,
+    "primary_metric": "f1_macro",
+    "accuracy": {
+      "mean": 0.5104166666666667,
+      "std": 0.018633899812498248
+    },
+    "precision_macro": {
+      "mean": 0.4994271324843605,
+      "std": 0.024812121235537592
+    },
+    "recall_macro": {
+      "mean": 0.5012356461528787,
+      "std": 0.023552591407911907
+    },
+    "f1_macro": {
+      "mean": 0.49722722963353316,
+      "std": 0.02532731227652452
+    }
+  },
+  "classes": [
+    "High",
+    "Low",
+    "Moderate"
+  ],
+  "train_rows": 480,
+  "n_features": 13,
+  "feature_names": [
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "forecast_rain_next_6h_mm",
+    "rainfall_last_3days_mm",
+    "wind_speed_kmh",
+    "soil_moisture_pct",
+    "soil_ph",
+    "tree_count",
+    "tapping_system",
+    "days_since_last_tap",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice.",
+  "x_train_sha256": "72571ed82ecb7831d421101bafe770fe742ed14048fc86021c4e454833cdd0b2",
+  "y_train_sha256": "48e3867ceb1f4ba6720ca99cc23ccea08e1c2bcae22105eb5b42b5dcb6662d92",
+  "model_sha256": "d2e907c4b6b7766b6fae628f614333261ddf6db908d45d57eca8dfdae1b069a6"
+}

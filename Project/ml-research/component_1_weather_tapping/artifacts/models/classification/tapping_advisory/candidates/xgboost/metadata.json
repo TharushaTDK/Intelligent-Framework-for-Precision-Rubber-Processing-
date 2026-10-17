@@ -1,0 +1,101 @@
+{
+  "stage": "27_xgboost_classification",
+  "task": "tapping_advisory",
+  "target": "tapping_suitability_proxy",
+  "model_family": "xgboost",
+  "model_class": "XGBClassifier",
+  "role": "candidates",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "objective": "multi:softprob",
+    "base_score": null,
+    "booster": null,
+    "callbacks": null,
+    "colsample_bylevel": null,
+    "colsample_bynode": null,
+    "colsample_bytree": 0.9,
+    "device": null,
+    "early_stopping_rounds": null,
+    "enable_categorical": true,
+    "eval_metric": "mlogloss",
+    "feature_types": null,
+    "feature_weights": null,
+    "gamma": null,
+    "grow_policy": null,
+    "importance_type": null,
+    "interaction_constraints": null,
+    "learning_rate": 0.04,
+    "max_bin": null,
+    "max_cat_threshold": null,
+    "max_cat_to_onehot": null,
+    "max_delta_step": null,
+    "max_depth": 3,
+    "max_leaves": null,
+    "min_child_weight": null,
+    "missing": NaN,
+    "monotone_constraints": null,
+    "multi_strategy": null,
+    "n_estimators": 180,
+    "n_jobs": 1,
+    "num_parallel_tree": null,
+    "random_state": 340,
+    "reg_alpha": null,
+    "reg_lambda": null,
+    "sampling_method": null,
+    "scale_pos_weight": null,
+    "subsample": 0.9,
+    "tree_method": null,
+    "validate_parameters": null,
+    "verbosity": 0
+  },
+  "cv": {
+    "folds": 5,
+    "primary_metric": "f1_macro",
+    "accuracy": {
+      "mean": 0.6458333333333333,
+      "std": 0.021850184336878166
+    },
+    "precision_macro": {
+      "mean": 0.6486741628856623,
+      "std": 0.023353853319023402
+    },
+    "recall_macro": {
+      "mean": 0.632296367642293,
+      "std": 0.022583411606709125
+    },
+    "f1_macro": {
+      "mean": 0.6353586882640859,
+      "std": 0.021838686694096353
+    }
+  },
+  "classes": [
+    "High",
+    "Low",
+    "Moderate"
+  ],
+  "train_rows": 480,
+  "n_features": 13,
+  "feature_names": [
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "forecast_rain_next_6h_mm",
+    "rainfall_last_3days_mm",
+    "wind_speed_kmh",
+    "soil_moisture_pct",
+    "soil_ph",
+    "tree_count",
+    "tapping_system",
+    "days_since_last_tap",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice.",
+  "x_train_sha256": "9ef262af05f01c70b2766bf587324f903a3d36fd2e723c609230d96bc5b173d2",
+  "y_train_sha256": "ae5ffaa84da713f6ef59800a2130a9911b5d9e93de47221957f9db16a7aead8e",
+  "model_sha256": "d48eee2f7683d29064e46530c35e3e1828f16dcb2ac649d655c6678bbb223369"
+}

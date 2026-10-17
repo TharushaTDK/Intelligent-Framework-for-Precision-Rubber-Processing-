@@ -1,0 +1,62 @@
+{
+  "stage": "33_export_final_models",
+  "note": "Preprocessing (median imputation + scaling for numeric, most-frequent imputation + one-hot for categorical) is embedded inside each exported sklearn Pipeline; it is fitted on the training partition only.",
+  "tasks": {
+    "drc_prediction": {
+      "numeric_and_categorical": [
+        "temperature_c",
+        "relative_humidity_pct",
+        "rainfall_last_6h_mm",
+        "forecast_rain_next_6h_mm",
+        "rainfall_last_3days_mm",
+        "wind_speed_kmh",
+        "soil_moisture_pct",
+        "soil_ph",
+        "estate_id",
+        "tree_count",
+        "tapping_system",
+        "days_since_last_tap",
+        "previous_collection_yield_litres",
+        "month",
+        "day_of_year"
+      ]
+    },
+    "price_estimation": {
+      "numeric_and_categorical": [
+        "latex_drc_pct",
+        "temperature_c",
+        "relative_humidity_pct",
+        "rainfall_last_6h_mm",
+        "soil_moisture_pct",
+        "soil_ph",
+        "tree_count",
+        "tapping_system",
+        "month",
+        "day_of_year"
+      ]
+    },
+    "tapping_advisory": {
+      "features": [
+        "temperature_c",
+        "relative_humidity_pct",
+        "rainfall_last_6h_mm",
+        "forecast_rain_next_6h_mm",
+        "rainfall_last_3days_mm",
+        "wind_speed_kmh",
+        "soil_moisture_pct",
+        "soil_ph",
+        "tree_count",
+        "tapping_system",
+        "days_since_last_tap",
+        "month",
+        "day_of_year"
+      ],
+      "classes": [
+        "High",
+        "Low",
+        "Moderate"
+      ]
+    }
+  },
+  "fit_scope": "TRAIN_ONLY"
+}

@@ -1,0 +1,43 @@
+{
+  "stage": "29_classification_final_selection",
+  "task": "tapping_advisory",
+  "target": "tapping_suitability_proxy",
+  "selection_scope": "DEVELOPMENT_ONLY",
+  "selected_model_family": "tuned_gradient_boosting",
+  "selected_role": "tuned",
+  "model_class": "GradientBoostingClassifier",
+  "selection_rule": {
+    "primary": "cv_macro_f1_mean descending",
+    "tie_breaker_1": "cv_macro_recall_mean descending",
+    "tie_breaker_2": "cv_accuracy_mean descending"
+  },
+  "development_cv": {
+    "accuracy_mean": 0.6666666666666667,
+    "macro_precision_mean": 0.6801186064232427,
+    "macro_recall_mean": 0.6547429669776867,
+    "macro_f1_mean": 0.6610312235260597
+  },
+  "runner_up": {
+    "model": "tuned_xgboost",
+    "role": "tuned",
+    "cv_macro_f1_mean": 0.6543225533480835,
+    "cv_accuracy_mean": 0.6625
+  },
+  "artifact": {
+    "source_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\classification\\tapping_advisory\\tuned\\gradient_boosting\\model.joblib",
+    "final_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\classification\\tapping_advisory\\final\\selected_model.joblib",
+    "source_sha256": "f24b149bc2638cad29bdccc111b66a376972cf7d975873f542379a0b7b54c230",
+    "final_sha256": "f24b149bc2638cad29bdccc111b66a376972cf7d975873f542379a0b7b54c230",
+    "copy_identical": true
+  },
+  "test_loaded": false,
+  "test_evaluated": false,
+  "test_evaluation_stage": 31,
+  "explainability_stage": 32,
+  "export_stage": 33,
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified agronomic advice.",
+  "warnings": [
+    "Row-wise split: most test estates also appear in training."
+  ]
+}

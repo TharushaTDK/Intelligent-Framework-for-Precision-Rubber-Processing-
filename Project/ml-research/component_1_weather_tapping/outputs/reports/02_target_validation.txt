@@ -1,0 +1,1 @@
+Target validation completed. Tapping target is a synthetic proxy, not expert-validated advice.

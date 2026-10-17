@@ -1,0 +1,31 @@
+{
+  "project": "RubberSense Component 1",
+  "stage": "19_final_regression_selection",
+  "selection_scope": "DEVELOPMENT_ONLY (cross-validation on the training partition)",
+  "selection_rule": {
+    "primary": "cv_RMSE_mean ascending",
+    "tie_breaker_1": "cv_MAE_mean ascending",
+    "tie_breaker_2": "cv_R2_mean descending"
+  },
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "test_loaded": false,
+  "test_evaluated": false,
+  "tasks": {
+    "drc_prediction": {
+      "selected_model": "tuned_gradient_boosting",
+      "selected_role": "tuned",
+      "cv_RMSE_mean": 0.8480759229299946,
+      "cv_MAE_mean": 0.6733332620463139,
+      "cv_R2_mean": 0.7983481581936641,
+      "candidates_considered": 10
+    },
+    "price_estimation": {
+      "selected_model": "tuned_random_forest",
+      "selected_role": "tuned",
+      "cv_RMSE_mean": 7.485478222429592,
+      "cv_MAE_mean": 5.956389207733297,
+      "cv_R2_mean": 0.6961121219085528,
+      "candidates_considered": 10
+    }
+  }
+}

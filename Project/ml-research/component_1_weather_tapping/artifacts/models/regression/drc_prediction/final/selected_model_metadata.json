@@ -1,0 +1,43 @@
+{
+  "stage": "19_final_regression_selection",
+  "task": "drc_prediction",
+  "target": "latex_drc_pct",
+  "selection_scope": "DEVELOPMENT_ONLY",
+  "selected_model_family": "tuned_gradient_boosting",
+  "selected_role": "tuned",
+  "model_class": "GradientBoostingRegressor",
+  "selection_rule": {
+    "primary": "cv_RMSE_mean ascending",
+    "tie_breaker_1": "cv_MAE_mean ascending",
+    "tie_breaker_2": "cv_R2_mean descending"
+  },
+  "development_cv": {
+    "RMSE_mean": 0.8480759229299946,
+    "MAE_mean": 0.6733332620463139,
+    "R2_mean": 0.7983481581936641,
+    "within_tolerance_pct_mean": 75.15789473684211
+  },
+  "runner_up": {
+    "model": "xgboost",
+    "role": "candidates",
+    "cv_RMSE_mean": 0.8611230881935086,
+    "cv_MAE_mean": 0.6796216117540419
+  },
+  "artifact": {
+    "source_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\regression\\drc_prediction\\tuned\\gradient_boosting\\model.joblib",
+    "final_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\regression\\drc_prediction\\final\\selected_model.joblib",
+    "source_sha256": "19475009a289d9c099a352cac94409a84cfa9a265cfac3f8cf44e5dd5bcb0290",
+    "final_sha256": "19475009a289d9c099a352cac94409a84cfa9a265cfac3f8cf44e5dd5bcb0290",
+    "copy_identical": true
+  },
+  "test_loaded": false,
+  "test_evaluated": false,
+  "test_evaluation_stage": 31,
+  "explainability_stage": 32,
+  "export_stage": 33,
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "warnings": [
+    "Row-wise split: most test estates also appear in training. Use stage-30 estate-grouped CV for the unseen-estate estimate.",
+    "Within-tolerance % is not accuracy."
+  ]
+}

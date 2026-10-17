@@ -1,0 +1,21 @@
+SPLIT INTEGRITY & LEAKAGE AUDIT
+================================
+
+[drc_prediction]
+  train rows=475  test rows=119  index overlap=0
+  train estates=120  test estates=73  test estates also in train=73  unseen=0
+  -> Row-wise split. Reported test metrics are for NEW OBSERVATIONS FROM KNOWN ESTATES, not unseen-estate generalisation. See 30_estate_group_cross_validation.
+
+[price_estimation]
+  train rows=480  test rows=120  index overlap=0
+  train estates=119  test estates=74  test estates also in train=73  unseen=1
+  -> Row-wise split. Reported test metrics are for NEW OBSERVATIONS FROM KNOWN ESTATES, not unseen-estate generalisation. See 30_estate_group_cross_validation.
+
+[tapping_advisory]
+  train rows=480  test rows=120  index overlap=0
+  train estates=118  test estates=81  test estates also in train=79  unseen=2
+  -> Row-wise split. Reported test metrics are for NEW OBSERVATIONS FROM KNOWN ESTATES, not unseen-estate generalisation. See 30_estate_group_cross_validation.
+
+Collection-time prediction: REMOVED. No collection-time target, model, report or artefact is produced anywhere in this project.
+
+Note: raw workbook data/raw/RubberSense_RawStyle_Synthetic_Dataset.xlsx is never rewritten by any stage; only copies under data/processed/ and reports/models are generated.
