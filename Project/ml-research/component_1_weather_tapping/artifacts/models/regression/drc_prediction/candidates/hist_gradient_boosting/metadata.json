@@ -1,0 +1,80 @@
+{
+  "stage": "17_hist_gradient_boosting_regression",
+  "task": "drc_prediction",
+  "target": "latex_drc_pct",
+  "model_family": "hist_gradient_boosting",
+  "model_class": "HistGradientBoostingRegressor",
+  "role": "candidates",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "categorical_features": "from_dtype",
+    "early_stopping": "auto",
+    "interaction_cst": null,
+    "l2_regularization": 0.0,
+    "learning_rate": 0.1,
+    "loss": "squared_error",
+    "max_bins": 255,
+    "max_depth": null,
+    "max_features": 1.0,
+    "max_iter": 100,
+    "max_leaf_nodes": 31,
+    "min_samples_leaf": 20,
+    "monotonic_cst": null,
+    "n_iter_no_change": 10,
+    "quantile": null,
+    "random_state": 340,
+    "scoring": "loss",
+    "tol": 1e-07,
+    "validation_fraction": 0.1,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "cv": {
+    "folds": 5,
+    "primary_metric": "RMSE",
+    "MAE": {
+      "mean": 0.7470185333251351,
+      "std": 0.0383646705837816
+    },
+    "RMSE": {
+      "mean": 0.9531637681591842,
+      "std": 0.058261701774524756
+    },
+    "R2": {
+      "mean": 0.7466296687863809,
+      "std": 0.028106005620903214
+    },
+    "within_tolerance_pct": {
+      "mean": 72.63157894736841,
+      "std": 4.049554539299232
+    }
+  },
+  "tolerance": 1.0,
+  "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
+  "train_rows": 475,
+  "n_features": 15,
+  "feature_names": [
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "forecast_rain_next_6h_mm",
+    "rainfall_last_3days_mm",
+    "wind_speed_kmh",
+    "soil_moisture_pct",
+    "soil_ph",
+    "estate_id",
+    "tree_count",
+    "tapping_system",
+    "days_since_last_tap",
+    "previous_collection_yield_litres",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "x_train_sha256": "461a83989fd1db4f0f64b8d55a46bf1b444e041ac01fa99771eaf7bde1080012",
+  "y_train_sha256": "81d3f1a9366b61dcacdb2d4447fcc93deead96674864b6197ee3892162f47e96",
+  "model_sha256": "5a9313dc77b0accfa246516525e1ad183f529de2a013b2c46d62a29a453f1a2e"
+}

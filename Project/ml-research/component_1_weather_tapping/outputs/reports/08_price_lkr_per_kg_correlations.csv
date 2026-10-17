@@ -1,0 +1,14 @@
+,correlation_with_target
+latex_drc_pct,0.47732808974453667
+relative_humidity_pct,-0.3949127823290693
+soil_moisture_pct,-0.15373707437695353
+days_since_last_tap,0.12345777859722071
+rainfall_last_3days_mm,-0.12203821674734404
+previous_collection_yield_litres,0.0642326279444501
+temperature_c,0.05107134377041523
+tree_count,-0.032085198915594
+rainfall_last_6h_mm,-0.024984750161674122
+actual_collection_yield_litres,0.020756998282172805
+wind_speed_kmh,-0.0076066711514729555
+forecast_rain_next_6h_mm,0.004091271857293102
+soil_ph,0.001920813029237162

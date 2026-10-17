@@ -1,0 +1,7 @@
+file,n_rows,unique_indices,duplicate_indices,min_index,max_index
+drc_prediction_test_indices.csv,119,119,0,3,599
+drc_prediction_train_indices.csv,475,475,0,0,597
+price_estimation_test_indices.csv,120,120,0,0,599
+price_estimation_train_indices.csv,480,480,0,1,597
+tapping_advisory_test_indices.csv,120,120,0,5,596
+tapping_advisory_train_indices.csv,480,480,0,0,599

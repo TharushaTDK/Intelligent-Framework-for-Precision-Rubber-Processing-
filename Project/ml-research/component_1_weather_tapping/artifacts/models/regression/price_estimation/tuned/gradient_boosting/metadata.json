@@ -1,0 +1,99 @@
+{
+  "stage": "18_regression_tuning",
+  "task": "price_estimation",
+  "target": "price_lkr_per_kg",
+  "model_family": "gradient_boosting",
+  "model_name": "tuned_gradient_boosting",
+  "role": "tuned",
+  "model_class": "GradientBoostingRegressor",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": true,
+  "search": {
+    "method": "GridSearchCV",
+    "cv_folds": 3,
+    "scoring": "neg_root_mean_squared_error",
+    "grid": {
+      "model__n_estimators": [
+        100,
+        200
+      ],
+      "model__learning_rate": [
+        0.03,
+        0.06
+      ],
+      "model__max_depth": [
+        2,
+        3
+      ]
+    }
+  },
+  "best_params": {
+    "model__learning_rate": 0.06,
+    "model__max_depth": 2,
+    "model__n_estimators": 100
+  },
+  "best_search_score_cv_rmse": 7.681813350467266,
+  "cv": {
+    "folds": 5,
+    "primary_metric": "RMSE",
+    "MAE": {
+      "mean": 5.989847902559896,
+      "std": 0.2489903337030101
+    },
+    "RMSE": {
+      "mean": 7.580106264436175,
+      "std": 0.3204331772084683
+    },
+    "R2": {
+      "mean": 0.6883062957477598,
+      "std": 0.0392458650613249
+    },
+    "within_tolerance_pct": {
+      "mean": 75.0,
+      "std": 3.784562942621863
+    }
+  },
+  "parameters": {
+    "alpha": 0.9,
+    "ccp_alpha": 0.0,
+    "criterion": "friedman_mse",
+    "init": null,
+    "learning_rate": 0.06,
+    "loss": "squared_error",
+    "max_depth": 2,
+    "max_features": null,
+    "max_leaf_nodes": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "n_estimators": 100,
+    "n_iter_no_change": null,
+    "random_state": 340,
+    "subsample": 1.0,
+    "tol": 0.0001,
+    "validation_fraction": 0.1,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "tolerance": 9.0,
+  "train_rows": 480,
+  "feature_names": [
+    "latex_drc_pct",
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "soil_moisture_pct",
+    "soil_ph",
+    "tree_count",
+    "tapping_system",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "x_train_sha256": "8d221e0418a4de3bd0f009d7a06c855a639bf4be9ee8af11b9dc0aaa18c0a854",
+  "y_train_sha256": "19b380b45a29becfe7dd62a0aa2d305c3c7e2e4f0a17e4d6ea4170d57fca91cc",
+  "model_sha256": "a3aaae54bf24863fe5254efa0d800737ec1da39f125d0689ba780d62177071ce"
+}

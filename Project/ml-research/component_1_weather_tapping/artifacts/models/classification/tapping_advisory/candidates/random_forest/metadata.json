@@ -1,0 +1,80 @@
+{
+  "stage": "27_random_forest_classification",
+  "task": "tapping_advisory",
+  "target": "tapping_suitability_proxy",
+  "model_family": "random_forest",
+  "model_class": "RandomForestClassifier",
+  "role": "candidates",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "class_weight": "balanced",
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "sqrt",
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 2,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 250,
+    "n_jobs": 1,
+    "oob_score": false,
+    "random_state": 340,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "cv": {
+    "folds": 5,
+    "primary_metric": "f1_macro",
+    "accuracy": {
+      "mean": 0.6458333333333334,
+      "std": 0.04166666666666668
+    },
+    "precision_macro": {
+      "mean": 0.6559609165273844,
+      "std": 0.04456496417380066
+    },
+    "recall_macro": {
+      "mean": 0.632594660417241,
+      "std": 0.041145505405091154
+    },
+    "f1_macro": {
+      "mean": 0.6370570601824237,
+      "std": 0.042553675539968035
+    }
+  },
+  "classes": [
+    "High",
+    "Low",
+    "Moderate"
+  ],
+  "train_rows": 480,
+  "n_features": 13,
+  "feature_names": [
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "forecast_rain_next_6h_mm",
+    "rainfall_last_3days_mm",
+    "wind_speed_kmh",
+    "soil_moisture_pct",
+    "soil_ph",
+    "tree_count",
+    "tapping_system",
+    "days_since_last_tap",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice.",
+  "x_train_sha256": "88241b3bb0856675cfa9123e3cbd0f0d73c91237c161371a6a7b9e05f185679f",
+  "y_train_sha256": "27cc204a1688bc64143e0469e48ba64996ca2f8e58ab9dd207aa279f81839599",
+  "model_sha256": "e7dc4b36d26dfd235f5a68faeefaf35b0a39c963be49ef7d74f43b1cf2a23979"
+}

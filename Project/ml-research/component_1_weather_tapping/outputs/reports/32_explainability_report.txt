@@ -1,0 +1,6 @@
+Stage 32 explainability
+========================
+Permutation importance was computed on the held-out test partition for the selected models.
+Impurity importance is reported for tree-based selected models.
+SHAP was NOT used (not installed); correlation and importance do not prove causation.
+All data are synthetic; importances describe the simulation, not real agronomy.

@@ -1,0 +1,31 @@
+DATASET OVERVIEW — RubberSense Component 1
+Rows: 600
+Columns: 23
+
+Columns:
+- record_id (object)
+- timestamp_local (object)
+- village_code (object)
+- temperature_c (float64)
+- relative_humidity_pct (float64)
+- rainfall_last_6h_mm (float64)
+- forecast_rain_next_6h_mm (float64)
+- rainfall_last_3days_mm (float64)
+- wind_speed_kmh (float64)
+- soil_moisture_pct (float64)
+- soil_ph (float64)
+- latex_drc_pct (float64)
+- tree_count (int64)
+- tapping_system (object)
+- days_since_last_tap (int64)
+- planned_tapping_time (object)
+- previous_collection_yield_litres (float64)
+- actual_collection_time (object)
+- actual_collection_yield_litres (float64)
+- price_lkr_per_kg (int64)
+- price_source_status (object)
+- estate_id (object)
+- estate_name (object)
+
+Dataset provenance: synthetic raw-style data; not real field measurements.
+Expected target columns: latex_drc_pct, tapping_suitability_proxy, price_lkr_per_kg. Collection-time prediction is excluded because no suitable collection-time training data is available. Tapping labels are simulated and include annotation uncertainty for demonstration only.

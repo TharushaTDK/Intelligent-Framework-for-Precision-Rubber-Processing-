@@ -1,0 +1,81 @@
+{
+  "stage": "27_gradient_boosting_classification",
+  "task": "tapping_advisory",
+  "target": "tapping_suitability_proxy",
+  "model_family": "gradient_boosting",
+  "model_class": "GradientBoostingClassifier",
+  "role": "candidates",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "ccp_alpha": 0.0,
+    "criterion": "friedman_mse",
+    "init": null,
+    "learning_rate": 0.1,
+    "loss": "log_loss",
+    "max_depth": 3,
+    "max_features": null,
+    "max_leaf_nodes": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "n_estimators": 100,
+    "n_iter_no_change": null,
+    "random_state": 340,
+    "subsample": 1.0,
+    "tol": 0.0001,
+    "validation_fraction": 0.1,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "cv": {
+    "folds": 5,
+    "primary_metric": "f1_macro",
+    "accuracy": {
+      "mean": 0.6541666666666667,
+      "std": 0.02411632688081298
+    },
+    "precision_macro": {
+      "mean": 0.6583036860102145,
+      "std": 0.021689015862629123
+    },
+    "recall_macro": {
+      "mean": 0.643495542689091,
+      "std": 0.02544715635177038
+    },
+    "f1_macro": {
+      "mean": 0.6464353773099825,
+      "std": 0.025007881877401827
+    }
+  },
+  "classes": [
+    "High",
+    "Low",
+    "Moderate"
+  ],
+  "train_rows": 480,
+  "n_features": 13,
+  "feature_names": [
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "forecast_rain_next_6h_mm",
+    "rainfall_last_3days_mm",
+    "wind_speed_kmh",
+    "soil_moisture_pct",
+    "soil_ph",
+    "tree_count",
+    "tapping_system",
+    "days_since_last_tap",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice.",
+  "x_train_sha256": "c3be05d91da46eefaeebc08a898f7201b8bbbeef1c17651096572fe6271ffe6e",
+  "y_train_sha256": "e7c06e05ff3af52103f34375904e92f6c67d4722dfa9c6d20ed15d6c717b1d02",
+  "model_sha256": "601ada1e6f35ca387b2f88243adcbc171c996f1c8f956ec12611fdd545742432"
+}

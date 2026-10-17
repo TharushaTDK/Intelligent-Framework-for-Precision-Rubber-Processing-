@@ -1,0 +1,122 @@
+{
+  "stage": "18_regression_tuning",
+  "task": "drc_prediction",
+  "target": "latex_drc_pct",
+  "model_family": "xgboost",
+  "model_name": "tuned_xgboost",
+  "role": "tuned",
+  "model_class": "XGBRegressor",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": true,
+  "search": {
+    "method": "GridSearchCV",
+    "cv_folds": 3,
+    "scoring": "neg_root_mean_squared_error",
+    "grid": {
+      "model__n_estimators": [
+        100
+      ],
+      "model__max_depth": [
+        2,
+        3
+      ],
+      "model__learning_rate": [
+        0.03,
+        0.06
+      ]
+    }
+  },
+  "best_params": {
+    "model__learning_rate": 0.06,
+    "model__max_depth": 3,
+    "model__n_estimators": 100
+  },
+  "best_search_score_cv_rmse": 0.8754425540722206,
+  "cv": {
+    "folds": 5,
+    "primary_metric": "RMSE",
+    "MAE": {
+      "mean": 0.6971097852289866,
+      "std": 0.05842819274424821
+    },
+    "RMSE": {
+      "mean": 0.8831806866989554,
+      "std": 0.07913267437007235
+    },
+    "R2": {
+      "mean": 0.7809101937997349,
+      "std": 0.043349935693253204
+    },
+    "within_tolerance_pct": {
+      "mean": 73.47368421052632,
+      "std": 3.8475088173678067
+    }
+  },
+  "parameters": {
+    "objective": "reg:squarederror",
+    "base_score": null,
+    "booster": null,
+    "callbacks": null,
+    "colsample_bylevel": null,
+    "colsample_bynode": null,
+    "colsample_bytree": null,
+    "device": null,
+    "early_stopping_rounds": null,
+    "enable_categorical": true,
+    "eval_metric": null,
+    "feature_types": null,
+    "feature_weights": null,
+    "gamma": null,
+    "grow_policy": null,
+    "importance_type": null,
+    "interaction_constraints": null,
+    "learning_rate": 0.06,
+    "max_bin": null,
+    "max_cat_threshold": null,
+    "max_cat_to_onehot": null,
+    "max_delta_step": null,
+    "max_depth": 3,
+    "max_leaves": null,
+    "min_child_weight": null,
+    "missing": NaN,
+    "monotone_constraints": null,
+    "multi_strategy": null,
+    "n_estimators": 100,
+    "n_jobs": 1,
+    "num_parallel_tree": null,
+    "random_state": 340,
+    "reg_alpha": null,
+    "reg_lambda": null,
+    "sampling_method": null,
+    "scale_pos_weight": null,
+    "subsample": null,
+    "tree_method": null,
+    "validate_parameters": null,
+    "verbosity": 0
+  },
+  "tolerance": 1.0,
+  "train_rows": 475,
+  "feature_names": [
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "forecast_rain_next_6h_mm",
+    "rainfall_last_3days_mm",
+    "wind_speed_kmh",
+    "soil_moisture_pct",
+    "soil_ph",
+    "estate_id",
+    "tree_count",
+    "tapping_system",
+    "days_since_last_tap",
+    "previous_collection_yield_litres",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "x_train_sha256": "36c53eb7ee96f05fd9049dc263f9bd4ecc3cb5f5ef948730428b413131359292",
+  "y_train_sha256": "81d3f1a9366b61dcacdb2d4447fcc93deead96674864b6197ee3892162f47e96",
+  "model_sha256": "5faa79570bbb9f22412cd1e66f7d3e2cbd4a4816ec7afa4f8ad91a536f0e3a3d"
+}
