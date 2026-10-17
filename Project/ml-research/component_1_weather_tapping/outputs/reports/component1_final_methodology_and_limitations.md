@@ -11,10 +11,17 @@ comparison, report or artefact is produced.
 
 ## Data
 - Source: `data/raw/RubberSense_RawStyle_Synthetic_Dataset.xlsx` (sheet `RawStyle_Data_600`).
-- Raw workbook SHA-256: `31eea4269e6aec28f109271b1323ad8ce42400d4a8fcd543eccdf1e9871c92e9` (never rewritten by any stage).
+- Raw workbook SHA-256: `0bd6c3b2b5de0a0d53c9309f52805c9de9ae3042395207039251d4a925119534` (not rewritten by any pipeline stage).
 - 600 rows; `estate_id` values are synthetic and unverified; `village_code` synthetic.
 - **All targets are simulated.** DRC and price are not measured; tapping labels are rule-derived
   with ~30% simulated label noise (seed 340) and are not expert agronomic advice.
+- `estate_name` (added 2026-10-17) holds temporary `TBD_EST-xxx` placeholders derived from the
+  synthetic `estate_id`. It is documentation-only, is **not** a model feature for any task, and is
+  not a verified real estate name.
+- Change history: 2026-10-17 - added `estate_name` placeholder columns to `RawStyle_Data_600`
+  (column W) and `Estate_Wise_DRC_Summary` (column H) and a `Data_Provenance` note. No existing data,
+  columns, sheets, splits, or model / preprocessing artifacts were changed; no retraining occurred.
+  Original workbook SHA-256 (superseded): `31eea4269e6aec28f109271b1323ad8ce42400d4a8fcd543eccdf1e9871c92e9`.
 
 ## Protocol
 - One deterministic 80/20 split per task is stored under `data/splits/` (seed 340).

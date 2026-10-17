@@ -8,6 +8,8 @@ data is copied. See `STRUCTURE_MAPPING.md` and
 > **The dataset is synthetic.** Estate IDs are not verified estates, price/DRC targets are
 > simulated, and tapping labels are rule-derived with ~30% simulated label noise (seed 340).
 > No metric in this project is real-world evidence.
+> The `estate_name` column holds `TBD_EST-xxx` placeholders derived from `estate_id` (not verified
+> real estate names) and is documentation-only - it is not an input feature of any model.
 
 ## Included tasks
 1. Estate-wise DRC regression (`latex_drc_pct`).
