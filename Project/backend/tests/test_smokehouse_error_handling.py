@@ -139,3 +139,46 @@ def test_preview_returns_guidance_matching_fire_risk_label():
             body["fire_risk_label"]
         )
     )
+
+
+# ============================================================
+# TEST 4 — NaN/INFINITY INPUT RETURNS 422, NOT 500
+# ============================================================
+
+
+def test_preview_rejects_nan_input_with_422_not_500():
+    """
+    A raw NaN/Infinity value in the JSON body must still be
+    reported as a client-side 422 validation error.
+
+    Pydantic rejects NaN correctly (allow_inf_nan=False), but
+    FastAPI's default 422 handler echoes the rejected input back
+    into the response, and Starlette's JSONResponse refuses to
+    serialize NaN/Infinity. Building the error body itself used
+    to raise, which surfaced as a 500 instead of a 422.
+    """
+
+    body = (
+        '{"smokehouse_id": "SH01", "layer_id": "L1", '
+        '"temperature_c": NaN, "humidity_pct": 80.0, '
+        '"recorded_at": "2026-10-15T01:00:00Z", '
+        '"batch_started_at": "2026-10-15T00:00:00Z", '
+        '"number_of_sheets": 40, "layer_area_m2": 8.5, '
+        '"history": []}'
+    )
+
+    response = client.post(
+        "/api/v1/smokehouse/predict-preview",
+        content=body,
+        headers={"content-type": "application/json"},
+    )
+
+    assert response.status_code == 422
+
+    detail = response.json()["detail"]
+
+    assert isinstance(detail, list)
+    assert any(
+        error.get("loc", [None, None])[-1] == "temperature_c"
+        for error in detail
+    )
