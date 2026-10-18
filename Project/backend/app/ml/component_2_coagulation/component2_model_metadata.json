@@ -1,0 +1,40 @@
+{
+  "component": "Component 2 - Latex Coagulation Recommendation",
+  "status": "FINAL_RESEARCH_EXPORT",
+  "source": "ml-research/component_2_coagulation/artifacts/model_card.json",
+  "research_environment": {
+    "python": "3.13.5",
+    "scikit-learn": "1.7.2",
+    "exported_on": "2026-10-16"
+  },
+  "runtime_export": {
+    "script": "ml-research/component_2_coagulation/src/33_export_backend_runtime.py",
+    "scikit-learn": "1.9.1",
+    "method": "clone of the selected research pipelines refit on the same training split",
+    "verification": "all 375 test predictions match the research predictions, max abs diff 3.4e-13"
+  },
+  "water_acid": {
+    "model_version": "component2-water-acid-v1",
+    "algorithm": "ExtraTrees",
+    "pipeline": "water_acid_pipeline.joblib",
+    "research_file": "model_1_water_acid_best.joblib",
+    "research_sha256": "b67b79a644ffe1c236c5713ebba0e244acda37123a49bebb6ceb250904bd0e7a",
+    "sha256": "3ca7a2d44fca8395fd2faf23e8889b0df9d2a234a6f549fd334b0071fca7a03b",
+    "test_metrics": {
+      "water_amount_L": {"MAE": 0.3127, "RMSE": 0.3836, "R2": 0.9970},
+      "prepared_1pct_formic_acid_solution_mL": {"MAE": 4.2435, "RMSE": 5.5286, "R2": 0.9993}
+    }
+  },
+  "coagulation_time": {
+    "model_version": "component2-coagulation-time-v1",
+    "algorithm": "Ridge",
+    "pipeline": "coagulation_time_pipeline.joblib",
+    "research_file": "model_2_coagulation_time_best.joblib",
+    "research_sha256": "581dd60842dafbc8fb351a5b591193f6900a97fbbf856404e805970031cff15c",
+    "sha256": "41a4d50fc212bc25edb2af57d792755ad21849cfd6456d5b1d91335f941c5d4c",
+    "test_metrics": {
+      "coagulation_time_hours": {"MAE": 0.6405, "RMSE": 0.8132, "R2": 0.7043}
+    }
+  },
+  "limitations": "Trained on a synthetic dataset. Outputs are decision support only and are not validated on real factory batches."
+}

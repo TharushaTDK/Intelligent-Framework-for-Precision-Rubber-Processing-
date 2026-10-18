@@ -1,0 +1,104 @@
+{
+  "stage": "28_classification_tuning",
+  "task": "tapping_advisory",
+  "target": "tapping_suitability_proxy",
+  "model_family": "random_forest",
+  "model_name": "tuned_random_forest",
+  "role": "tuned",
+  "model_class": "RandomForestClassifier",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": true,
+  "search": {
+    "method": "GridSearchCV",
+    "cv_folds": 3,
+    "scoring": "f1_macro",
+    "grid": {
+      "model__n_estimators": [
+        100
+      ],
+      "model__max_depth": [
+        null,
+        8
+      ],
+      "model__min_samples_leaf": [
+        2,
+        4
+      ]
+    }
+  },
+  "best_params": {
+    "model__max_depth": 8,
+    "model__min_samples_leaf": 4,
+    "model__n_estimators": 100
+  },
+  "best_search_score_cv_macro_f1": 0.6303857283216875,
+  "cv": {
+    "folds": 5,
+    "primary_metric": "f1_macro",
+    "accuracy": {
+      "mean": 0.6499999999999999,
+      "std": 0.03061862178478973
+    },
+    "precision_macro": {
+      "mean": 0.6616614088776542,
+      "std": 0.031826414941326986
+    },
+    "recall_macro": {
+      "mean": 0.6381417814248884,
+      "std": 0.03019002381847362
+    },
+    "f1_macro": {
+      "mean": 0.6433514875513235,
+      "std": 0.03113139575995029
+    }
+  },
+  "parameters": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "class_weight": "balanced",
+    "criterion": "gini",
+    "max_depth": 8,
+    "max_features": "sqrt",
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 4,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 100,
+    "n_jobs": 1,
+    "oob_score": false,
+    "random_state": 340,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "classes": [
+    "High",
+    "Low",
+    "Moderate"
+  ],
+  "train_rows": 480,
+  "feature_names": [
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "forecast_rain_next_6h_mm",
+    "rainfall_last_3days_mm",
+    "wind_speed_kmh",
+    "soil_moisture_pct",
+    "soil_ph",
+    "tree_count",
+    "tapping_system",
+    "days_since_last_tap",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice.",
+  "x_train_sha256": "10d756e724e29fde6394107d209e8208b13e0d58790fe408b5a8ebce2f8d56af",
+  "y_train_sha256": "97503a684d8bcafb96e99e7317cdfbae9203c91d693eafe797c9eea176894092",
+  "model_sha256": "6b5d4d829d7f79ccdaffb566ce908711071f8eccc74c23958867b5150ae3e396"
+}

@@ -1,0 +1,57 @@
+{
+  "stage": "17_dummy_mean_regression",
+  "task": "price_estimation",
+  "target": "price_lkr_per_kg",
+  "model_family": "dummy_mean",
+  "model_class": "DummyRegressor",
+  "role": "baseline",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "constant": null,
+    "quantile": null,
+    "strategy": "mean"
+  },
+  "cv": {
+    "folds": 5,
+    "primary_metric": "RMSE",
+    "MAE": {
+      "mean": 11.045594618055556,
+      "std": 0.5586597540700972
+    },
+    "RMSE": {
+      "mean": 13.676405059969747,
+      "std": 0.5379364509095629
+    },
+    "R2": {
+      "mean": -0.006624515755609739,
+      "std": 0.005506454295424442
+    },
+    "within_tolerance_pct": {
+      "mean": 46.87499999999999,
+      "std": 4.320091948609942
+    }
+  },
+  "tolerance": 9.0,
+  "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
+  "train_rows": 480,
+  "n_features": 10,
+  "feature_names": [
+    "latex_drc_pct",
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "soil_moisture_pct",
+    "soil_ph",
+    "tree_count",
+    "tapping_system",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "x_train_sha256": "0f779604e9697fe4cdd086a2dd19248afc97730aab6370e8f0a62b293f0e5b82",
+  "y_train_sha256": "19b380b45a29becfe7dd62a0aa2d305c3c7e2e4f0a17e4d6ea4170d57fca91cc",
+  "model_sha256": "0161e9ab1218cec0be392822ffb670fc870595fad8c4fa96825f80da73ed8fa7"
+}

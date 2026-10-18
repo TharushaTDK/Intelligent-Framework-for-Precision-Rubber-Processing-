@@ -1,3 +1,4 @@
+from backend.app.database.models.coagulation import CoagulationRecommendation
 from backend.app.database.models.smokehouse import (
     SmokehouseBatch,
     SmokehouseLayer,
@@ -6,6 +7,7 @@ from backend.app.database.models.smokehouse import (
 )
 
 __all__ = [
+    "CoagulationRecommendation",
     "SmokehouseBatch",
     "SmokehouseLayer",
     "SmokehouseReading",

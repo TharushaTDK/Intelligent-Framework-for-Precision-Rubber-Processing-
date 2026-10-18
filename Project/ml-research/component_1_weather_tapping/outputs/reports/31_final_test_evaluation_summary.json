@@ -1,0 +1,103 @@
+{
+  "project": "RubberSense Component 1",
+  "stage": "31_final_test_evaluation",
+  "protocol": "Selected models were chosen by CV on the training partition. The test partition was loaded once here. Other candidates are also scored on test for transparency, but those numbers did not influence selection.",
+  "test_loaded": true,
+  "test_evaluated": true,
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "regression": {
+    "drc_prediction": {
+      "selected_model": "tuned_gradient_boosting",
+      "selection_role": "tuned",
+      "development_cv": {
+        "RMSE_mean": 0.8480759229299946,
+        "MAE_mean": 0.6733332620463139,
+        "R2_mean": 0.7983481581936641,
+        "within_tolerance_pct_mean": 75.15789473684211
+      },
+      "test": {
+        "MAE": 0.6857408325750253,
+        "RMSE": 0.8626585865075098,
+        "R2": 0.8013578438060657,
+        "within_tolerance_pct": 77.31092436974791,
+        "tolerance": 1.0
+      },
+      "test_estates": 73,
+      "test_rows": 119,
+      "x_test_sha256": "cb238b9ba30a3e8ff51a20af5d4292b160066bb3a80419e74781d0b6b1c0569a",
+      "y_test_sha256": "fcf964e1730c7d8d623527fed4f9b14f2f2f9a3895a5eed4ff1bcf7b720f7fdc"
+    },
+    "price_estimation": {
+      "selected_model": "tuned_random_forest",
+      "selection_role": "tuned",
+      "development_cv": {
+        "RMSE_mean": 7.485478222429592,
+        "MAE_mean": 5.956389207733297,
+        "R2_mean": 0.6961121219085528,
+        "within_tolerance_pct_mean": 77.91666666666667
+      },
+      "test": {
+        "MAE": 6.229200403448244,
+        "RMSE": 7.662891397886357,
+        "R2": 0.7258782548325653,
+        "within_tolerance_pct": 74.16666666666667,
+        "tolerance": 9.0
+      },
+      "test_estates": 74,
+      "test_rows": 120,
+      "x_test_sha256": "d064ac608db45bee16407ee6a4c7519a3f786ccb8110d0cfeff9a1ade2329ce0",
+      "y_test_sha256": "d63ee6780c2e82e347e381813ad44337ab76542e8d98443548651732717c172e"
+    }
+  },
+  "classification": {
+    "tapping_advisory": {
+      "selected_model": "tuned_gradient_boosting",
+      "selection_role": "tuned",
+      "development_cv": {
+        "accuracy_mean": 0.6666666666666667,
+        "macro_precision_mean": 0.6801186064232427,
+        "macro_recall_mean": 0.6547429669776867,
+        "macro_f1_mean": 0.6610312235260597
+      },
+      "test": {
+        "accuracy": 0.775,
+        "macro_precision": 0.7949206349206349,
+        "macro_recall": 0.7585470085470085,
+        "macro_f1": 0.767721744733239
+      },
+      "confusion_matrix_labels": [
+        "High",
+        "Low",
+        "Moderate"
+      ],
+      "confusion_matrix": [
+        [
+          44,
+          2,
+          2
+        ],
+        [
+          5,
+          22,
+          6
+        ],
+        [
+          11,
+          1,
+          27
+        ]
+      ],
+      "test_estates": 81,
+      "test_rows": 120,
+      "x_test_sha256": "5102e3abd2df3462ed0f4dbc5e1ec6010808d13838b27b49e8fe3faa4ff72635",
+      "y_test_sha256": "2193fd2c6271527db7ae0fe5fe656ed8e1158198747e23ca6e74f2bcbe82a852"
+    }
+  },
+  "figures": {
+    "matplotlib_available": true
+  },
+  "warnings": [
+    "Row-wise split: most test estates also appear in training.",
+    "Within-tolerance % is not accuracy."
+  ]
+}

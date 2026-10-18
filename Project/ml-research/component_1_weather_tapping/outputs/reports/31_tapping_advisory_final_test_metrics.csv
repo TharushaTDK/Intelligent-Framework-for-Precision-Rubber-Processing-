@@ -1,0 +1,2 @@
+accuracy,macro_precision,macro_recall,macro_f1,task,model
+0.775,0.7949206349206349,0.7585470085470085,0.767721744733239,tapping_advisory,tuned_gradient_boosting

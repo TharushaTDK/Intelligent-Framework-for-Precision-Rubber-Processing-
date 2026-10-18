@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latex Coagulation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-900: #12321d;
+            --green-700: #1f5130;
+            --green-500: #2f7d4a;
+            --green-100: #e5f2e8;
+            --cream: #f7f4ec;
+            --card: #ffffff;
+            --text: #1d2a22;
+            --muted: #6b7a70;
+            --line: #e4e1d6;
+            --water: #2b7bb9;
+            --water-bg: #e6f1fa;
+            --acid: #a05a1c;
+            --acid-bg: #fbeee0;
+            --time: #c27c0e;
+            --time-bg: #fdf3dc;
+            --error: #b42318;
+            --shadow: 0 10px 30px rgba(18, 50, 29, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Source Sans 3", "Segoe UI", Arial, sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            font-size: 16px;
+        }
+
+        .topbar {
+            background: var(--green-900);
+            color: white;
+        }
+
+        .topbar-inner {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 16px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 19px;
+            font-weight: 600;
+        }
+
+        .topbar span {
+            font-size: 13px;
+            opacity: 0.75;
+        }
+
+        .page {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 28px 16px 60px;
+        }
+
+        .part {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 22px;
+        }
+
+        .part-water {
+            --accent: var(--water);
+            --accent-bg: var(--water-bg);
+        }
+
+        .part-time {
+            --accent: var(--time);
+            --accent-bg: var(--time-bg);
+        }
+
+        .part-head {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .step {
+            flex: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: var(--accent-bg);
+            color: var(--accent);
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .part h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .part-head p {
+            margin: 2px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .field {
+            flex: 1 1 220px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--muted);
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 44px 12px 14px;
+            border: 1.5px solid var(--line);
+            border-radius: 6px;
+            font: inherit;
+            background: #fcfbf8;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-bg);
+            background: white;
+        }
+
+        .unit {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        button {
+            margin-top: 18px;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 6px;
+            background: var(--accent, var(--green-500));
+            color: white;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: filter 0.15s;
+        }
+
+        button:hover {
+            filter: brightness(0.92);
+        }
+
+        button.ghost {
+            background: white;
+            color: var(--error);
+            border: 1.5px solid #f1c7c2;
+            box-shadow: none;
+        }
+
+        button.go {
+            background: var(--green-500);
+        }
+
+        .answer {
+            margin-top: 24px;
+        }
+
+        .answer:empty {
+            display: none;
+        }
+
+        .tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+        }
+
+        .tile {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            border-radius: 8px;
+            background: var(--tile-bg);
+        }
+
+        .tile svg {
+            flex: none;
+            width: 44px;
+            height: 44px;
+            padding: 10px;
+            border-radius: 12px;
+            background: white;
+            fill: none;
+            stroke: var(--tile-color);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .tile small {
+            display: block;
+            color: var(--muted);
+            font-size: 12.5px;
+        }
+
+        .tile strong {
+            font-size: 24px;
+            color: var(--tile-color);
+        }
+
+        .tile-water {
+            --tile-bg: var(--water-bg);
+            --tile-color: var(--water);
+        }
+
+        .tile-acid {
+            --tile-bg: var(--acid-bg);
+            --tile-color: var(--acid);
+        }
+
+        .tile-time {
+            --tile-bg: var(--time-bg);
+            --tile-color: var(--time);
+        }
+
+        .tile-plain {
+            --tile-bg: var(--green-100);
+            --tile-color: var(--green-700);
+        }
+
+        .meta {
+            margin-top: 10px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .error {
+            color: var(--error);
+            background: #fdecea;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin: 0;
+        }
+
+        .guide {
+            margin-top: 18px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 16px 18px;
+        }
+
+        .guide h3 {
+            margin: 0 0 10px;
+            font-size: 15px;
+        }
+
+        .guide ol {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            counter-reset: point;
+        }
+
+        .guide li {
+            counter-increment: point;
+            position: relative;
+            padding: 0 0 10px 34px;
+            line-height: 1.55;
+            font-size: 14px;
+        }
+
+        .guide li::before {
+            content: counter(point);
+            position: absolute;
+            left: 0;
+            top: 1px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--green-100);
+            color: var(--green-700);
+            font-size: 12px;
+            font-weight: 600;
+            display: grid;
+            place-items: center;
+        }
+
+        .batch-tag {
+            display: inline-block;
+            margin-bottom: 14px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: var(--green-100);
+            color: var(--green-700);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .part-batches {
+            --accent: var(--green-500);
+            --accent-bg: var(--green-100);
+        }
+
+        .batch {
+            border: 1px solid #efe2c4;
+            background: #fffbf2;
+            border-radius: 10px;
+            padding: 18px;
+            margin-top: 14px;
+        }
+
+        .batch-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .chip {
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 12.5px;
+            font-weight: 600;
+            background: #eee;
+            color: #555;
+        }
+
+        .chip-in_progress {
+            background: var(--time-bg);
+            color: var(--time);
+        }
+
+        .chip-completed {
+            background: var(--green-100);
+            color: var(--green-700);
+        }
+
+        .hint {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 13.5px;
+        }
+
+        details {
+            margin-top: 14px;
+        }
+
+        summary {
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--green-700);
+        }
+
+        button.plain-btn {
+            background: white;
+            color: var(--accent);
+            border: 1.5px solid var(--accent);
+            box-shadow: none;
+        }
+
+        button.small {
+            padding: 7px 14px;
+            font-size: 13px;
+        }
+
+        .timer-body {
+            display: flex;
+            align-items: center;
+            gap: 26px;
+            flex-wrap: wrap;
+        }
+
+        .ring {
+            position: relative;
+            width: 170px;
+            height: 170px;
+            flex: none;
+        }
+
+        .ring svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .ring circle {
+            fill: none;
+            stroke-width: 12;
+        }
+
+        .ring .track {
+            stroke: rgba(194, 124, 14, 0.15);
+        }
+
+        .ring .bar {
+            stroke: var(--time);
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .ring.overdue .bar {
+            stroke: var(--error);
+        }
+
+        .ring-text {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-content: center;
+            text-align: center;
+        }
+
+        .ring-text strong {
+            font-size: 26px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .ring-text span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .timer-info {
+            flex: 1 1 220px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .timer-info button {
+            margin-right: 8px;
+        }
+
+        .alert-now {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            background: white;
+            border-left: 4px solid var(--time);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .alert-now.overdue {
+            border-color: var(--error);
+        }
+
+        .timeline {
+            list-style: none;
+            margin: 12px 0 0;
+            padding: 4px 8px 4px 4px;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .timeline li {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            padding: 7px 0;
+            border-bottom: 1px solid #f1e8d3;
+            font-size: 13.5px;
+        }
+
+        .timeline li:last-child {
+            border-bottom: none;
+        }
+
+        .timeline li::before {
+            content: "";
+            flex: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--time);
+        }
+
+        .timeline li.done {
+            color: #9aa39d;
+        }
+
+        .timeline li.done::before {
+            background: var(--time);
+        }
+
+        .timeline b {
+            flex: none;
+            min-width: 72px;
+        }
+
+        .toasts {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            left: 16px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: white;
+            border-left: 5px solid var(--time);
+            border-radius: 8px;
+            padding: 12px 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            font-size: 14px;
+        }
+
+        .toast-due {
+            border-color: var(--green-500);
+        }
+
+        .toast-overdue {
+            border-color: var(--error);
+        }
+
+        .toast > svg {
+            flex: none;
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: var(--time);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .toast strong {
+            display: block;
+        }
+
+        .toast div {
+            flex: 1;
+        }
+
+        button.toast-close {
+            margin: 0;
+            padding: 0 4px;
+            background: none;
+            color: var(--muted);
+            font-size: 20px;
+            line-height: 1;
+            box-shadow: none;
+        }
+
+        .alert-now > svg {
+            flex: none;
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: var(--time);
+            stroke-width: 2;
+        }
+
+        .facts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .facts div {
+            background: white;
+            border: 1px solid #f1e8d3;
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+
+        .facts small {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .facts strong {
+            font-size: 15px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap;
+        }
+
+        th {
+            color: var(--muted);
+            font-size: 12.5px;
+            font-weight: 600;
+        }
+
+        .chip-cancelled {
+            background: #fdecea;
+            color: var(--error);
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .part {
+                padding: 20px;
+            }
+
+            .timer-body {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <div class="topbar-inner">
+        <h1>Latex Coagulation</h1>
+        <span id="today"></span>
+    </div>
+</header>
+
+<div id="toasts" class="toasts"></div>
+
+<div class="page">
+    <section class="part part-water">
+        <div class="part-head">
+            <div class="step">1</div>
+            <div>
+                <h2>Water and Acid Amount</h2>
+                <p>How much water and 1% formic acid solution should be added?</p>
+            </div>
+        </div>
+
+        <form id="waterAcidForm">
+            <div class="row">
+                <div class="field">
+                    <label for="waDrc">Dry rubber content</label>
+                    <div class="input-wrap">
+                        <input id="waDrc" type="number" min="0.01" max="100" step="0.01" placeholder="e.g. 35.2" required>
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="waVolume">Latex volume</label>
+                    <div class="input-wrap">
+                        <input id="waVolume" type="number" min="0.01" step="0.01" placeholder="e.g. 100" required>
+                        <span class="unit">L</span>
+                    </div>
+                </div>
+            </div>
+            <button type="submit">Calculate water and acid amount</button>
+        </form>
+
+        <div id="waterAcidAnswer" class="answer"></div>
+    </section>
+
+    <section class="part part-time">
+        <div class="part-head">
+            <div class="step">2</div>
+            <div>
+                <h2>Coagulation Time</h2>
+                <p>How long will this batch take to coagulate?</p>
+            </div>
+        </div>
+
+        <form id="timeForm">
+            <div class="row">
+                <div class="field">
+                    <label for="tDrc">Dry rubber content</label>
+                    <div class="input-wrap">
+                        <input id="tDrc" type="number" min="0.01" max="100" step="0.01" placeholder="e.g. 35.2" required>
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="tVolume">Latex volume</label>
+                    <div class="input-wrap">
+                        <input id="tVolume" type="number" min="0.01" step="0.01" placeholder="e.g. 100" required>
+                        <span class="unit">L</span>
+                    </div>
+                </div>
+            </div>
+            <p id="linkHint" class="hint"></p>
+            <button type="submit">Predict coagulation time</button>
+        </form>
+
+        <div id="timeAnswer" class="answer"></div>
+    </section>
+
+    <section class="part part-batches">
+        <div class="part-head">
+            <div class="step">3</div>
+            <div>
+                <h2>Batch Timers</h2>
+                <p>Each batch has its own timer and alerts.</p>
+            </div>
+        </div>
+
+        <p id="batchEmpty" class="muted">No batches yet. Predict a coagulation time to add one.</p>
+        <div id="batchList"></div>
+    </section>
+
+    <section class="part part-batches">
+        <div class="part-head">
+            <div class="step">4</div>
+            <div>
+                <h2>Batch History</h2>
+                <p>Finished batches with the amounts used and the actual coagulation time.</p>
+            </div>
+        </div>
+
+        <div id="historyList"></div>
+    </section>
+</div>
+
+<script>
+    const API = "/api/v1/coagulation";
+    // estate selection comes with Component 1, until then batches are saved under this id
+    const ESTATE_ID = "MANUAL";
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const RING = 2 * Math.PI * 76;
+
+    const ICONS = {
+        water: ["M12 3c3.5 4.2 6 7.4 6 10.5A6 6 0 0 1 6 13.5C6 10.4 8.5 7.2 12 3z"],
+        acid: ["M9 3h6", "M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3", "M7.5 15h9"],
+        time: ["M12 7v5l3 2", "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"],
+        check: ["M5 12l4 4 10-10"],
+        bell: ["M6 9a6 6 0 1 1 12 0c0 6 2 7 2 7H4s2-1 2-7", "M10 20a2 2 0 0 0 4 0"],
+    };
+
+    // every batch on screen, keyed by batch id
+    const batches = new Map();
+    // live ring and alert elements for running batches
+    const live = new Map();
+    // batch made in part 1, part 2 adds its time to the same batch
+    let currentBatch = null;
+
+    const $ = id => document.getElementById(id);
+
+    $("today").textContent = new Date().toLocaleDateString([], {
+        weekday: "long", day: "numeric", month: "long", year: "numeric",
+    });
+
+    function make(tag, text, className) {
+        const node = document.createElement(tag);
+        if (text !== undefined && text !== null) node.textContent = String(text);
+        if (className) node.className = className;
+        return node;
+    }
+
+    function icon(name) {
+        const svg = document.createElementNS(SVG_NS, "svg");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        ICONS[name].forEach(d => {
+            const path = document.createElementNS(SVG_NS, "path");
+            path.setAttribute("d", d);
+            svg.append(path);
+        });
+        return svg;
+    }
+
+    async function call(url, method = "GET", body) {
+        const options = { method, headers: { "Content-Type": "application/json" } };
+        if (body) options.body = JSON.stringify(body);
+        const res = await fetch(url, options);
+        let data = {};
+        try {
+            data = await res.json();
+        } catch {
+            data = { detail: "Unexpected server response." };
+        }
+        if (!res.ok) {
+            const detail = Array.isArray(data.detail)
+                ? data.detail.map(d => d.msg).join("; ")
+                : data.detail;
+            throw new Error(detail || "Request failed.");
+        }
+        return data;
+    }
+
+    function showError(box, message) {
+        box.replaceChildren(make("p", message, "error"));
+    }
+
+    function tile(kind, label, value, extra) {
+        const div = make("div", null, "tile tile-" + kind);
+        const text = make("div");
+        text.append(make("small", label), make("strong", value));
+        if (extra) text.append(make("small", extra));
+        div.append(icon(kind === "plain" ? "check" : kind), text);
+        return div;
+    }
+
+    function addGuidance(box, items) {
+        for (const item of items) {
+            const guide = make("div", null, "guide");
+            guide.append(make("h3", item.title));
+            const list = make("ol");
+            item.guidance.forEach(point => list.append(make("li", point)));
+            guide.append(list);
+            box.append(guide);
+        }
+    }
+
+    function batchTag(data) {
+        return make("div", `Batch #${data.id} · DRC ${data.drc}% · ${data.latex_volume_L} L`, "batch-tag");
+    }
+
+    function clockText(ms) {
+        const total = Math.max(Math.floor(ms / 1000), 0);
+        const h = Math.floor(total / 3600);
+        const m = Math.floor((total % 3600) / 60);
+        const s = total % 60;
+        return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    }
+
+    // same wording as the backend guidance, e.g. "7 hours 48 minutes"
+    function hoursText(hours) {
+        const total = Math.round(hours * 60);
+        const h = Math.floor(total / 60);
+        const m = total % 60;
+        const parts = [];
+        if (h) parts.push(`${h} hour${h !== 1 ? "s" : ""}`);
+        if (m || !h) parts.push(`${m} minute${m !== 1 ? "s" : ""}`);
+        return parts.join(" ");
+    }
+
+    function shortHours(hours) {
+        const total = Math.round(hours * 60);
+        const h = Math.floor(total / 60);
+        return h ? `${h} h ${total % 60} min` : `${total} min`;
+    }
+
+    function dateTime(value) {
+        return new Date(value).toLocaleString([], { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    }
+
+    function time(value) {
+        return new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function sameInputs(batch, drc, volume) {
+        return batch && Number(drc) === batch.drc && Number(volume) === batch.latex_volume_L;
+    }
+
+    // part 1
+
+    $("waterAcidForm").addEventListener("submit", async e => {
+        e.preventDefault();
+        const box = $("waterAcidAnswer");
+        const drc = $("waDrc").value;
+        const volume = $("waVolume").value;
+        try {
+            const data = await call(API + "/recommendations", "POST", {
+                estate_id: ESTATE_ID,
+                drc: Number(drc),
+                latex_volume_L: Number(volume),
+                outputs: ["water_acid"],
+            });
+            currentBatch = data;
+            box.replaceChildren(batchTag(data));
+            const tiles = make("div", null, "tiles");
+            tiles.append(
+                tile("water", "Water to add", data.water_acid.water_amount_L.toFixed(2) + " L"),
+                tile("acid", "1% formic acid solution", data.water_acid.prepared_1pct_formic_acid_solution_mL.toFixed(1) + " mL"),
+            );
+            box.append(tiles);
+            addGuidance(box, data.guidance);
+
+            $("tDrc").value = drc;
+            $("tVolume").value = volume;
+            $("timeAnswer").replaceChildren();
+            updateLinkHint();
+        } catch (err) {
+            showError(box, err.message);
+        }
+    });
+
+    // part 2
+
+    function updateLinkHint() {
+        const hint = $("linkHint");
+        if (currentBatch && sameInputs(currentBatch, $("tDrc").value, $("tVolume").value)) {
+            hint.textContent = `This time will be added to batch #${currentBatch.id} from part 1.`;
+        } else {
+            hint.textContent = "A new batch will be created for this latex.";
+        }
+    }
+
+    $("tDrc").addEventListener("input", updateLinkHint);
+    $("tVolume").addEventListener("input", updateLinkHint);
+
+    $("timeForm").addEventListener("submit", async e => {
+        e.preventDefault();
+        const box = $("timeAnswer");
+        const drc = $("tDrc").value;
+        const volume = $("tVolume").value;
+        try {
+            let data;
+            if (currentBatch && sameInputs(currentBatch, drc, volume)) {
+                data = await call(`${API}/recommendations/${currentBatch.id}/coagulation-time`, "POST");
+            } else {
+                data = await call(API + "/recommendations", "POST", {
+                    estate_id: ESTATE_ID,
+                    drc: Number(drc),
+                    latex_volume_L: Number(volume),
+                    outputs: ["coagulation_time"],
+                });
+            }
+            currentBatch = null;
+            updateLinkHint();
+
+            box.replaceChildren(batchTag(data));
+            const tiles = make("div", null, "tiles");
+            tiles.append(tile("time", "Predicted coagulation time", hoursText(data.coagulation_time_hours)));
+            box.append(tiles);
+            addGuidance(box, data.guidance.filter(g => g.output === "coagulation_time"));
+            box.append(make("p", `Batch #${data.id} is ready in the batch timers below.`, "hint"));
+            const again = make("button", "Check another batch", "plain-btn");
+            again.onclick = resetForms;
+            box.append(again);
+
+            putBatch(data);
+        } catch (err) {
+            showError(box, err.message);
+        }
+    });
+
+    // clears both parts for the next latex batch, running timers stay below
+    function resetForms() {
+        ["waDrc", "waVolume", "tDrc", "tVolume"].forEach(id => ($(id).value = ""));
+        $("waterAcidAnswer").replaceChildren();
+        $("timeAnswer").replaceChildren();
+        currentBatch = null;
+        updateLinkHint();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        $("waDrc").focus({ preventScroll: true });
+    }
+
+    // batch timers
+
+    function putBatch(data) {
+        // finished batches move from the timers to the history
+        if (data.status === "completed" || data.status === "cancelled") {
+            batches.delete(data.id);
+            loadHistory();
+        } else {
+            batches.set(data.id, data);
+        }
+        drawBatches();
+    }
+
+    function ring() {
+        const wrap = make("div", null, "ring");
+        const svg = document.createElementNS(SVG_NS, "svg");
+        svg.setAttribute("viewBox", "0 0 170 170");
+        for (const cls of ["track", "bar"]) {
+            const c = document.createElementNS(SVG_NS, "circle");
+            c.setAttribute("cx", "85");
+            c.setAttribute("cy", "85");
+            c.setAttribute("r", "76");
+            c.setAttribute("class", cls);
+            svg.append(c);
+        }
+        const bar = svg.lastChild;
+        bar.style.strokeDasharray = RING;
+        const text = make("div", null, "ring-text");
+        const big = make("strong");
+        const small = make("span");
+        text.append(big, small);
+        wrap.append(svg, text);
+        return { wrap, bar, big, small };
+    }
+
+    function drawBatches() {
+        const list = $("batchList");
+        list.replaceChildren();
+        live.clear();
+
+        const items = [...batches.values()].sort((a, b) => b.id - a.id);
+        $("batchEmpty").hidden = items.length > 0;
+        items.forEach(b => list.append(batchCard(b)));
+        tickAll();
+    }
+
+    function statusChip(status) {
+        const names = { recommended: "Not started", in_progress: "Running", completed: "Completed", cancelled: "Cancelled" };
+        return make("span", names[status] || status, "chip chip-" + status);
+    }
+
+    function batchCard(b) {
+        const card = make("article", null, "batch");
+        const head = make("div", null, "batch-head");
+        const title = make("div");
+        title.append(make("strong", `Batch #${b.id}`), make("span", ` · ${dateTime(b.created_at)}`, "muted"));
+        head.append(title, statusChip(b.status));
+        card.append(head, batchFacts(b));
+
+        if (b.status === "recommended") {
+            card.append(make("p", "Start the timer when coagulation begins. You will get alerts until the batch is ready.", "muted"));
+            const start = make("button", "Start timer", "go");
+            start.onclick = () => {
+                askNotificationPermission();
+                setStatus(b, "in_progress");
+            };
+            card.append(start);
+            return card;
+        }
+
+        if (b.status === "in_progress") {
+            const body = make("div", null, "timer-body");
+            const r = ring();
+            const info = make("div", null, "timer-info");
+            info.append(
+                make("div", `Started at ${time(b.started_at)}`),
+                make("div", `Expected to finish at ${time(b.expected_completion_at)}`),
+            );
+            const done = make("button", "Coagulation completed", "go");
+            done.onclick = () => setStatus(b, "completed");
+            const cancel = make("button", "Cancel", "ghost");
+            cancel.onclick = () => confirm(`Cancel batch #${b.id}?`) && setStatus(b, "cancelled");
+            info.append(done, cancel);
+            body.append(r.wrap, info);
+            card.append(body);
+
+            const alertBox = make("div");
+            card.append(alertBox);
+
+            const details = make("details");
+            details.append(make("summary", `Alert schedule (every ${b.alert_interval_minutes} min)`));
+            const timeline = make("ul", null, "timeline");
+            b.alerts.forEach(a => {
+                const li = make("li", null, new Date(a.alert_at) <= Date.now() ? "done" : "");
+                li.append(make("b", time(a.alert_at)), make("span", a.message));
+                timeline.append(li);
+            });
+            details.append(timeline);
+            card.append(details);
+
+            live.set(b.id, { batch: b, ring: r, alertBox, shown: null });
+            return card;
+        }
+
+        return card;
+    }
+
+    function batchFacts(b) {
+        const facts = make("div", null, "facts");
+        const add = (label, value) => {
+            const item = make("div");
+            item.append(make("small", label), make("strong", value));
+            facts.append(item);
+        };
+        add("DRC", `${b.drc} %`);
+        add("Latex volume", `${b.latex_volume_L} L`);
+        add("Water", b.water_acid ? `${b.water_acid.water_amount_L.toFixed(2)} L` : "Not asked");
+        add("1% formic acid solution", b.water_acid ? `${b.water_acid.prepared_1pct_formic_acid_solution_mL.toFixed(1)} mL` : "Not asked");
+        add("Predicted time", b.coagulation_time_hours === null ? "Not asked" : hoursText(b.coagulation_time_hours));
+        return facts;
+    }
+
+    // batch history
+
+    async function loadHistory() {
+        const box = $("historyList");
+        try {
+            const [done, cancelled] = await Promise.all([
+                call(`${API}/recommendations?estate_id=${ESTATE_ID}&status=completed&limit=50`),
+                call(`${API}/recommendations?estate_id=${ESTATE_ID}&status=cancelled&limit=50`),
+            ]);
+            drawHistory([...done.items, ...cancelled.items].sort((a, b) => b.id - a.id));
+        } catch (err) {
+            showError(box, err.message);
+        }
+    }
+
+    function drawHistory(items) {
+        const box = $("historyList");
+        box.replaceChildren();
+        if (!items.length) {
+            box.append(make("p", "Finished batches will appear here.", "muted"));
+            return;
+        }
+
+        const finished = items.filter(b => b.status === "completed");
+        if (finished.length) {
+            const avg = finished.reduce((sum, b) => sum + Math.abs(b.actual_coagulation_time_hours - b.coagulation_time_hours), 0) / finished.length;
+            box.append(make("p", `${finished.length} completed batch${finished.length > 1 ? "es" : ""}. On average the actual time was ${shortHours(avg)} away from the predicted time.`, "hint"));
+        }
+
+        const wrap = make("div", null, "table-wrap");
+        const table = make("table");
+        const headRow = make("tr");
+        ["Batch", "Date", "DRC", "Latex", "Water", "Acid solution", "Predicted", "Actual", "Difference", "Status"]
+            .forEach(h => headRow.append(make("th", h)));
+        const thead = make("thead");
+        thead.append(headRow);
+
+        const tbody = make("tbody");
+        for (const b of items) {
+            const row = make("tr");
+            const hasActual = b.actual_coagulation_time_hours !== null;
+            const diff = hasActual ? b.actual_coagulation_time_hours - b.coagulation_time_hours : null;
+            [
+                `#${b.id}`,
+                dateTime(b.created_at),
+                `${b.drc} %`,
+                `${b.latex_volume_L} L`,
+                b.water_acid ? `${b.water_acid.water_amount_L.toFixed(2)} L` : "—",
+                b.water_acid ? `${b.water_acid.prepared_1pct_formic_acid_solution_mL.toFixed(1)} mL` : "—",
+                b.coagulation_time_hours === null ? "—" : shortHours(b.coagulation_time_hours),
+                hasActual ? shortHours(b.actual_coagulation_time_hours) : "—",
+                hasActual ? (diff >= 0 ? "+" : "−") + shortHours(Math.abs(diff)) : "—",
+            ].forEach(v => row.append(make("td", v)));
+            const statusCell = make("td");
+            statusCell.append(statusChip(b.status));
+            row.append(statusCell);
+            tbody.append(row);
+        }
+        table.append(thead, tbody);
+        wrap.append(table);
+        box.append(wrap);
+    }
+
+    // one clock drives every running batch
+    function tickAll() {
+        const now = Date.now();
+        for (const item of live.values()) {
+            const { batch: b, ring: r, alertBox } = item;
+            const start = new Date(b.started_at);
+            const end = new Date(b.expected_completion_at);
+            const left = end - now;
+            if (left > 0) {
+                r.big.textContent = clockText(left);
+                r.small.textContent = "remaining";
+                // ring starts full and empties as the time runs out
+                r.bar.style.strokeDashoffset = RING * (1 - left / (end - start));
+            } else {
+                r.wrap.classList.add("overdue");
+                r.big.textContent = "+" + clockText(-left);
+                r.small.textContent = "past expected time";
+                r.bar.style.strokeDashoffset = 0;
+            }
+
+            const passed = b.alerts.filter(a => new Date(a.alert_at) <= now);
+            const last = passed[passed.length - 1];
+            if (last && item.shown !== last.alert_at) {
+                item.shown = last.alert_at;
+                const note = make("div", null, "alert-now" + (left <= 0 ? " overdue" : ""));
+                note.append(icon("bell"), make("span", last.message));
+                alertBox.replaceChildren(note);
+            }
+
+            for (const a of passed) {
+                const key = `${b.id}|${a.alert_at}`;
+                if (notified.has(key)) continue;
+                notified.add(key);
+                // only fresh alerts pop up, old ones from before a reload stay quiet
+                if (now - new Date(a.alert_at) < 90000) notify(b, a);
+            }
+        }
+    }
+
+    // alerts: popup on the page, a short beep and a browser notification
+
+    const notified = new Set();
+    let audio = null;
+
+    document.addEventListener("click", () => {
+        // browsers only allow sound after the user has clicked something
+        if (!audio && window.AudioContext) audio = new AudioContext();
+    });
+
+    function beep() {
+        if (!audio) return;
+        const osc = audio.createOscillator();
+        const gain = audio.createGain();
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.25, audio.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.9);
+        osc.connect(gain).connect(audio.destination);
+        osc.start();
+        osc.stop(audio.currentTime + 0.9);
+    }
+
+    function askNotificationPermission() {
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
+        }
+    }
+
+    function notify(b, a) {
+        const toast = make("div", null, "toast toast-" + a.type);
+        const text = make("div");
+        text.append(make("strong", a.type === "progress" ? "Progress" : a.type === "due" ? "Time reached" : "Overdue"), make("span", a.message));
+        const close = make("button", "×", "toast-close");
+        close.onclick = () => toast.remove();
+        toast.append(icon("bell"), text, close);
+        $("toasts").prepend(toast);
+        setTimeout(() => toast.remove(), 20000);
+
+        beep();
+        if ("Notification" in window && Notification.permission === "granted") {
+            new Notification(`Batch #${b.id}`, { body: a.message });
+        }
+    }
+
+    setInterval(tickAll, 1000);
+
+    // alert lists come from the server, refresh running batches every minute
+    setInterval(async () => {
+        const running = [...batches.values()].filter(b => b.status === "in_progress");
+        if (!running.length) return;
+        try {
+            const fresh = await Promise.all(running.map(b => call(`${API}/recommendations/${b.id}`)));
+            fresh.forEach(b => batches.set(b.id, b));
+            drawBatches();
+        } catch {
+            // keep the current view if the server is briefly unreachable
+        }
+    }, 60000);
+
+    async function setStatus(b, status) {
+        try {
+            putBatch(await call(`${API}/recommendations/${b.id}/status`, "PATCH", { status }));
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+
+    // bring back batches that are waiting or running after a page reload
+    async function loadBatches() {
+        try {
+            const [running, waiting] = await Promise.all([
+                call(`${API}/recommendations?estate_id=${ESTATE_ID}&status=in_progress&limit=50`),
+                call(`${API}/recommendations?estate_id=${ESTATE_ID}&status=recommended&limit=50`),
+            ]);
+            running.items.forEach(b => batches.set(b.id, b));
+            waiting.items
+                .filter(b => b.outputs.includes("coagulation_time"))
+                .forEach(b => batches.set(b.id, b));
+        } catch {
+            // page still works for new batches
+        }
+        drawBatches();
+    }
+
+    updateLinkHint();
+    loadBatches();
+    loadHistory();
+</script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+MAE,RMSE,R2,within_tolerance_pct,tolerance,task,model
+0.6857408325750253,0.8626585865075098,0.8013578438060657,77.31092436974791,1.0,drc_prediction,tuned_gradient_boosting

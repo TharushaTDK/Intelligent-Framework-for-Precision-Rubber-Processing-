@@ -1,0 +1,1 @@
+Audit reflects existing row-based splits. For generalization to entirely unseen estates, use group-based splitting by estate_id and report that separately.

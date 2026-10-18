@@ -1,0 +1,59 @@
+{
+  "stage": "17_linear_regression_regression",
+  "task": "price_estimation",
+  "target": "price_lkr_per_kg",
+  "model_family": "linear_regression",
+  "model_class": "LinearRegression",
+  "role": "candidates",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "copy_X": true,
+    "fit_intercept": true,
+    "n_jobs": null,
+    "positive": false,
+    "tol": 1e-06
+  },
+  "cv": {
+    "folds": 5,
+    "primary_metric": "RMSE",
+    "MAE": {
+      "mean": 6.109395179089601,
+      "std": 0.2964362681956329
+    },
+    "RMSE": {
+      "mean": 7.534710854219045,
+      "std": 0.45225603890864746
+    },
+    "R2": {
+      "mean": 0.6911630899085605,
+      "std": 0.04840326905602854
+    },
+    "within_tolerance_pct": {
+      "mean": 76.45833333333333,
+      "std": 2.4295632895188737
+    }
+  },
+  "tolerance": 9.0,
+  "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
+  "train_rows": 480,
+  "n_features": 10,
+  "feature_names": [
+    "latex_drc_pct",
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "soil_moisture_pct",
+    "soil_ph",
+    "tree_count",
+    "tapping_system",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "x_train_sha256": "0e5040d36c7714779edae569b749a17788113aad54a4da6a0c56088d20cfc730",
+  "y_train_sha256": "19b380b45a29becfe7dd62a0aa2d305c3c7e2e4f0a17e4d6ea4170d57fca91cc",
+  "model_sha256": "a6f0274ea26d425fc6293eb5d88d0aae0826e50391572f638d7747fb13591785"
+}

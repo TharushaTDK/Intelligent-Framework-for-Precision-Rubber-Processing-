@@ -1,0 +1,75 @@
+{
+  "stage": "17_hist_gradient_boosting_regression",
+  "task": "price_estimation",
+  "target": "price_lkr_per_kg",
+  "model_family": "hist_gradient_boosting",
+  "model_class": "HistGradientBoostingRegressor",
+  "role": "candidates",
+  "fit_scope": "TRAIN_ONLY",
+  "validation_scope": "CV_ON_TRAIN_ONLY",
+  "test_loaded": false,
+  "hyperparameter_tuning_performed": false,
+  "parameters": {
+    "categorical_features": "from_dtype",
+    "early_stopping": "auto",
+    "interaction_cst": null,
+    "l2_regularization": 0.0,
+    "learning_rate": 0.1,
+    "loss": "squared_error",
+    "max_bins": 255,
+    "max_depth": null,
+    "max_features": 1.0,
+    "max_iter": 100,
+    "max_leaf_nodes": 31,
+    "min_samples_leaf": 20,
+    "monotonic_cst": null,
+    "n_iter_no_change": 10,
+    "quantile": null,
+    "random_state": 340,
+    "scoring": "loss",
+    "tol": 1e-07,
+    "validation_fraction": 0.1,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "cv": {
+    "folds": 5,
+    "primary_metric": "RMSE",
+    "MAE": {
+      "mean": 6.227598586884129,
+      "std": 0.36428297879175353
+    },
+    "RMSE": {
+      "mean": 7.958874785641136,
+      "std": 0.35724157992372774
+    },
+    "R2": {
+      "mean": 0.6574850870638858,
+      "std": 0.03476506038057007
+    },
+    "within_tolerance_pct": {
+      "mean": 73.54166666666666,
+      "std": 4.497298571858935
+    }
+  },
+  "tolerance": 9.0,
+  "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
+  "train_rows": 480,
+  "n_features": 10,
+  "feature_names": [
+    "latex_drc_pct",
+    "temperature_c",
+    "relative_humidity_pct",
+    "rainfall_last_6h_mm",
+    "soil_moisture_pct",
+    "soil_ph",
+    "tree_count",
+    "tapping_system",
+    "month",
+    "day_of_year"
+  ],
+  "dataset_provenance": "synthetic; not real-world evidence",
+  "x_train_sha256": "7636de198867881591d22e2730a4964fed4c6cdd2e6be164dc2c2c0bd4735803",
+  "y_train_sha256": "19b380b45a29becfe7dd62a0aa2d305c3c7e2e4f0a17e4d6ea4170d57fca91cc",
+  "model_sha256": "9ae9960e65d486d1d41fa51df0c050ff5cbd1d5d5d067a494d7991e608902e0f"
+}
