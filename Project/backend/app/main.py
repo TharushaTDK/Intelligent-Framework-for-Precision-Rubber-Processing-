@@ -3,6 +3,9 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 
+from backend.app.api.routes.coagulation import (
+    router as coagulation_router,
+)
 from backend.app.api.routes.smokehouse import (
     router as smokehouse_router,
 )
@@ -27,6 +30,7 @@ SMOKEHOUSE_DASHBOARD_FILE = (
     / "smokehouse_dashboard.html"
 )
 
+COAGULATION_DASHBOARD_FILE = STATIC_DIR / "coagulation_dashboard.html"
 WEATHER_TAPPING_DASHBOARD_FILE = (
     STATIC_DIR
     / "weather_tapping_dashboard.html"
@@ -52,6 +56,7 @@ app.include_router(
 )
 
 app.include_router(
+    coagulation_router
     weather_tapping_router
 )
 
@@ -107,6 +112,18 @@ def smokehouse_dashboard() -> FileResponse:
     )
 
 
+@app.get(
+    "/coagulation-dashboard",
+    include_in_schema=False,
+)
+def coagulation_dashboard() -> FileResponse:
+    """Temporary Component 2 validation dashboard, not the final mobile app."""
+
+    return FileResponse(
+        path=COAGULATION_DASHBOARD_FILE,
+        media_type="text/html",
+        # always send the latest page so old copies are not shown while testing
+        headers={"Cache-Control": "no-store"},
 # ============================================================
 # COMPONENT 1 TEMPORARY TESTING DASHBOARD
 # ============================================================
