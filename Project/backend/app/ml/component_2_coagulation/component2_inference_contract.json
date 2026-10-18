@@ -1,0 +1,27 @@
+{
+  "component": "Component 2 - Latex Coagulation Recommendation",
+  "client_inputs": {
+    "estate_id": "string, estate identifier owned by Component 1",
+    "latex_volume_L": "float > 0, litres"
+  },
+  "server_inputs": {
+    "drc": "float, estate level predicted DRC (%) supplied by Component 1"
+  },
+  "water_acid": {
+    "features": ["drc", "latex_volume_L"],
+    "targets": ["water_amount_L", "prepared_1pct_formic_acid_solution_mL"],
+    "units": {"water_amount_L": "L", "prepared_1pct_formic_acid_solution_mL": "mL"}
+  },
+  "coagulation_time": {
+    "features": ["drc", "latex_volume_L", "water_amount_L", "prepared_1pct_formic_acid_solution_mL"],
+    "targets": ["coagulation_time_hours"],
+    "units": {"coagulation_time_hours": "h"},
+    "water_acid_source": "water_acid model output for the same batch"
+  },
+  "preprocessing": "none outside the artifacts, raw values are passed in feature order",
+  "missing_values": "not allowed, every feature is required",
+  "training_ranges": {
+    "drc": {"min": 19.4, "max": 45.56},
+    "latex_volume_L": {"min": 5.13, "max": 199.92}
+  }
+}
