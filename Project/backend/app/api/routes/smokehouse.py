@@ -44,9 +44,13 @@ from backend.app.schemas.smokehouse import (
 
     SmokehouseBatchCreate,
 
+    SmokehouseBatchListResponse,
+
     SmokehouseBatchResponse,
 
     SmokehouseBatchStatusUpdate,
+
+    SmokehouseBatchSummary,
 
     SmokehouseHistoryItemResponse,
 
@@ -87,6 +91,8 @@ from backend.app.services.smokehouse_service import (
     get_latest_layer_status,
 
     get_smokehouse_batch_by_code,
+
+    list_batches_by_smokehouse,
 
     predict_smokehouse_state,
 
@@ -349,6 +355,75 @@ def get_batch(
     return SmokehouseBatchResponse.model_validate(
 
         batch
+
+    )
+
+# ============================================================
+
+# LIST BATCHES FOR A SMOKEHOUSE
+
+# ============================================================
+
+
+@router.get(
+
+    "/smokehouses/{smokehouse_id}/batches",
+
+    response_model=SmokehouseBatchListResponse,
+
+    status_code=status.HTTP_200_OK,
+
+)
+def list_smokehouse_batches(
+
+    smokehouse_id: str,
+
+    db: Session = Depends(get_db),
+
+) -> SmokehouseBatchListResponse:
+    """
+
+    List every drying batch recorded for one smokehouse_id,
+    most recently started first.
+
+    An empty 'batches' array means no batches have been
+    recorded for that smokehouse_id yet — this is a listing
+    query, not a lookup by primary identifier, so it is not
+    a 404.
+
+    """
+
+    try:
+
+        batches = list_batches_by_smokehouse(
+
+            db,
+
+            smokehouse_id,
+
+        )
+
+    except SmokehouseServiceError as exc:
+
+        raise HTTPException(
+
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+
+            detail=str(exc),
+
+        ) from exc
+
+    return SmokehouseBatchListResponse(
+
+        smokehouse_id=smokehouse_id.strip(),
+
+        batches=[
+
+            SmokehouseBatchSummary.model_validate(batch)
+
+            for batch in batches
+
+        ],
 
     )
 

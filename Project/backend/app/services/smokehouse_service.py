@@ -512,6 +512,75 @@ def get_smokehouse_batch_by_code(
 
     return batch
 
+
+def list_batches_by_smokehouse(
+
+    db: Session,
+
+    smokehouse_id: str,
+
+) -> list[SmokehouseBatch]:
+    """
+
+    Retrieve every drying batch recorded for one smokehouse_id,
+    most recently started first.
+
+    This is a listing query, not a lookup by primary identifier:
+    an empty result means the smokehouse_id has no recorded
+    batches yet, not that something went wrong.
+
+    """
+
+    normalized_smokehouse_id = str(
+
+        smokehouse_id
+
+    ).strip()
+
+    if not normalized_smokehouse_id:
+
+        raise SmokehouseServiceError(
+
+            "smokehouse_id must not be empty."
+
+        )
+
+    try:
+
+        batches = db.scalars(
+
+            select(
+
+                SmokehouseBatch
+
+            )
+
+            .where(
+
+                SmokehouseBatch.smokehouse_id
+
+                == normalized_smokehouse_id
+
+            )
+
+            .order_by(
+
+                SmokehouseBatch.started_at.desc()
+
+            )
+
+        ).all()
+
+    except SQLAlchemyError as exc:
+
+        raise SmokehouseServiceError(
+
+            "Database error while listing smokehouse batches."
+
+        ) from exc
+
+    return list(batches)
+
 # ============================================================
 
 # ML INFERENCE

@@ -269,6 +269,38 @@ class SmokehouseBatchStatusUpdate(BaseModel):
             "ended_at",
         )
 
+
+class SmokehouseBatchSummary(BaseModel):
+    """
+    Lightweight batch summary used when listing every batch
+    recorded for one smokehouse_id. Omits layer configuration,
+    which callers can fetch via GET /batches/{batch_code} once
+    a batch is selected.
+    """
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
+    batch_code: str
+    smokehouse_id: str
+
+    started_at: datetime
+    ended_at: datetime | None
+
+    status: BatchStatus
+
+
+class SmokehouseBatchListResponse(BaseModel):
+    """
+    Every drying batch recorded for one smokehouse_id, most
+    recently started first.
+    """
+
+    smokehouse_id: str
+
+    batches: list[SmokehouseBatchSummary]
+
 # ============================================================
 # SENSOR / MANUAL READING SCHEMAS
 # ============================================================

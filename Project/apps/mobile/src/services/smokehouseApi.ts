@@ -1,6 +1,7 @@
 import type {
   LayerCode,
   SmokehouseBatchCreate,
+  SmokehouseBatchListResponse,
   SmokehouseBatchResponse,
   SmokehouseLatestStatusResponse,
   SmokehouseLayerHistoryResponse,
@@ -105,6 +106,18 @@ export function createSmokehouseReading(
       method: 'POST',
       body: JSON.stringify(payload),
     },
+  );
+}
+
+// ============================================================
+// BATCHES FOR A SMOKEHOUSE
+// ============================================================
+
+export function listSmokehouseBatches(
+  smokehouseId: string,
+): Promise<SmokehouseBatchListResponse> {
+  return request<SmokehouseBatchListResponse>(
+    `${SMOKEHOUSE_PREFIX}/smokehouses/${encodeURIComponent(smokehouseId)}/batches`,
   );
 }
 
