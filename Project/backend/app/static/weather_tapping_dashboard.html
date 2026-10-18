@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Component 1 - Tapping Advisory Dashboard</title>
+
+    <style>
+        /* Same palette as the Component 3 smokehouse dashboard. */
+        :root {
+            --background: #f5f7fa;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --text: #172033;
+            --muted: #667085;
+            --primary: #17345c;
+            --primary-hover: #102747;
+            --accent: #1f7a4d;
+            --accent-hover: #17603c;
+            --border: #dfe5ec;
+            --success-bg: #eaf8ef;
+            --success-text: #176b37;
+            --warning-bg: #fff5d9;
+            --warning-text: #8a6200;
+            --critical-bg: #fdeaea;
+            --critical-text: #a22222;
+            --info-bg: #eef4ff;
+            --shadow: 0 8px 30px rgba(23, 32, 51, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 18px 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header .label { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.75; }
+        header h1 { margin: 2px 0 0 0; font-size: 21px; }
+
+        main { max-width: 1100px; margin: 0 auto; padding: 22px 16px 48px; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            padding: 20px 22px;
+            margin-bottom: 18px;
+        }
+
+        .card h2 { margin: 0 0 12px 0; font-size: 17px; }
+
+        .row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+        .row > .field { flex: 1 1 220px; }
+
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+        label .unit { font-weight: 400; color: var(--muted); }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font: inherit;
+            font-size: 14px;
+            background: white;
+            color: var(--text);
+        }
+
+        input.invalid { border-color: var(--critical-text); background: var(--critical-bg); }
+
+        .hint { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: 0;
+            border-radius: 8px;
+            padding: 11px 18px;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        button:hover:not(:disabled) { background: var(--primary-hover); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button.primary-action { background: var(--accent); }
+        button.primary-action:hover:not(:disabled) { background: var(--accent-hover); }
+        button.secondary { background: white; color: var(--primary); border: 1px solid var(--border); }
+
+        .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.ok { background: var(--success-bg); color: var(--success-text); }
+        .badge.warn { background: var(--warning-bg); color: var(--warning-text); }
+        .badge.bad { background: var(--critical-bg); color: var(--critical-text); }
+        .badge.neutral { background: var(--surface-soft); color: var(--muted); border: 1px solid var(--border); }
+
+        .status { font-size: 13px; padding: 9px 12px; border-radius: 8px; margin-top: 12px; display: none; line-height: 1.5; }
+        .status.show { display: block; }
+        .status.loading { background: var(--info-bg); color: var(--primary); }
+        .status.success { background: var(--success-bg); color: var(--success-text); }
+        .status.error { background: var(--critical-bg); color: var(--critical-text); white-space: pre-line; }
+
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: -1px;
+            margin-right: 6px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+        .tile { background: var(--surface-soft); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+        .tile .name { font-size: 12px; color: var(--muted); }
+        .tile .value { font-size: 20px; font-weight: 700; margin-top: 2px; }
+        .tile .value small { font-size: 13px; font-weight: 500; color: var(--muted); }
+
+        .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; }
+
+        .result-box {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            background: var(--surface-soft);
+        }
+
+        .result-box h3 { margin: 0 0 6px 0; font-size: 15px; }
+        .big-value { font-size: 30px; font-weight: 700; margin: 6px 0 4px; }
+        .estimate-tag { font-size: 11px; color: var(--warning-text); font-weight: 700; letter-spacing: 0.03em; }
+        .line { font-size: 13px; color: var(--muted); margin-top: 4px; }
+        .empty { color: var(--muted); font-size: 13px; font-style: italic; margin: 6px 0 0; }
+
+        .blocked {
+            background: var(--critical-bg);
+            color: var(--critical-text);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-top: 8px;
+            white-space: pre-line;
+        }
+
+        details { margin-top: 14px; font-size: 13px; }
+        summary { cursor: pointer; color: var(--primary); font-weight: 600; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 12px; }
+
+        @media (max-width: 600px) {
+            header { padding: 16px; }
+            .card { padding: 16px; }
+            button { flex: 1 1 auto; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <div class="label">Component 1 · J26-DS-340</div>
+            <h1>Smart Rubber Tapping &amp; Collection Advisory</h1>
+        </div>
+        <span id="backendBadge" class="badge neutral">Checking backend...</span>
+    </header>
+
+    <main>
+
+        <!-- Estate selection -->
+        <section class="card">
+            <div class="row">
+                <div class="field">
+                    <label for="estateSelect">Estate</label>
+                    <select id="estateSelect"></select>
+                </div>
+                <div class="field">
+                    <label for="observationTimeInput">Advisory time <span class="unit">(Sri Lanka time)</span></label>
+                    <input id="observationTimeInput" type="datetime-local" step="60">
+                </div>
+            </div>
+
+            <div class="actions">
+                <button id="getWeatherBtn" class="secondary">Get Weather</button>
+                <button id="generateBtn" class="primary-action">Generate Advisory</button>
+                <button id="nowBtn" class="secondary">Use current time</button>
+            </div>
+
+            <details id="measurementsDetails">
+                <summary>Field measurements (optional)</summary>
+                <div class="grid">
+                    <div>
+                        <label for="soil_moisture_pct">Soil moisture <span class="unit">(%)</span></label>
+                        <input id="soil_moisture_pct" type="number" step="any" min="0" max="100">
+                    </div>
+                    <div>
+                        <label for="soil_ph">Soil pH</label>
+                        <input id="soil_ph" type="number" step="any" min="0" max="14">
+                    </div>
+                    <div>
+                        <label for="tree_count">Tree count</label>
+                        <input id="tree_count" type="number" step="1" min="0">
+                    </div>
+                    <div>
+                        <label for="tapping_system">Tapping system</label>
+                        <select id="tapping_system"></select>
+                    </div>
+                    <div>
+                        <label for="days_since_last_tap">Days since last tapping</label>
+                        <input id="days_since_last_tap" type="number" step="any" min="0">
+                    </div>
+                    <div>
+                        <label for="previous_collection_yield_litres">Previous yield <span class="unit">(litres)</span></label>
+                        <input id="previous_collection_yield_litres" type="number" step="any" min="0">
+                    </div>
+                    <div>
+                        <label for="latex_drc_pct">Measured DRC <span class="unit">(%)</span></label>
+                        <input id="latex_drc_pct" type="number" step="any" min="0" max="100">
+                    </div>
+                </div>
+            </details>
+
+            <div id="mainStatus" class="status"></div>
+        </section>
+
+        <!-- Weather -->
+        <section class="card">
+            <h2>Weather</h2>
+            <div id="weatherResult"><p class="empty">Not retrieved yet.</p></div>
+        </section>
+
+        <!-- Results -->
+        <section class="card">
+            <h2>Advisory results</h2>
+            <div class="line" id="resultsFor" style="margin: -6px 0 12px;"></div>
+
+            <div class="results">
+                <div class="result-box">
+                    <h3>Dry rubber content (DRC)</h3>
+                    <div id="drcResult"><p class="empty">Not generated yet.</p></div>
+                </div>
+                <div class="result-box">
+                    <h3>Tapping suitability</h3>
+                    <div id="tappingResult"><p class="empty">Not generated yet.</p></div>
+                </div>
+                <div class="result-box">
+                    <h3>Latex price</h3>
+                    <div id="priceResult"><p class="empty">Not generated yet.</p></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // ------------------------------------------------------------------
+        // Configuration
+        // ------------------------------------------------------------------
+
+        // Served by the FastAPI app itself, so relative URLs work without CORS.
+        const API_BASE = "/api/v1/weather-tapping";
+        const HEALTH_URL = "/health";
+        const REQUEST_TIMEOUT_MS = 30000;
+
+        // Sri Lanka has no daylight saving, so a fixed offset is safe here.
+        const SRI_LANKA_OFFSET = "+05:30";
+        const SRI_LANKA_OFFSET_MINUTES = 330;
+
+        // DEMO ESTATES - REPLACE BEFORE REAL USE.
+        // The IDs are real categories the DRC model was trained on, and the names
+        // are the dataset's own placeholders. The coordinates are rough town centres
+        // in rubber-growing districts, NOT the estates' real locations. Swap in real
+        // names and surveyed coordinates when we have them.
+        const ESTATES = [
+            { estate_id: "EST-001", estate_name: "TBD_EST-001", latitude: 6.5854, longitude: 79.9607 },
+            { estate_id: "EST-002", estate_name: "TBD_EST-002", latitude: 6.7056, longitude: 80.3847 },
+            { estate_id: "EST-003", estate_name: "TBD_EST-003", latitude: 7.2513, longitude: 80.3464 },
+            { estate_id: "EST-004", estate_name: "TBD_EST-004", latitude: 6.7156, longitude: 80.0626 },
+            { estate_id: "EST-005", estate_name: "TBD_EST-005", latitude: 6.0535, longitude: 80.2210 },
+        ].map(e => ({ ...e, coordinate_status: "demo_placeholder" }));
+
+        // Tapping systems that actually appear in the training data.
+        const TAPPING_SYSTEMS = ["S/2 D2", "S/2 D3", "S/2 D4"];
+
+        // Weather values copied straight from the snapshot response. Names and
+        // units match the prediction schemas exactly.
+        const WEATHER_FIELDS = [
+            { key: "temperature_c", label: "Temperature", unit: "°C" },
+            { key: "relative_humidity_pct", label: "Humidity", unit: "%" },
+            { key: "wind_speed_kmh", label: "Wind speed", unit: "km/h" },
+            { key: "rainfall_last_6h_mm", label: "Rain, last 6 h", unit: "mm" },
+            { key: "rainfall_last_3days_mm", label: "Rain, last 3 days", unit: "mm" },
+            { key: "forecast_rain_next_6h_mm", label: "Forecast rain, next 6 h", unit: "mm" },
+        ];
+
+        // Optional measurements. Limits mirror the backend's research policy, which
+        // quietly treats out-of-range values as missing, so we catch typos here.
+        const MEASUREMENT_RULES = {
+            soil_moisture_pct: { label: "Soil moisture", min: 0, max: 100 },
+            soil_ph: { label: "Soil pH", min: 0, max: 14 },
+            tree_count: { label: "Tree count", min: 0 },
+            days_since_last_tap: { label: "Days since last tapping", min: 0 },
+            previous_collection_yield_litres: { label: "Previous yield", min: 0 },
+            latex_drc_pct: { label: "Measured DRC", min: 0, max: 100 },
+        };
+
+        // Exactly which fields each endpoint accepts. The schemas use
+        // extra="forbid", so anything else (estate_name, say) gets a 422.
+        const ENDPOINT_FIELDS = {
+            drc: [
+                "temperature_c", "relative_humidity_pct", "rainfall_last_6h_mm",
+                "forecast_rain_next_6h_mm", "rainfall_last_3days_mm", "wind_speed_kmh",
+                "soil_moisture_pct", "soil_ph", "estate_id", "tree_count", "tapping_system",
+                "days_since_last_tap", "previous_collection_yield_litres",
+            ],
+            tapping: [
+                "temperature_c", "relative_humidity_pct", "rainfall_last_6h_mm",
+                "forecast_rain_next_6h_mm", "rainfall_last_3days_mm", "wind_speed_kmh",
+                "soil_moisture_pct", "soil_ph", "tree_count", "tapping_system",
+                "days_since_last_tap",
+            ],
+            price: [
+                "latex_drc_pct", "temperature_c", "relative_humidity_pct", "rainfall_last_6h_mm",
+                "soil_moisture_pct", "soil_ph", "tree_count", "tapping_system",
+            ],
+        };
+
+        // ------------------------------------------------------------------
+        // Pure helpers (no DOM). Kept separate so they can be tested in Node.
+        // ------------------------------------------------------------------
+
+        // "2025-01-02T08:00" (datetime-local, read as Sri Lanka time)
+        //   -> "2025-01-02T08:00:00+05:30"
+        function toSriLankaTimestamp(localValue) {
+            if (!localValue || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(localValue)) {
+                return null;
+            }
+            const withSeconds = localValue.length === 16 ? localValue + ":00" : localValue;
+            return withSeconds + SRI_LANKA_OFFSET;
+        }
+
+        // Current wall-clock time in Sri Lanka, formatted for a datetime-local input.
+        function currentSriLankaLocalValue(now = new Date()) {
+            const shifted = new Date(now.getTime() + SRI_LANKA_OFFSET_MINUTES * 60000);
+            return shifted.toISOString().slice(0, 16);
+        }
+
+        // Weather is reused only for the same estate, coordinates and time.
+        function weatherCacheKey(estate, timestamp) {
+            return `${estate.estate_id}|${estate.latitude}|${estate.longitude}|${timestamp}`;
+        }
+
+        // Turns one raw input string into a number, or null if left blank.
+        // Returns an error message instead when the value can't be used.
+        function parseMeasurement(key, raw) {
+            const rule = MEASUREMENT_RULES[key];
+            const text = raw == null ? "" : String(raw).trim();
+            if (text === "") return { value: null };
+
+            const value = Number(text);
+            if (!Number.isFinite(value)) {
+                return { error: `${rule.label} must be a number.` };
+            }
+            if (rule.min !== undefined && value < rule.min) {
+                return { error: `${rule.label} cannot be below ${rule.min}.` };
+            }
+            if (rule.max !== undefined && value > rule.max) {
+                return { error: `${rule.label} cannot be above ${rule.max}.` };
+            }
+            return { value };
+        }
+
+        // Picks the DRC for the price request: a measurement wins, otherwise the
+        // DRC model's estimate (the price endpoint accepts either). Returns null
+        // when neither exists, and then price isn't requested at all, because DRC
+        // is one of the price model's strongest inputs.
+        function choosePriceDrc(measuredDrc, estimatedDrc) {
+            if (typeof measuredDrc === "number" && Number.isFinite(measuredDrc)) {
+                return { value: measuredDrc, source: "measured" };
+            }
+            if (typeof estimatedDrc === "number" && Number.isFinite(estimatedDrc)) {
+                return { value: estimatedDrc, source: "model_estimate" };
+            }
+            return null;
+        }
+
+        // Builds the request body for one prediction endpoint. Only fields the
+        // schema knows about are included; unavailable values are left out (the
+        // backend treats a missing field as "not observed").
+        // Returns the body plus the list of fields that were sent as missing.
+        function buildPredictionPayload(kind, context) {
+            const fields = ENDPOINT_FIELDS[kind];
+            if (!fields) throw new Error("Unknown prediction kind: " + kind);
+
+            const payload = { observation_timestamp: context.observationTimestamp };
+            const missing = [];
+            const measurements = context.measurements || {};
+
+            for (const field of fields) {
+                let value = null;
+
+                if (WEATHER_FIELDS.some(w => w.key === field)) {
+                    // Never swap a missing weather value for 0.
+                    const v = context.weather ? context.weather[field] : null;
+                    value = typeof v === "number" && Number.isFinite(v) ? v : null;
+                } else if (field === "estate_id") {
+                    value = context.estateId || null;
+                } else if (field === "tapping_system") {
+                    value = measurements.tapping_system || null;
+                } else if (field === "latex_drc_pct") {
+                    value = context.latexDrc ?? null;
+                } else {
+                    value = measurements[field] ?? null;
+                }
+
+                if (value === null) {
+                    missing.push(field);
+                } else {
+                    payload[field] = value;
+                }
+            }
+
+            return { payload, missing };
+        }
+
+        // FastAPI errors come back as a string or a list of pydantic errors.
+        function formatErrorDetail(detail) {
+            if (typeof detail === "string") return detail;
+            if (Array.isArray(detail)) {
+                return detail.map(item => {
+                    const where = Array.isArray(item.loc)
+                        ? item.loc.filter(part => part !== "body").join(".")
+                        : "";
+                    return where ? `${where}: ${item.msg}` : item.msg;
+                }).join("\n");
+            }
+            return "The request failed.";
+        }
+
+        class ApiError extends Error {
+            constructor(message, kind, status = null, body = null) {
+                super(message);
+                this.kind = kind;       // "unreachable" | "timeout" | "http"
+                this.status = status;
+                this.body = body;
+            }
+        }
+
+        // Wrapper around fetch that turns every failure into a readable ApiError.
+        async function apiRequest(url, options = {}, fetchImpl = fetch) {
+            const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+            const timer = controller ? setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS) : null;
+
+            let response;
+            try {
+                response = await fetchImpl(url, { ...options, signal: controller ? controller.signal : undefined });
+            } catch (err) {
+                if (err && err.name === "AbortError") {
+                    throw new ApiError("The backend took too long to respond (over 30 s).", "timeout");
+                }
+                throw new ApiError(
+                    "Cannot reach the backend. Check that uvicorn is running and open this page from it.",
+                    "unreachable"
+                );
+            } finally {
+                if (timer) clearTimeout(timer);
+            }
+
+            let body;
+            try {
+                body = await response.json();
+            } catch {
+                body = { detail: `The server returned a non-JSON response (HTTP ${response.status}).` };
+            }
+
+            if (!response.ok) {
+                const prefix = response.status === 422 ? "Invalid input:\n" : `HTTP ${response.status}: `;
+                throw new ApiError(prefix + formatErrorDetail(body.detail), "http", response.status, body);
+            }
+
+            return body;
+        }
+
+        // Export the pure bits for the Node test. "module" doesn't exist in the
+        // browser, so this does nothing there.
+        if (typeof module !== "undefined" && module.exports) {
+            module.exports = {
+                ESTATES, TAPPING_SYSTEMS, ENDPOINT_FIELDS,
+                toSriLankaTimestamp, currentSriLankaLocalValue, weatherCacheKey, parseMeasurement,
+                choosePriceDrc, buildPredictionPayload, formatErrorDetail, apiRequest, ApiError,
+            };
+        }
+
+        // ------------------------------------------------------------------
+        // Everything below talks to the page.
+        // ------------------------------------------------------------------
+
+        if (typeof document !== "undefined") {
+
+            const $ = id => document.getElementById(id);
+
+            let weatherCache = null;     // { key, estate, response }
+            let busy = false;
+
+            function setStatus(id, type, message) {
+                const node = $(id);
+                node.className = "status show " + type;
+                node.textContent = "";
+                if (type === "loading") node.appendChild(el("span", "spinner"));
+                node.appendChild(document.createTextNode(message));
+            }
+
+            function clearStatus(id) {
+                $(id).className = "status";
+                $(id).textContent = "";
+            }
+
+            function el(tag, className, text) {
+                const node = document.createElement(tag);
+                if (className) node.className = className;
+                if (text !== undefined) node.textContent = text;
+                return node;
+            }
+
+            function badge(text, kind) {
+                return el("span", "badge " + kind, text);
+            }
+
+            function setBackendBadge(state, text) {
+                const b = $("backendBadge");
+                b.className = "badge " + ({ ok: "ok", down: "bad", checking: "neutral" }[state]);
+                b.textContent = text;
+            }
+
+            function noteUnreachable(err) {
+                if (err instanceof ApiError && err.kind === "unreachable") {
+                    setBackendBadge("down", "Backend unreachable");
+                }
+            }
+
+            function setBusy(value) {
+                busy = value;
+                for (const id of ["getWeatherBtn", "generateBtn", "nowBtn", "estateSelect", "observationTimeInput"]) {
+                    $(id).disabled = value;
+                }
+            }
+
+            function selectedEstate() {
+                return ESTATES.find(e => e.estate_id === $("estateSelect").value);
+            }
+
+            function currentTimestamp() {
+                return toSriLankaTimestamp($("observationTimeInput").value);
+            }
+
+            async function checkBackend() {
+                if (location.protocol === "file:") {
+                    setBackendBadge("down", "Opened as a file");
+                    setStatus("mainStatus", "error",
+                        "Open this page through the backend: http://127.0.0.1:8000/weather-tapping-dashboard");
+                    return;
+                }
+                try {
+                    await apiRequest(HEALTH_URL);
+                    setBackendBadge("ok", "Backend online");
+                } catch (err) {
+                    setBackendBadge("down", err.kind === "unreachable" ? "Backend unreachable" : "Backend error");
+                }
+            }
+
+            // ---------------- estate ----------------
+
+            function populateEstates() {
+                for (const estate of ESTATES) {
+                    $("estateSelect").appendChild(
+                        new Option(`${estate.estate_name} (${estate.estate_id}) - demo`, estate.estate_id));
+                }
+            }
+
+            function populateTappingSystems() {
+                $("tapping_system").appendChild(new Option("Not recorded", ""));
+                for (const ts of TAPPING_SYSTEMS) $("tapping_system").appendChild(new Option(ts, ts));
+            }
+
+            // Estate or time changed: weather and results for the old selection are stale.
+            function onSelectionChanged() {
+                if (weatherCache && weatherCache.key !== weatherCacheKey(selectedEstate(), currentTimestamp())) {
+                    weatherCache = null;
+                    $("weatherResult").innerHTML = "";
+                    $("weatherResult").appendChild(el("p", "empty", "Not retrieved yet."));
+                    resetResults("Not generated yet.");
+                }
+                clearStatus("mainStatus");
+            }
+
+            function resetResults(message) {
+                $("resultsFor").textContent = "";
+                for (const id of ["drcResult", "tappingResult", "priceResult"]) {
+                    $(id).innerHTML = "";
+                    $(id).appendChild(el("p", "empty", message));
+                }
+            }
+
+            // ---------------- weather ----------------
+
+            // Returns cached weather for the current estate+time, or fetches it.
+            async function ensureWeather() {
+                const estate = selectedEstate();
+                const timestamp = currentTimestamp();
+                if (!timestamp) throw new Error("Pick an advisory date and time.");
+
+                const key = weatherCacheKey(estate, timestamp);
+                if (weatherCache && weatherCache.key === key) return weatherCache;
+
+                const response = await apiRequest(`${API_BASE}/weather-snapshot`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        latitude: estate.latitude,
+                        longitude: estate.longitude,
+                        observation_timestamp: timestamp,
+                    }),
+                });
+                weatherCache = { key, estate, response };
+                renderWeather();
+                return weatherCache;
+            }
+
+            function renderWeather() {
+                const { response } = weatherCache;
+                const box = $("weatherResult");
+                box.innerHTML = "";
+
+                const tiles = el("div", "tiles");
+                for (const f of WEATHER_FIELDS) {
+                    const tile = el("div", "tile");
+                    tile.appendChild(el("div", "name", f.label));
+                    const value = el("div", "value");
+                    const v = response[f.key];
+                    if (typeof v === "number") {
+                        value.textContent = v + " ";
+                        value.appendChild(el("small", null, f.unit));
+                    } else {
+                        // Say it's missing rather than printing a zero.
+                        value.appendChild(badge("Missing", "bad"));
+                    }
+                    tile.appendChild(value);
+                    tiles.appendChild(tile);
+                }
+                box.appendChild(tiles);
+                box.appendChild(el("div", "hint", `Observation hour ${response.observation_timestamp} · ${response.provider}`));
+            }
+
+            async function onGetWeather() {
+                if (busy) return;
+                setBusy(true);
+                setStatus("mainStatus", "loading", "Fetching weather...");
+                try {
+                    await ensureWeather();
+                    setBackendBadge("ok", "Backend online");
+                    clearStatus("mainStatus");
+                } catch (err) {
+                    noteUnreachable(err);
+                    setStatus("mainStatus", "error", "Weather could not be retrieved.\n" + (err.message || err));
+                } finally {
+                    setBusy(false);
+                }
+            }
+
+            // ---------------- predictions ----------------
+
+            function readMeasurements() {
+                const values = {};
+                const errors = [];
+                for (const key of Object.keys(MEASUREMENT_RULES)) {
+                    const input = $(key);
+                    const result = parseMeasurement(key, input.value);
+                    input.classList.toggle("invalid", Boolean(result.error));
+                    if (result.error) errors.push(result.error); else values[key] = result.value;
+                }
+                values.tapping_system = $("tapping_system").value || null;
+                return { values, errors };
+            }
+
+            async function callModel(path, payload) {
+                try {
+                    const body = await apiRequest(`${API_BASE}${path}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                    });
+                    return { ok: true, body };
+                } catch (err) {
+                    noteUnreachable(err);
+                    return { ok: false, error: err };
+                }
+            }
+
+            function showFailure(boxId, err) {
+                $(boxId).innerHTML = "";
+                $(boxId).appendChild(el("div", "blocked", "No result.\n" + (err.message || err)));
+            }
+
+            function renderDrc(result) {
+                if (!result.ok) return showFailure("drcResult", result.error);
+                const b = result.body;
+                $("drcResult").innerHTML = "";
+                $("drcResult").append(
+                    el("div", "estimate-tag", "MODEL ESTIMATE"),
+                    el("div", "big-value", `${b.predicted_latex_drc_pct.toFixed(2)} %`),
+                );
+            }
+
+            function renderTapping(result) {
+                if (!result.ok) return showFailure("tappingResult", result.error);
+                const b = result.body;
+                const kind = { High: "ok", Moderate: "warn", Low: "bad" }[b.predicted_label] || "neutral";
+                const value = el("div", "big-value");
+                value.appendChild(badge(`${b.predicted_label}`, kind));
+
+                const probs = (b.class_order || [])
+                    .map(label => `${label} ${(b.probabilities[label.toLowerCase()] * 100).toFixed(1)}%`)
+                    .join(" · ");
+
+                $("tappingResult").innerHTML = "";
+                $("tappingResult").append(
+                    el("div", "estimate-tag", "MODEL ESTIMATE (research proxy)"),
+                    value,
+                    el("div", "line", probs),
+                );
+            }
+
+            function renderPrice(result, drcChoice) {
+                const box = $("priceResult");
+                box.innerHTML = "";
+                if (!drcChoice) {
+                    box.appendChild(el("div", "blocked", "Not estimated: no DRC value available (measured or estimated)."));
+                    return;
+                }
+                if (!result.ok) return showFailure("priceResult", result.error);
+
+                const b = result.body;
+                const drcText = drcChoice.source === "measured"
+                    ? `Using measured DRC ${drcChoice.value} %`
+                    : `Using estimated DRC ${drcChoice.value.toFixed(2)} %`;
+
+                box.append(
+                    el("div", "estimate-tag", "MODEL ESTIMATE"),
+                    el("div", "big-value", `${b.predicted_price_lkr_per_kg.toFixed(2)} LKR/kg`),
+                    el("div", "line", drcText),
+                );
+            }
+
+            // Main flow: weather (cached if possible) -> DRC and tapping -> price.
+            // Each model shows its own result, so one failure doesn't hide the others.
+            async function onGenerateAdvisory() {
+                if (busy) return;
+
+                const { values, errors } = readMeasurements();
+                if (errors.length) {
+                    $("measurementsDetails").open = true;
+                    setStatus("mainStatus", "error", errors.join("\n"));
+                    return;
+                }
+
+                setBusy(true);
+                resetResults("Working...");
+
+                try {
+                    setStatus("mainStatus", "loading", "Getting weather...");
+                    let weather;
+                    try {
+                        weather = await ensureWeather();
+                    } catch (err) {
+                        noteUnreachable(err);
+                        setStatus("mainStatus", "error", "Weather could not be retrieved.\n" + (err.message || err));
+                        resetResults("Not generated: weather is required.");
+                        return;
+                    }
+
+                    const context = {
+                        observationTimestamp: weather.response.observation_timestamp,
+                        weather: weather.response,
+                        measurements: values,
+                        estateId: weather.estate.estate_id,
+                    };
+
+                    setStatus("mainStatus", "loading", "Running the models...");
+                    const drcPayload = buildPredictionPayload("drc", context);
+                    const tapPayload = buildPredictionPayload("tapping", context);
+                    const [drc, tap] = await Promise.all([
+                        callModel("/drc-estimation", drcPayload.payload),
+                        callModel("/tapping-advisory", tapPayload.payload),
+                    ]);
+                    renderDrc(drc);
+                    renderTapping(tap);
+
+                    const drcChoice = choosePriceDrc(
+                        values.latex_drc_pct,
+                        drc.ok ? drc.body.predicted_latex_drc_pct : null,
+                    );
+                    let price = null;
+                    if (drcChoice) {
+                        const pricePayload = buildPredictionPayload("price", { ...context, latexDrc: drcChoice.value });
+                        price = await callModel("/price-estimation", pricePayload.payload);
+                    }
+                    renderPrice(price, drcChoice);
+
+                    $("resultsFor").textContent =
+                        `${weather.estate.estate_name} · ${weather.response.observation_timestamp}`;
+
+                    const failed = [drc, tap, price].some(r => r && !r.ok) || !drcChoice;
+                    if (failed) {
+                        setStatus("mainStatus", "error", "Some results could not be produced.");
+                    } else {
+                        setBackendBadge("ok", "Backend online");
+                        clearStatus("mainStatus");
+                    }
+                } finally {
+                    setBusy(false);
+                }
+            }
+
+            // ---------------- wiring ----------------
+
+            populateEstates();
+            populateTappingSystems();
+            $("observationTimeInput").value = currentSriLankaLocalValue();
+
+            $("estateSelect").addEventListener("change", onSelectionChanged);
+            $("observationTimeInput").addEventListener("change", onSelectionChanged);
+            $("nowBtn").addEventListener("click", () => {
+                $("observationTimeInput").value = currentSriLankaLocalValue();
+                onSelectionChanged();
+            });
+            $("getWeatherBtn").addEventListener("click", onGetWeather);
+            $("generateBtn").addEventListener("click", onGenerateAdvisory);
+
+            checkBackend();
+        }
+    </script>
+
+</body>
+
+</html>

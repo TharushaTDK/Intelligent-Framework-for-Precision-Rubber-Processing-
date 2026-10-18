@@ -19,6 +19,13 @@ class Settings(BaseSettings):
     postgres_host: str = "localhost"
     postgres_port: int = 5432
 
+    # Weather provider (Open-Meteo Forecast API, keyless)
+    open_meteo_base_url: str = (
+        "https://api.open-meteo.com/v1/forecast"
+    )
+    weather_provider_connect_timeout_seconds: float = 5.0
+    weather_provider_read_timeout_seconds: float = 10.0
+
     model_config = SettingsConfigDict(
         env_file=PROJECT_ROOT / ".env",
         env_file_encoding="utf-8",
