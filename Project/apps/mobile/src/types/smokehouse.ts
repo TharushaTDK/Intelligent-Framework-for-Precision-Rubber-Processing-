@@ -56,6 +56,19 @@ export interface SmokehouseBatchResponse {
   layers: SmokehouseLayerResponse[];
 }
 
+export interface SmokehouseBatchSummary {
+  batch_code: string;
+  smokehouse_id: string;
+  started_at: string;
+  ended_at: string | null;
+  status: BatchStatus;
+}
+
+export interface SmokehouseBatchListResponse {
+  smokehouse_id: string;
+  batches: SmokehouseBatchSummary[];
+}
+
 // ============================================================
 // READING SCHEMAS
 // ============================================================

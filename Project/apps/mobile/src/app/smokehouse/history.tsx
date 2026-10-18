@@ -12,12 +12,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { FormField } from '../../components/FormField';
 import { PrimaryButton } from '../../components/PrimaryButton';
+import { SecondaryButton } from '../../components/SecondaryButton';
 import { colors, radii, spacing, typography } from '../../constants/theme';
 import { PredictionHistoryCard } from '../../features/smokehouse/PredictionHistoryCard';
 import { useSmokehouseFlow } from '../../features/smokehouse/SmokehouseFlowContext';
-import { getSmokehouseLayerHistory, SmokehouseApiError } from '../../services/smokehouseApi';
+import {
+  getSmokehouseLayerHistory,
+  listSmokehouseBatches,
+  SmokehouseApiError,
+} from '../../services/smokehouseApi';
 import type {
   LayerCode,
+  SmokehouseBatchSummary,
   SmokehouseHistoryItemResponse,
   SmokehouseLayerHistoryResponse,
 } from '../../types/smokehouse';
@@ -35,6 +41,13 @@ export default function PredictionHistory() {
   const [hasQueried, setHasQueried] = useState(false);
   const [queryError, setQueryError] = useState<string | null>(null);
   const [history, setHistory] = useState<SmokehouseLayerHistoryResponse | null>(null);
+
+  const [smokehouseIdInput, setSmokehouseIdInput] = useState('');
+  const [smokehouseError, setSmokehouseError] = useState<string | null>(null);
+  const [batchListLoading, setBatchListLoading] = useState(false);
+  const [batchListError, setBatchListError] = useState<string | null>(null);
+  const [batchResults, setBatchResults] = useState<SmokehouseBatchSummary[] | null>(null);
+  const [hasSearchedSmokehouse, setHasSearchedSmokehouse] = useState(false);
 
   const autoLoadedRef = useRef(false);
 
@@ -98,6 +111,45 @@ export default function PredictionHistory() {
     loadHistory(batchCodeInput.trim(), layerInput);
   }
 
+  async function handleFindBatches() {
+    const trimmed = smokehouseIdInput.trim();
+
+    if (!trimmed) {
+      setSmokehouseError('Smokehouse ID is required.');
+      return;
+    }
+
+    setSmokehouseError(null);
+    setBatchListLoading(true);
+    setBatchListError(null);
+
+    try {
+      const response = await listSmokehouseBatches(trimmed);
+      setBatchResults(response.batches);
+      setHasSearchedSmokehouse(true);
+    } catch (error) {
+      setBatchResults(null);
+      setHasSearchedSmokehouse(true);
+
+      if (error instanceof SmokehouseApiError) {
+        setBatchListError(error.message);
+      } else {
+        setBatchListError('Could not reach the backend. Please try again.');
+      }
+    } finally {
+      setBatchListLoading(false);
+    }
+  }
+
+  function handleSelectBatch(selectedBatchCode: string) {
+    setBatchCodeInput(selectedBatchCode);
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next.batchCode;
+      return next;
+    });
+  }
+
   const displayItems: SmokehouseHistoryItemResponse[] = history
     ? [...history.items].reverse()
     : [];
@@ -125,6 +177,79 @@ export default function PredictionHistory() {
               Review previous readings and model predictions for a
               smokehouse layer.
             </Text>
+
+            <View style={styles.card}>
+              <FormField
+                label="Smokehouse ID"
+                value={smokehouseIdInput}
+                onChangeText={setSmokehouseIdInput}
+                placeholder="e.g. SH01"
+                error={smokehouseError ?? undefined}
+              />
+
+              <SecondaryButton label="Find Batches" onPress={handleFindBatches} />
+
+              {batchListLoading ? (
+                <View style={styles.loadingRow}>
+                  <ActivityIndicator color={colors.primary} />
+                  <Text style={styles.loadingText}>Looking up batches...</Text>
+                </View>
+              ) : null}
+
+              {!batchListLoading && batchListError ? (
+                <View style={styles.errorBox}>
+                  <Text style={styles.errorText}>{batchListError}</Text>
+                </View>
+              ) : null}
+
+              {!batchListLoading &&
+              !batchListError &&
+              hasSearchedSmokehouse &&
+              batchResults &&
+              batchResults.length === 0 ? (
+                <View style={styles.emptyBox}>
+                  <Text style={styles.emptyText}>
+                    No batches found for that smokehouse ID.
+                  </Text>
+                </View>
+              ) : null}
+
+              {!batchListLoading && batchResults && batchResults.length > 0 ? (
+                <View style={styles.batchList}>
+                  {batchResults.map((item) => {
+                    const selected = batchCodeInput === item.batch_code;
+                    return (
+                      <Pressable
+                        key={item.batch_code}
+                        accessibilityRole="button"
+                        onPress={() => handleSelectBatch(item.batch_code)}
+                        style={[
+                          styles.batchOption,
+                          selected && styles.batchOptionSelected,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.batchOptionCode,
+                            selected && styles.batchOptionTextSelected,
+                          ]}
+                        >
+                          {item.batch_code}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.batchOptionMeta,
+                            selected && styles.batchOptionTextSelected,
+                          ]}
+                        >
+                          {item.status} · started {new Date(item.started_at).toLocaleDateString()}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              ) : null}
+            </View>
 
             <View style={styles.card}>
               <FormField
@@ -303,6 +428,34 @@ const styles = StyleSheet.create({
   fieldError: {
     fontSize: 12,
     color: colors.critical,
+  },
+  batchList: {
+    gap: spacing.xs,
+  },
+  batchOption: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.background,
+  },
+  batchOptionSelected: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  batchOptionCode: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  batchOptionMeta: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  batchOptionTextSelected: {
+    color: colors.textOnPrimary,
   },
   loadingRow: {
     flexDirection: 'row',
