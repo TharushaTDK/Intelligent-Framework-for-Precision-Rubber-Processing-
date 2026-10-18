@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Callable
+
 from fastapi import (
 
     APIRouter,
@@ -8,9 +10,19 @@ from fastapi import (
 
     HTTPException,
 
+    Request,
+
     status,
 
 )
+
+from fastapi.exceptions import RequestValidationError
+
+from fastapi.responses import JSONResponse
+
+from fastapi.routing import APIRoute
+
+from starlette.responses import Response
 
 from sqlalchemy.orm import Session
 
@@ -85,14 +97,54 @@ from backend.app.services.smokehouse_service import (
 # ============================================================
 
 # ROUTER
+#
+# NaN/Infinity payload values pass pydantic's allow_inf_nan=False
+# check correctly, but FastAPI's default 422 handler echoes the
+# rejected input back into the error response, and Starlette's
+# JSONResponse serializes with allow_nan=False. That makes
+# *building* the 422 body itself raise, which surfaces as a 500.
+# This route class strips the unserializable fields before the
+# response is built, scoped to Component 3 only.
 
 # ============================================================
+
+
+class _SmokehouseAPIRoute(APIRoute):
+    def get_route_handler(self) -> Callable:
+        original_route_handler = super().get_route_handler()
+
+        async def safe_route_handler(
+            request: Request,
+        ) -> Response:
+            try:
+                return await original_route_handler(request)
+            except RequestValidationError as exc:
+                errors = [
+                    {
+                        key: value
+                        for key, value in error.items()
+                        if key not in ("input", "ctx")
+                    }
+                    for error in exc.errors()
+                ]
+
+                return JSONResponse(
+                    status_code=(
+                        status.HTTP_422_UNPROCESSABLE_CONTENT
+                    ),
+                    content={"detail": errors},
+                )
+
+        return safe_route_handler
+
 
 router = APIRouter(
 
     prefix="/api/v1/smokehouse",
 
     tags=["Component 3 - Smokehouse"],
+
+    route_class=_SmokehouseAPIRoute,
 
 )
 
