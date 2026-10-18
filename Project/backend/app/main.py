@@ -57,6 +57,9 @@ app.include_router(
 
 app.include_router(
     coagulation_router
+)
+
+app.include_router(
     weather_tapping_router
 )
 
@@ -124,6 +127,9 @@ def coagulation_dashboard() -> FileResponse:
         media_type="text/html",
         # always send the latest page so old copies are not shown while testing
         headers={"Cache-Control": "no-store"},
+    )
+
+
 # ============================================================
 # COMPONENT 1 TEMPORARY TESTING DASHBOARD
 # ============================================================
