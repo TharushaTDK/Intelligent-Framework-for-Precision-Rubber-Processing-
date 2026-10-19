@@ -1,7 +1,8 @@
 // Mocked frontend tests for the Component 1 testing dashboard.
 //
-// These never touch the real backend: fetch is replaced with fakes so we can
-// check payload building, validation and error handling on their own.
+// These never touch the real backend or a real GPS: fetch and
+// navigator.geolocation are replaced with fakes so we can check the location,
+// payload, validation and error-handling logic on their own.
 // Uses only Node's built-in test runner, so there's nothing to install.
 //
 // Run from the Project folder:
@@ -16,11 +17,12 @@ const htmlPath = fileURLToPath(
     new URL("../../app/static/weather_tapping_dashboard.html", import.meta.url)
 );
 
-// Grab the page's script and run it without a DOM. The page only exports its
-// pure helpers when "module" exists, and skips all DOM code when "document"
-// doesn't, so this gives us just the logic.
+// Grab the page's inline script and run it without a DOM. The page only
+// exports its pure helpers when "module" exists, and skips all DOM code when
+// "document" doesn't, so this gives us just the logic.
 function loadDashboard() {
     const html = readFileSync(htmlPath, "utf-8");
+    // Matches the attribute-less inline <script>, not the Leaflet <script src>.
     const match = html.match(/<script>([\s\S]*?)<\/script>/);
     assert.ok(match, "inline script not found");
 
@@ -43,14 +45,6 @@ const sampleWeather = {
     forecast_rain_next_6h_mm: 3.2,
 };
 
-const sampleMeasurements = {
-    soil_moisture_pct: 41,
-    soil_ph: 5.8,
-    tree_count: 250,
-    tapping_system: "S/2 D2",
-    days_since_last_tap: 2,
-    previous_collection_yield_litres: 38,
-};
 
 function fakeResponse(status, body, { json = true } = {}) {
     return {
@@ -63,49 +57,140 @@ function fakeResponse(status, body, { json = true } = {}) {
     };
 }
 
-// ---------------- estates ----------------
+// A fake navigator.geolocation that records how it was called.
+function fakeGeolocation({ position = null, error = null } = {}) {
+    const calls = [];
+    return {
+        calls,
+        getCurrentPosition(success, failure, options) {
+            calls.push(options);
+            if (error) failure(error); else success(position);
+        },
+    };
+}
 
-test("every estate uses a trained estate ID and the dataset's placeholder name", () => {
-    assert.ok(page.ESTATES.length > 0);
-    for (const e of page.ESTATES) {
-        assert.match(e.estate_id, /^EST-(0\d\d|1[01]\d|120)$/);
-        assert.equal(e.estate_name, "TBD_" + e.estate_id);
-    }
+// ---------------- manual pin selection ----------------
+
+test("map click becomes a location with rounded coordinates", () => {
+    const loc = page.makeLocation(6.927079123456, 79.861244987654, "map");
+    assert.deepEqual(loc, {
+        latitude: 6.927079,
+        longitude: 79.861245,
+        source: "map",
+        accuracy: null,
+        errors: [],
+    });
 });
 
-test("every estate is labelled as demo and has usable coordinates", () => {
-    for (const e of page.ESTATES) {
-        assert.equal(e.coordinate_status, "demo_placeholder");
-        assert.ok(e.latitude >= -90 && e.latitude <= 90);
-        assert.ok(e.longitude >= -180 && e.longitude <= 180);
-    }
+test("typed coordinates are accepted as strings", () => {
+    const loc = page.makeLocation("7.2513", " 80.3464 ", "typed");
+    assert.equal(loc.latitude, 7.2513);
+    assert.equal(loc.longitude, 80.3464);
+    assert.equal(loc.source, "typed");
 });
 
-// ---------------- weather reuse ----------------
+test("invalid coordinates are rejected with a message per field", () => {
+    assert.equal(page.makeLocation("", "80", "typed").errors.length, 1);
+    assert.equal(page.makeLocation("91", "181", "typed").errors.length, 2);
+    assert.equal(page.makeLocation("abc", "80", "typed").errors.length, 1);
+    assert.equal(page.makeLocation(-90, 180, "map").errors.length, 0);
+});
 
-test("weather cache key changes with estate or time", () => {
-    const [a, b] = page.ESTATES;
+test("weather cache key changes when the pin or time changes", () => {
+    const a = page.makeLocation(6.5854, 79.9607, "map");
+    const moved = page.makeLocation(6.5855, 79.9607, "map");
     const t1 = "2026-10-18T14:00:00+05:30";
     const t2 = "2026-10-18T15:00:00+05:30";
 
-    assert.equal(page.weatherCacheKey(a, t1), page.weatherCacheKey({ ...a }, t1));
-    assert.notEqual(page.weatherCacheKey(a, t1), page.weatherCacheKey(b, t1));
+    assert.equal(page.weatherCacheKey(a, t1), page.weatherCacheKey({ ...a, source: "gps" }, t1));
+    assert.notEqual(page.weatherCacheKey(a, t1), page.weatherCacheKey(moved, t1));
     assert.notEqual(page.weatherCacheKey(a, t1), page.weatherCacheKey(a, t2));
 });
 
-// ---------------- price DRC choice ----------------
+// ---------------- GPS permission handling ----------------
 
-test("measured DRC wins over the model estimate", () => {
-    assert.deepEqual(page.choosePriceDrc(33.1, 30.2), { value: 33.1, source: "measured" });
+test("granted GPS returns the coordinates and accuracy", async () => {
+    const geo = fakeGeolocation({
+        position: { coords: { latitude: 6.9271, longitude: 79.8612, accuracy: 18.4 } },
+    });
+
+    const pos = await page.requestCurrentPosition(geo);
+
+    assert.deepEqual(pos, { latitude: 6.9271, longitude: 79.8612, accuracy: 18.4 });
+    assert.equal(geo.calls.length, 1);
+    assert.deepEqual(geo.calls[0], page.GEOLOCATION_OPTIONS);
+
+    const loc = page.makeLocation(pos.latitude, pos.longitude, "gps", pos.accuracy);
+    assert.equal(loc.source, "gps");
+    assert.equal(loc.accuracy, 18);
 });
 
-test("model estimate is used only when nothing was measured", () => {
-    assert.deepEqual(page.choosePriceDrc(null, 30.2), { value: 30.2, source: "model_estimate" });
+test("denied permission tells the farmer to use the map", async () => {
+    const geo = fakeGeolocation({ error: { code: 1, message: "User denied Geolocation" } });
+
+    await assert.rejects(page.requestCurrentPosition(geo), err => {
+        assert.match(err.message, /permission was denied/i);
+        assert.match(err.message, /click the map/i);
+        return true;
+    });
 });
 
-test("no DRC at all means no price request", () => {
-    assert.equal(page.choosePriceDrc(null, null), null);
-    assert.equal(page.choosePriceDrc(undefined, NaN), null);
+test("unavailable position and timeout have their own messages", async () => {
+    await assert.rejects(
+        page.requestCurrentPosition(fakeGeolocation({ error: { code: 2 } })),
+        /could not find its location/
+    );
+    await assert.rejects(
+        page.requestCurrentPosition(fakeGeolocation({ error: { code: 3 } })),
+        /took too long/
+    );
+});
+
+test("a browser without geolocation is handled", async () => {
+    await assert.rejects(page.requestCurrentPosition(undefined), /cannot share its location/);
+    await assert.rejects(page.requestCurrentPosition({}), /cannot share its location/);
+});
+
+// ---------------- weather API integration (mocked fetch) ----------------
+
+test("weather request hits the real route with exactly the schema fields", async () => {
+    const loc = page.makeLocation(6.5854, 79.9607, "map");
+    let seen = null;
+    const fetchSpy = async (url, options) => {
+        seen = { url, options };
+        return fakeResponse(200, sampleWeather);
+    };
+
+    const body = await page.fetchWeatherSnapshot(loc, "2026-10-18T14:20:00+05:30", fetchSpy);
+
+    assert.equal(seen.url, "/api/v1/weather-tapping/weather-snapshot");
+    assert.equal(seen.options.method, "POST");
+    assert.deepEqual(JSON.parse(seen.options.body), {
+        latitude: 6.5854,
+        longitude: 79.9607,
+        observation_timestamp: "2026-10-18T14:20:00+05:30",
+    });
+    assert.deepEqual(body, sampleWeather);
+});
+
+test("weather provider outage surfaces the backend's message", async () => {
+    const loc = page.makeLocation(6.5854, 79.9607, "map");
+    const fetch503 = async () => fakeResponse(503, { detail: "Weather data is currently unavailable." });
+
+    await assert.rejects(
+        page.fetchWeatherSnapshot(loc, "2026-10-18T14:00:00+05:30", fetch503),
+        err => err.status === 503 && /Weather data is currently unavailable/.test(err.message)
+    );
+});
+
+test("weather request when the backend is down is reported as unreachable", async () => {
+    const loc = page.makeLocation(6.5854, 79.9607, "map");
+    const failingFetch = async () => { throw new TypeError("Failed to fetch"); };
+
+    await assert.rejects(
+        page.fetchWeatherSnapshot(loc, "2026-10-18T14:00:00+05:30", failingFetch),
+        err => err.kind === "unreachable"
+    );
 });
 
 // ---------------- timestamps ----------------
@@ -117,119 +202,183 @@ test("datetime-local value is sent with an explicit +05:30 offset", () => {
     assert.equal(page.toSriLankaTimestamp("02/01/2025 08:00"), null);
 });
 
+test("advisory times up to 7 days ahead are allowed", () => {
+    const now = new Date("2026-10-19T15:00:00Z");   // 20:30 in Sri Lanka
+    assert.equal(page.checkAdvisoryTime("2026-10-19T20:30:00+05:30", now), null);
+    assert.equal(page.checkAdvisoryTime("2026-10-20T08:32:00+05:30", now), null);   // the time from the screenshot
+    assert.equal(page.checkAdvisoryTime("2026-10-26T20:30:00+05:30", now), null);   // exactly 7 days
+});
+
+test("more than 7 days ahead or too far back is refused with a clear message", () => {
+    const now = new Date("2026-10-19T15:00:00Z");
+    assert.match(page.checkAdvisoryTime("2026-10-26T21:30:00+05:30", now), /up to 7 days ahead/);
+    assert.match(page.checkAdvisoryTime("2026-07-01T08:00:00+05:30", now), /goes back about 89 days/);
+    assert.match(page.checkAdvisoryTime(null, now), /Pick an advisory date/);
+});
+
+test("forecast flag comes from the backend's data_quality", () => {
+    assert.equal(page.isForecastBased({ data_quality: { observation_in_future: true } }), true);
+    assert.equal(page.isForecastBased({ data_quality: { observation_in_future: false } }), false);
+    assert.equal(page.isForecastBased({ data_quality: {} }), false);
+    assert.equal(page.isForecastBased(null), false);
+});
+
 test("current Sri Lanka time is UTC + 5:30", () => {
-    const utc = new Date("2026-10-18T20:00:00Z");
-    assert.equal(page.currentSriLankaLocalValue(utc), "2026-10-19T01:30");
-});
-
-// ---------------- validation ----------------
-
-test("blank measurements become null, not zero", () => {
-    assert.deepEqual(page.parseMeasurement("soil_ph", ""), { value: null });
-    assert.deepEqual(page.parseMeasurement("soil_ph", "   "), { value: null });
-});
-
-test("invalid and out-of-range measurements are rejected", () => {
-    assert.ok(page.parseMeasurement("soil_ph", "abc").error);
-    assert.ok(page.parseMeasurement("soil_ph", "15").error);
-    assert.ok(page.parseMeasurement("soil_moisture_pct", "-1").error);
-    assert.ok(page.parseMeasurement("latex_drc_pct", "101").error);
-    assert.ok(page.parseMeasurement("tree_count", "-5").error);
-    assert.deepEqual(page.parseMeasurement("soil_ph", "5.8"), { value: 5.8 });
+    assert.equal(page.currentSriLankaLocalValue(new Date("2026-10-18T20:00:00Z")), "2026-10-19T01:30");
 });
 
 // ---------------- payloads ----------------
 
-test("DRC payload has weather, measurements and estate_id but no estate_name", () => {
+test("DRC request sends only weather and timestamp, nothing invented", () => {
     const { payload, missing } = page.buildPredictionPayload("drc", {
         observationTimestamp: sampleWeather.observation_timestamp,
         weather: sampleWeather,
-        measurements: sampleMeasurements,
-        estateId: "EST-001",
     });
 
-    assert.equal(payload.estate_id, "EST-001");
-    assert.equal(payload.temperature_c, 29.1);
-    assert.equal(payload.observation_timestamp, "2026-10-18T14:00:00+05:30");
-    assert.ok(!("estate_name" in payload));
-    assert.deepEqual(missing, []);
-    assert.deepEqual(
-        Object.keys(payload).sort(),
-        ["observation_timestamp", ...page.ENDPOINT_FIELDS.drc].sort()
-    );
+    assert.deepEqual(Object.keys(payload).sort(), [
+        "forecast_rain_next_6h_mm", "observation_timestamp", "rainfall_last_3days_mm",
+        "rainfall_last_6h_mm", "relative_humidity_pct", "temperature_c", "wind_speed_kmh",
+    ]);
+    assert.deepEqual(missing.sort(), [
+        "days_since_last_tap", "estate_id", "previous_collection_yield_litres",
+        "soil_moisture_pct", "soil_ph", "tapping_system", "tree_count",
+    ]);
+    assert.ok(!("latitude" in payload) && !("longitude" in payload));
+});
+
+test("every sent field is one the schema accepts", () => {
+    for (const kind of ["drc", "tapping", "price"]) {
+        const { payload } = page.buildPredictionPayload(kind, {
+            observationTimestamp: sampleWeather.observation_timestamp,
+            weather: sampleWeather,
+            latexDrc: 30.2,
+        });
+        const allowed = new Set(["observation_timestamp", ...page.ENDPOINT_FIELDS[kind]]);
+        for (const key of Object.keys(payload)) {
+            assert.ok(allowed.has(key), `${kind} payload has unexpected field ${key}`);
+        }
+    }
 });
 
 test("tapping payload never includes estate_id", () => {
     const { payload } = page.buildPredictionPayload("tapping", {
         observationTimestamp: sampleWeather.observation_timestamp,
         weather: sampleWeather,
-        measurements: sampleMeasurements,
-        estateId: "EST-001",
     });
 
     assert.ok(!("estate_id" in payload));
-    assert.ok(!("previous_collection_yield_litres" in payload));
 });
 
-test("price payload carries the supplied DRC and only price fields", () => {
-    const { payload } = page.buildPredictionPayload("price", {
+test("price payload carries the DRC estimate and only price fields", () => {
+    const { payload, missing } = page.buildPredictionPayload("price", {
         observationTimestamp: sampleWeather.observation_timestamp,
         weather: sampleWeather,
-        measurements: sampleMeasurements,
-        estateId: "EST-001",
         latexDrc: 32.4,
     });
 
     assert.equal(payload.latex_drc_pct, 32.4);
     assert.ok(!("forecast_rain_next_6h_mm" in payload));
-    assert.ok(!("estate_id" in payload));
+    assert.ok(!missing.includes("latex_drc_pct"));
 });
 
-test("estate-only request sends weather, timestamp and estate_id, and lists the rest as missing", () => {
-    const { payload, missing } = page.buildPredictionPayload("drc", {
+test("price payload without a DRC lists it as missing, not zero", () => {
+    const { payload, missing } = page.buildPredictionPayload("price", {
         observationTimestamp: sampleWeather.observation_timestamp,
         weather: sampleWeather,
-        measurements: {},
-        estateId: "EST-001",
+        latexDrc: NaN,
     });
 
-    assert.deepEqual(Object.keys(payload).sort(), [
-        "estate_id", "forecast_rain_next_6h_mm", "observation_timestamp", "rainfall_last_3days_mm",
-        "rainfall_last_6h_mm", "relative_humidity_pct", "temperature_c", "wind_speed_kmh",
-    ]);
-    assert.deepEqual(missing.sort(), [
-        "days_since_last_tap", "previous_collection_yield_litres", "soil_moisture_pct",
-        "soil_ph", "tapping_system", "tree_count",
-    ]);
+    assert.ok(!("latex_drc_pct" in payload));
+    assert.ok(missing.includes("latex_drc_pct"));
 });
 
-test("missing weather and blank measurements are left out, never zero-filled", () => {
+test("missing weather values are left out, never zero-filled", () => {
     const weather = { ...sampleWeather, wind_speed_kmh: null };
     delete weather.rainfall_last_3days_mm;
 
     const { payload, missing } = page.buildPredictionPayload("drc", {
         observationTimestamp: sampleWeather.observation_timestamp,
         weather,
-        measurements: { ...sampleMeasurements, soil_ph: null, tapping_system: null },
-        estateId: "EST-001",
     });
 
-    for (const field of ["wind_speed_kmh", "rainfall_last_3days_mm", "soil_ph", "tapping_system"]) {
+    for (const field of ["wind_speed_kmh", "rainfall_last_3days_mm"]) {
         assert.ok(!(field in payload), `${field} should be omitted`);
         assert.ok(missing.includes(field), `${field} should be listed as missing`);
     }
 });
 
-// ---------------- API error handling (mocked fetch) ----------------
-
-test("network failure is reported as backend unreachable", async () => {
-    const failingFetch = async () => { throw new TypeError("Failed to fetch"); };
-
-    await assert.rejects(
-        page.apiRequest("/health", {}, failingFetch),
-        err => err.kind === "unreachable" && /Cannot reach the backend/.test(err.message)
-    );
+test("not-provided list merges all requests without duplicates", () => {
+    const names = page.describeNotProvided([
+        ["estate_id", "soil_ph", "tree_count"],
+        ["soil_ph", "tree_count"],
+        ["soil_ph"],
+    ]);
+    assert.deepEqual(names, ["estate ID", "soil pH", "tree count"]);
 });
+
+
+// ---------------- saving for Component 2 ----------------
+
+const drcBody = {
+    predicted_latex_drc_pct: 30.26572224824792,
+    model_name: "drc_prediction",
+    runtime_artifact_sha256: "b".repeat(64),
+};
+const tappingBody = {
+    predicted_label: "High",
+    probabilities: { high: 0.597, low: 0.137, moderate: 0.267 },
+};
+const priceBody = { predicted_price_lkr_per_kg: 413.0509 };
+
+test("saved record carries location, time, weather and the exact DRC", () => {
+    const loc = page.makeLocation(7.411142, 79.822483, "gps", 25);
+    const record = page.buildAdvisoryRecord(loc, sampleWeather, drcBody, tappingBody, priceBody);
+
+    assert.deepEqual(record, {
+        latitude: 7.411142,
+        longitude: 79.822483,
+        location_source: "gps",
+        observation_timestamp: sampleWeather.observation_timestamp,
+        forecast_based: false,
+        temperature_c: 29.1,
+        relative_humidity_pct: 78,
+        wind_speed_kmh: 9.4,
+        rainfall_last_6h_mm: 0.4,
+        rainfall_last_3days_mm: 21.7,
+        forecast_rain_next_6h_mm: 3.2,
+        predicted_latex_drc_pct: 30.26572224824792,
+        drc_model_name: "drc_prediction",
+        drc_runtime_artifact_sha256: "b".repeat(64),
+        tapping_label: "High",
+        tapping_probability_high: 0.597,
+        tapping_probability_low: 0.137,
+        tapping_probability_moderate: 0.267,
+        predicted_price_lkr_per_kg: 413.0509,
+    });
+});
+
+test("record without tapping or price leaves those fields out", () => {
+    const loc = page.makeLocation(6.9271, 79.8612, "map");
+    const record = page.buildAdvisoryRecord(loc, sampleWeather, drcBody);
+
+    assert.equal(record.predicted_latex_drc_pct, drcBody.predicted_latex_drc_pct);
+    for (const key of ["tapping_label", "tapping_probability_high", "predicted_price_lkr_per_kg"]) {
+        assert.ok(!(key in record), `${key} should be omitted`);
+    }
+});
+
+test("forecast-based weather is flagged in the saved record", () => {
+    const loc = page.makeLocation(6.9271, 79.8612, "map");
+    const future = { ...sampleWeather, data_quality: { observation_in_future: true } };
+
+    assert.equal(page.buildAdvisoryRecord(loc, future, drcBody).forecast_based, true);
+});
+
+test("records are saved to the Component 1 advisory-records route", () => {
+    assert.equal(page.ADVISORY_RECORDS_URL, "/api/v1/weather-tapping/advisory-records");
+});
+
+// ---------------- general API error handling ----------------
 
 test("aborted request is reported as a timeout", async () => {
     const abortingFetch = async () => {
@@ -238,37 +387,24 @@ test("aborted request is reported as a timeout", async () => {
         throw err;
     };
 
-    await assert.rejects(
-        page.apiRequest("/health", {}, abortingFetch),
-        err => err.kind === "timeout"
-    );
+    await assert.rejects(page.apiRequest("/health", {}, abortingFetch), err => err.kind === "timeout");
 });
 
 test("422 validation errors are turned into readable field messages", async () => {
     const body = {
         detail: [
             { loc: ["body", "observation_timestamp"], msg: "must include an explicit timezone offset" },
-            { loc: ["body", "estate_name"], msg: "Extra inputs are not permitted" },
+            { loc: ["body", "latitude"], msg: "Input should be less than or equal to 90" },
         ],
     };
     const fetch422 = async () => fakeResponse(422, body);
 
     await assert.rejects(page.apiRequest("/x", {}, fetch422), err => {
-        assert.equal(err.kind, "http");
         assert.equal(err.status, 422);
         assert.match(err.message, /observation_timestamp: must include/);
-        assert.match(err.message, /estate_name: Extra inputs/);
+        assert.match(err.message, /latitude: Input should be/);
         return true;
     });
-});
-
-test("503 from the weather provider shows the backend's message", async () => {
-    const fetch503 = async () => fakeResponse(503, { detail: "Weather data is currently unavailable." });
-
-    await assert.rejects(
-        page.apiRequest("/x", {}, fetch503),
-        err => err.status === 503 && /Weather data is currently unavailable/.test(err.message)
-    );
 });
 
 test("non-JSON error responses are handled", async () => {
@@ -278,11 +414,4 @@ test("non-JSON error responses are handled", async () => {
         page.apiRequest("/x", {}, fetchHtml),
         err => err.status === 500 && /non-JSON/.test(err.message)
     );
-});
-
-test("successful responses are returned untouched", async () => {
-    const body = { predicted_latex_drc_pct: 31.23456 };
-    const fetchOk = async () => fakeResponse(200, body);
-
-    assert.deepEqual(await page.apiRequest("/x", {}, fetchOk), body);
 });

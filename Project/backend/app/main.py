@@ -1,3 +1,6 @@
+import logging
+import threading
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -12,6 +15,13 @@ from backend.app.api.routes.weather_tapping import (
 )
 
 from backend.app.core.config import settings
+
+from backend.app.ml.component_1_weather_tapping.model_loader import (
+    get_models as get_component1_models,
+)
+
+
+logger = logging.getLogger(__name__)
 
 
 # ============================================================
@@ -34,12 +44,48 @@ WEATHER_TAPPING_DASHBOARD_FILE = (
 
 
 # ============================================================
+# STARTUP: PRELOAD COMPONENT 1 MODELS
+# ============================================================
+
+
+def _preload_component1_models() -> None:
+    """
+    Load the Component 1 models in the background so the first
+    advisory doesn't wait for scikit-learn/XGBoost to import
+    (about 20 s on a cold start, which made the dashboard's first
+    requests time out). If it fails, the models simply load on the
+    first request as before.
+    """
+
+    try:
+        get_component1_models()
+    except Exception:
+        logger.exception(
+            "Component 1 models could not be preloaded; "
+            "they will load on the first request."
+        )
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # A background thread, so startup isn't delayed and Component 3
+    # is available straight away.
+    threading.Thread(
+        target=_preload_component1_models,
+        name="component1-model-preload",
+        daemon=True,
+    ).start()
+    yield
+
+
+# ============================================================
 # FASTAPI APPLICATION
 # ============================================================
 
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
+    lifespan=lifespan,
 )
 
 

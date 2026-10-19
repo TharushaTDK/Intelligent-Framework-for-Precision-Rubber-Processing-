@@ -26,6 +26,7 @@ from backend.app.schemas.weather_tapping import (
 from backend.app.services.weather_provider import (
     WeatherProviderDataError,
     WeatherProviderError,
+    WeatherTimestampRangeError,
 )
 
 from backend.app.services.weather_tapping_service import (
@@ -827,6 +828,32 @@ def test_weather_snapshot_data_error_returns_502(monkeypatch):
     )
     assert "reason" not in response.text
     assert "400" not in response.text
+
+
+def test_weather_snapshot_unsupported_time_returns_clear_422(monkeypatch):
+    """A time more than 7 days ahead (or too far back) is the
+    caller's input, so it's a 422 with a plain explanation - not
+    the 502 'provider returned invalid data'."""
+
+    def fail_provider(latitude, longitude, observation_timestamp):
+        raise WeatherTimestampRangeError(
+            "observation_timestamp is outside the supported provider range"
+        )
+
+    monkeypatch.setattr(
+        weather_tapping_routes,
+        "fetch_weather_snapshot",
+        fail_provider,
+    )
+
+    response = client.post(
+        "/api/v1/weather-tapping/weather-snapshot",
+        json=valid_snapshot_payload(),
+    )
+
+    assert response.status_code == 422
+    assert "7 days in the future" in response.json()["detail"]
+    assert "provider" not in response.json()["detail"]
 
 
 def test_weather_snapshot_validation_returns_422():

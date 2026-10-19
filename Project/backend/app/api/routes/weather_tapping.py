@@ -2,11 +2,30 @@ from __future__ import annotations
 
 from fastapi import (
     APIRouter,
+    Depends,
     HTTPException,
+    Query,
     status,
 )
 
 from pydantic import BaseModel
+
+from sqlalchemy.orm import Session
+
+from backend.app.database.session import get_db
+
+from backend.app.schemas.advisory_record import (
+    AdvisoryRecordCreate,
+    AdvisoryRecordList,
+    AdvisoryRecordResponse,
+)
+
+from backend.app.services.advisory_record_service import (
+    AdvisoryRecordStorageError,
+    create_advisory_record,
+    get_advisory_record,
+    list_advisory_records,
+)
 
 from backend.app.ml.component_1_weather_tapping.model_loader import (
     ModelLoadError,
@@ -30,6 +49,7 @@ from backend.app.schemas.weather_provider import (
 from backend.app.services.weather_provider import (
     WeatherProviderDataError,
     WeatherProviderError,
+    WeatherTimestampRangeError,
     fetch_weather_snapshot,
 )
 
@@ -216,6 +236,10 @@ def weather_snapshot(
     forecast_rain_next_6h_mm reflects the provider's current
     best-match series, not an as-issued historical forecast.
 
+    Times up to 7 days ahead are accepted; then every value is
+    a forecast and data_quality.observation_in_future is true.
+    Times outside the supported range get a 422.
+
     Provider URLs, parameters and error payloads are never
     exposed to the caller.
     """
@@ -226,6 +250,18 @@ def weather_snapshot(
             longitude=request.longitude,
             observation_timestamp=request.observation_timestamp,
         )
+
+    except WeatherTimestampRangeError as exc:
+        # The caller asked for an unsupported time - say so plainly
+        # instead of blaming the provider.
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail=(
+                "observation_timestamp is outside the supported "
+                "range: it must be no more than 7 days in the "
+                "future and no more than about 89 days in the past."
+            ),
+        ) from exc
 
     except WeatherProviderDataError as exc:
         raise HTTPException(
@@ -247,6 +283,102 @@ def weather_snapshot(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected internal error occurred.",
         )
+
+
+# ============================================================
+# SAVED ADVISORIES (FOR COMPONENT 2)
+# ============================================================
+#
+# The dashboard saves each advisory it generates, so Component 2
+# can read the estimated DRC together with the location and time
+# instead of re-running Component 1.
+
+
+STORAGE_UNAVAILABLE_DETAIL = (
+    "Saved advisories are currently unavailable (database error)."
+)
+
+
+@router.post(
+    "/advisory-records",
+    response_model=AdvisoryRecordResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def save_advisory_record(
+    request: AdvisoryRecordCreate,
+    db: Session = Depends(get_db),
+) -> AdvisoryRecordResponse:
+    """
+    Save one generated advisory: location, the weather it used,
+    the DRC estimate and (when available) tapping and price.
+    Values are stored exactly as sent; no model is run here.
+    """
+
+    try:
+        record = create_advisory_record(db, request)
+    except AdvisoryRecordStorageError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=STORAGE_UNAVAILABLE_DETAIL,
+        ) from exc
+
+    return AdvisoryRecordResponse.model_validate(record)
+
+
+@router.get(
+    "/advisory-records",
+    response_model=AdvisoryRecordList,
+    status_code=status.HTTP_200_OK,
+)
+def read_advisory_records(
+    limit: int = Query(default=50, ge=1, le=500),
+    db: Session = Depends(get_db),
+) -> AdvisoryRecordList:
+    """
+    Saved advisories, newest first. This is what Component 2 reads
+    to get DRC estimates with their locations.
+    """
+
+    try:
+        records = list_advisory_records(db, limit)
+    except AdvisoryRecordStorageError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=STORAGE_UNAVAILABLE_DETAIL,
+        ) from exc
+
+    return AdvisoryRecordList(
+        count=len(records),
+        records=[AdvisoryRecordResponse.model_validate(r) for r in records],
+    )
+
+
+@router.get(
+    "/advisory-records/{record_id}",
+    response_model=AdvisoryRecordResponse,
+    status_code=status.HTTP_200_OK,
+)
+def read_advisory_record(
+    record_id: int,
+    db: Session = Depends(get_db),
+) -> AdvisoryRecordResponse:
+    """One saved advisory by its id."""
+
+    try:
+        record = get_advisory_record(db, record_id)
+    except AdvisoryRecordStorageError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=STORAGE_UNAVAILABLE_DETAIL,
+        ) from exc
+
+    if record is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No saved advisory with id {record_id}.",
+        )
+
+    return AdvisoryRecordResponse.model_validate(record)
 
 
 # ============================================================

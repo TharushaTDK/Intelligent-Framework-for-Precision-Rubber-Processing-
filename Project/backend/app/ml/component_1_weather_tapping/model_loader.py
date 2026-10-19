@@ -1,5 +1,6 @@
 import hashlib
 import json
+import threading
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -622,12 +623,20 @@ def load_models() -> Component1Models:
 # ============================================================
 
 
+# lru_cache doesn't stop two threads loading at the same time. The
+# first load imports scikit-learn/XGBoost and can take ~20 s on a cold
+# Windows start, and the DRC and tapping requests arrive together, so
+# without this lock they would both do the slow load in parallel.
+_load_lock = threading.Lock()
+
+
 def get_models() -> Component1Models:
     """
     Public accessor used by backend inference services.
     """
 
-    return load_models()
+    with _load_lock:
+        return load_models()
 
 
 def get_manifest() -> dict:
