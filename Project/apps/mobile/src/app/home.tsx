@@ -42,18 +42,18 @@ export default function Home() {
           <View style={styles.grid}>
             <FeatureCard
               label="Component 01"
-              title="Let's Set the Latex"
-              description="Coagulation guidance for better latex processing."
-              icon={<DropletMark />}
-              onPress={() => router.push('/latex')}
-            />
-
-            <FeatureCard
-              label="Component 02"
               title="How's Today Your Rubber Plant?"
               description="Weather-aware support for tapping decisions."
               icon={<LeafMark />}
               onPress={() => router.push('/plant-advisory')}
+            />
+
+            <FeatureCard
+              label="Component 02"
+              title="Let's Set the Latex"
+              description="Coagulation guidance for better latex processing."
+              icon={<DropletMark />}
+              onPress={() => router.push('/latex')}
             />
 
             <FeatureCard
