@@ -16,6 +16,7 @@ import { SecondaryButton } from '../../components/SecondaryButton';
 import { colors, radii, spacing, typography } from '../../constants/theme';
 import { PredictionHistoryCard } from '../../features/smokehouse/PredictionHistoryCard';
 import { useSmokehouseFlow } from '../../features/smokehouse/SmokehouseFlowContext';
+import { SmokehouseIdInput } from '../../features/smokehouse/SmokehouseIdInput';
 import {
   getSmokehouseLayerHistory,
   listSmokehouseBatches,
@@ -169,6 +170,7 @@ export default function PredictionHistory() {
         keyExtractor={(item) => String(item.reading.id)}
         renderItem={({ item }) => <PredictionHistoryCard item={item} />}
         contentContainerStyle={styles.listContent}
+        keyboardShouldPersistTaps="handled"
         ItemSeparatorComponent={() => <View style={{ height: spacing.sm }} />}
         ListHeaderComponent={
           <View style={styles.headerSection}>
@@ -179,11 +181,9 @@ export default function PredictionHistory() {
             </Text>
 
             <View style={styles.card}>
-              <FormField
-                label="Smokehouse ID"
+              <SmokehouseIdInput
                 value={smokehouseIdInput}
                 onChangeText={setSmokehouseIdInput}
-                placeholder="e.g. SH01"
                 error={smokehouseError ?? undefined}
               />
 
