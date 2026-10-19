@@ -1,6 +1,6 @@
 STEP 3: DATA QUALITY ANALYSIS
-Input file: latex_coagulation_dataset_final.csv
-Rows checked: 2500
+Input file: latex_coagulation_dataset_raw.csv
+Rows checked: 2606
 
 Outputs:
 - 03_data_quality_checks.csv

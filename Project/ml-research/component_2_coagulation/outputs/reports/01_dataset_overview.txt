@@ -1,26 +1,31 @@
 LATEX COAGULATION DATASET OVERVIEW
 ========================================
-Rows: 2500
-Columns: 9
-Duplicate batch IDs: 0
+Rows: 2606
+Columns: 14
+Duplicate batch IDs: 48
 Duplicate complete rows: 0
-Total missing values: 0
+Total missing values: 3136
 
 Column names and data types:
+Unnamed: 0                                 int64
+entry_no                                   int64
 batch_id                                     str
 record_date                                  str
 metrolac_reading                         float64
 latex_temperature_C                      float64
-drc                                      float64
-latex_volume_L                           float64
+drc                                          str
+latex_volume_L                               str
 water_amount_L                           float64
 prepared_1pct_formic_acid_solution_mL    float64
-coagulation_time_hours                   float64
+coagulation_time_hours                       str
+recorded_by                                  str
+weather_note                                 str
+remarks                                      str
 
 First five records:
-   batch_id record_date  metrolac_reading  latex_temperature_C   drc  latex_volume_L  water_amount_L  prepared_1pct_formic_acid_solution_mL  coagulation_time_hours
-BATCH_00001  2026-09-23              44.5                 30.8 45.20          138.00           21.24                                 690.29                    5.57
-BATCH_00002  2026-09-27              26.6                 31.3 26.58          113.60           13.23                                 315.23                    9.37
-BATCH_00003  2026-09-20              42.7                 28.5 42.68          141.21           20.61                                 671.33                    6.05
-BATCH_00004  2026-09-16              38.9                 26.2 38.57           46.07            6.15                                 193.88                    7.02
-BATCH_00005  2026-09-05              23.2                 24.9 22.64           92.72           10.03                                 214.39                   10.15
+ Unnamed: 0  entry_no    batch_id record_date  metrolac_reading  latex_temperature_C   drc latex_volume_L  water_amount_L  prepared_1pct_formic_acid_solution_mL coagulation_time_hours recorded_by weather_note remarks
+          0         1 BATCH_01898  2026-09-17              21.9                 33.3 22.88          34.38            3.07                                  80.88                   9.88         NaN        Sunny     NaN
+          1         2 BATCH_01229  2026-09-26              22.8                 24.2 21.76          114.1           11.43                                 247.22                  10.07   Officer C       Cloudy     NaN
+          2         3 BATCH_02135  2026-09-28              22.6                 28.8 22.73          47.77            5.21                                 114.26                  10.04   Officer A         Rain     NaN
+          3         4 BATCH_02327  2026-10-02              34.9                 33.2 35.55         172.79           22.22                                 661.86                   9.23   Officer A        Sunny     NaN
+          4         5 BATCH_01717  2026-09-09              43.5                 26.4 43.55           6.31            0.34                                  27.05                   6.46   Officer C   Light rain     NaN

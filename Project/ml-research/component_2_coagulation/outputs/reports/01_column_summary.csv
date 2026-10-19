@@ -1,10 +1,15 @@
 column_name,data_type,missing_values,unique_values
-batch_id,str,0,2500
-record_date,str,0,36
+Unnamed: 0,int64,0,2606
+entry_no,int64,0,2606
+batch_id,str,0,2558
+record_date,str,0,105
 metrolac_reading,float64,0,251
 latex_temperature_C,float64,0,101
-drc,float64,0,1600
-latex_volume_L,float64,0,2345
-water_amount_L,float64,0,1624
-prepared_1pct_formic_acid_solution_mL,float64,0,2463
-coagulation_time_hours,float64,0,632
+drc,str,10,1652
+latex_volume_L,str,8,2367
+water_amount_L,float64,9,1627
+prepared_1pct_formic_acid_solution_mL,float64,8,2466
+coagulation_time_hours,str,8,637
+recorded_by,str,480,5
+weather_note,str,267,5
+remarks,str,2346,7
