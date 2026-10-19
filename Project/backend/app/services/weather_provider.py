@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import time
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -45,7 +46,27 @@ MAX_PAST_DAYS = 92
 MAX_FORECAST_DAYS = 16
 
 # How far into the future an observation timestamp may sit.
-FUTURE_OBSERVATION_GRACE = timedelta(hours=FORECAST_HOURS)
+# Agreed 2026-10-19: up to 7 days, so farmers can plan ahead.
+# For a future time every weather value is a forecast (including
+# the "last 6 h" / "last 3 days" rain windows), and the models
+# were trained on observed weather - so the response flags it
+# (observation_in_future) and the dashboard labels the results
+# as forecast-based. Rain forecast skill drops a lot past ~7
+# days, which is why we stop there rather than at the
+# provider's 16-day limit.
+FUTURE_OBSERVATION_LIMIT = timedelta(days=7)
+
+# The free Open-Meteo API answers roughly 1 in 8 requests with
+# 503 "The service is overloaded" (seen 2026-10-19), and the next
+# call usually works. These statuses mean "busy right now", not
+# "bad data", so we retry them with growing pauses (3.5 s at most
+# in total). Connection errors are retried too; read timeouts are
+# not, because they are slow and would stack up.
+RETRYABLE_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
+RETRY_DELAYS_SECONDS = (0.5, 1.0, 2.0)
+
+# Kept as a module attribute so tests can skip the real waiting.
+_sleep = time.sleep
 
 # Runtime window arithmetic agreed for this component. These
 # are unverified_runtime_convention: the research code has no
@@ -99,6 +120,17 @@ class WeatherProviderDataError(WeatherProviderError):
     """
 
 
+class WeatherTimestampRangeError(WeatherProviderDataError):
+    """
+    The requested time is outside what we support (more than 7
+    days ahead, or too far back for the provider's history).
+    This is the caller's input, not a provider problem, so the
+    API reports it as 422 with a plain explanation. It stays a
+    WeatherProviderDataError subclass so existing handling keeps
+    working.
+    """
+
+
 def _to_observation_timezone(
     timestamp: datetime,
 ) -> datetime:
@@ -133,13 +165,13 @@ def _coverage(
     Derive the hour-aligned observation time, required window
     bounds and the past_days/forecast_days request parameters.
 
-    Raises WeatherProviderDataError when the timestamp is
-    outside the Forecast API's supported envelope, before any
-    HTTP request is made.
+    Raises WeatherTimestampRangeError when the timestamp is
+    outside the supported envelope, before any HTTP request is
+    made.
     """
 
-    if observation_timestamp > now + FUTURE_OBSERVATION_GRACE:
-        raise WeatherProviderDataError(
+    if observation_timestamp > now + FUTURE_OBSERVATION_LIMIT:
+        raise WeatherTimestampRangeError(
             "observation_timestamp is outside the supported "
             "provider range"
         )
@@ -156,7 +188,7 @@ def _coverage(
     past_days = (today - history_start.date()).days
 
     if past_days > MAX_PAST_DAYS:
-        raise WeatherProviderDataError(
+        raise WeatherTimestampRangeError(
             "observation_timestamp is outside the supported "
             "provider range"
         )
@@ -167,7 +199,7 @@ def _coverage(
     )
 
     if forecast_days > MAX_FORECAST_DAYS:
-        raise WeatherProviderDataError(
+        raise WeatherTimestampRangeError(
             "observation_timestamp is outside the supported "
             "provider range"
         )
@@ -190,9 +222,13 @@ def _request_forecast(
 ) -> dict:
     """
     Call the configured Forecast API and return the decoded
-    JSON payload. Transport failures raise
-    WeatherProviderError; status/JSON problems raise
-    WeatherProviderDataError.
+    JSON payload.
+
+    Connection errors and "busy" statuses (429/5xx) are retried
+    with a short pause. If they still fail, WeatherProviderError
+    is raised (the provider is unavailable, not wrong). Timeouts
+    raise WeatherProviderError straight away. Any other non-200
+    status or bad JSON raises WeatherProviderDataError.
     """
 
     params = {
@@ -214,23 +250,42 @@ def _request_forecast(
         pool=settings.weather_provider_connect_timeout_seconds,
     )
 
-    try:
-        with httpx.Client(
-            timeout=timeout,
-            transport=transport,
-        ) as client:
-            response = client.get(
-                settings.open_meteo_base_url,
-                params=params,
-            )
-    except httpx.TimeoutException as exc:
-        raise WeatherProviderError(
-            "Weather provider request timed out."
-        ) from exc
-    except httpx.TransportError as exc:
-        raise WeatherProviderError(
-            "Could not connect to the weather provider."
-        ) from exc
+    attempts = len(RETRY_DELAYS_SECONDS) + 1
+
+    with httpx.Client(
+        timeout=timeout,
+        transport=transport,
+    ) as client:
+        for attempt in range(attempts):
+            last_attempt = attempt == attempts - 1
+
+            try:
+                response = client.get(
+                    settings.open_meteo_base_url,
+                    params=params,
+                )
+            except httpx.TimeoutException as exc:
+                raise WeatherProviderError(
+                    "Weather provider request timed out."
+                ) from exc
+            except httpx.TransportError as exc:
+                if last_attempt:
+                    raise WeatherProviderError(
+                        "Could not connect to the weather provider."
+                    ) from exc
+                _sleep(RETRY_DELAYS_SECONDS[attempt])
+                continue
+
+            if response.status_code in RETRYABLE_STATUS_CODES:
+                if last_attempt:
+                    raise WeatherProviderError(
+                        f"Weather provider is temporarily "
+                        f"unavailable (HTTP {response.status_code})."
+                    )
+                _sleep(RETRY_DELAYS_SECONDS[attempt])
+                continue
+
+            break
 
     if response.status_code != 200:
         raise WeatherProviderDataError(
@@ -487,6 +542,14 @@ def fetch_weather_snapshot(
     parsed = _validated_hourly(payload)
     values = _required_values(parsed, observation_hour)
 
+    # Hours after the current hour are forecasts. For a future
+    # observation that includes part (or all) of the 72-hour
+    # "past rain" window, which callers need to know about.
+    hours_ahead = int(
+        (observation_hour - _aligned_hour(now)).total_seconds() // 3600
+    )
+    forecast_hours_in_history = min(max(hours_ahead, 0), HISTORICAL_HOURS)
+
     return WeatherSnapshotResponse(
         observation_timestamp=observation_hour,
         observation_timezone=OBSERVATION_TIMEZONE,
@@ -517,5 +580,7 @@ def fetch_weather_snapshot(
                 payload,
                 "longitude",
             ),
+            observation_in_future=hours_ahead > 0,
+            forecast_hours_in_history_window=forecast_hours_in_history,
         ),
     )

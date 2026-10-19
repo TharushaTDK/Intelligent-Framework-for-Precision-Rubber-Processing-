@@ -10,11 +10,19 @@ from backend.app.schemas.weather_provider import (
     WeatherSnapshotRequest,
     WeatherSnapshotResponse,
 )
+import backend.app.services.weather_provider as weather_provider
 from backend.app.services.weather_provider import (
     WeatherProviderDataError,
     WeatherProviderError,
+    WeatherTimestampRangeError,
     fetch_weather_snapshot,
 )
+
+
+@pytest.fixture(autouse=True)
+def no_retry_wait(monkeypatch):
+    # Retries pause between attempts; tests don't need to wait.
+    monkeypatch.setattr(weather_provider, "_sleep", lambda seconds: None)
 
 
 TZ = ZoneInfo("Asia/Colombo")
@@ -537,6 +545,100 @@ def test_connection_error_raises_provider_error():
 
 
 # ============================================================
+# RETRIES FOR A BRIEFLY UNAVAILABLE PROVIDER
+# ============================================================
+
+
+def make_sequence_transport(steps: list, capture: list) -> httpx.MockTransport:
+    """
+    Serves one step per request, in order. A step is either an
+    HTTP status (served with a valid payload when it is 200) or an
+    exception class to raise.
+    """
+
+    remaining = list(steps)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        capture.append(request)
+        step = remaining.pop(0)
+
+        if isinstance(step, type) and issubclass(step, Exception):
+            raise step("mock failure", request=request)
+
+        if step == 200:
+            return httpx.Response(200, json=make_payload())
+
+        return httpx.Response(step, json={"reason": "busy"})
+
+    return httpx.MockTransport(handler)
+
+
+def test_brief_503_is_retried_and_then_succeeds():
+    # This is what happened in the browser: one 503, then fine.
+    capture = []
+    response = fetch_snapshot(make_sequence_transport([503, 200], capture))
+
+    assert len(capture) == 2
+    assert response.temperature_c is not None
+
+
+def test_several_overloaded_replies_in_a_row_still_recover():
+    capture = []
+    response = fetch_snapshot(make_sequence_transport([503, 503, 503, 200], capture))
+
+    assert len(capture) == 4
+    assert response.temperature_c is not None
+
+
+def test_connection_error_is_retried_and_then_succeeds():
+    capture = []
+    response = fetch_snapshot(
+        make_sequence_transport([httpx.ConnectError, 200], capture)
+    )
+
+    assert len(capture) == 2
+    assert response.provider
+
+
+@pytest.mark.parametrize("status", [429, 500, 502, 503, 504])
+def test_provider_still_busy_after_retries_is_unavailable_not_bad_data(status):
+    attempts = len(weather_provider.RETRY_DELAYS_SECONDS) + 1
+    capture = []
+    transport = make_sequence_transport([status] * attempts, capture)
+
+    with pytest.raises(WeatherProviderError) as exc_info:
+        fetch_snapshot(transport)
+
+    # Unavailable (API 503), not "invalid data" (API 502).
+    assert not isinstance(exc_info.value, WeatherProviderDataError)
+    assert len(capture) == attempts
+    message = str(exc_info.value)
+    assert "temporarily unavailable" in message
+    assert "busy" not in message
+    assert "api.open-meteo.com" not in message
+
+
+def test_client_error_status_is_not_retried():
+    capture = []
+    transport = make_sequence_transport([400], capture)
+
+    with pytest.raises(WeatherProviderDataError):
+        fetch_snapshot(transport)
+
+    assert len(capture) == 1
+
+
+def test_timeout_is_not_retried():
+    capture = []
+    transport = make_sequence_transport([httpx.ReadTimeout], capture)
+
+    with pytest.raises(WeatherProviderError):
+        fetch_snapshot(transport)
+
+    assert len(capture) == 1
+
+
+# ============================================================
 # PRE-FLIGHT RANGE REJECTIONS (NO HTTP CALL)
 # ============================================================
 
@@ -555,18 +657,57 @@ def test_history_beyond_supported_range_rejected_before_http():
     assert capture == []
 
 
-def test_future_observation_beyond_grace_rejected_before_http():
+def test_future_observation_beyond_7_days_rejected_before_http():
     capture: list[httpx.Request] = []
     transport = make_transport(make_payload(), capture=capture)
-    observation = NOW + timedelta(hours=7)
+    observation = NOW + timedelta(days=7, hours=1)
 
-    with pytest.raises(WeatherProviderDataError):
+    with pytest.raises(WeatherTimestampRangeError):
         fetch_snapshot(
             transport,
             observation_timestamp=observation,
         )
 
     assert capture == []
+
+
+def test_history_range_error_is_the_timestamp_range_type():
+    with pytest.raises(WeatherTimestampRangeError):
+        fetch_snapshot(
+            make_transport(make_payload()),
+            observation_timestamp=NOW - timedelta(days=100),
+        )
+
+
+def future_snapshot(hours_ahead: int) -> WeatherSnapshotResponse:
+    observation = NOW + timedelta(hours=hours_ahead)
+    return fetch_snapshot(
+        make_transport(make_payload(observation.replace(tzinfo=None))),
+        observation_timestamp=observation,
+    )
+
+
+def test_current_hour_is_not_flagged_as_forecast():
+    quality = future_snapshot(0).data_quality
+
+    assert quality.observation_in_future is False
+    assert quality.forecast_hours_in_history_window == 0
+
+
+def test_a_few_hours_ahead_counts_the_forecast_hours():
+    quality = future_snapshot(2).data_quality
+
+    assert quality.observation_in_future is True
+    assert quality.forecast_hours_in_history_window == 2
+
+
+@pytest.mark.parametrize("hours_ahead", [72, 7 * 24])
+def test_days_ahead_is_accepted_and_fully_forecast(hours_ahead):
+    response = future_snapshot(hours_ahead)
+
+    assert response.data_quality.observation_in_future is True
+    assert response.data_quality.forecast_hours_in_history_window == 72
+    assert response.temperature_c is not None
 
 
 # ============================================================
