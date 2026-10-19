@@ -3,7 +3,7 @@ import pandas as pd
 
 # Project directories
 BASE_DIR = Path(__file__).resolve().parents[1]
-RAW_FILE = BASE_DIR / "data" / "raw" / "latex_coagulation_dataset_final.csv"
+RAW_FILE = BASE_DIR / "data" / "raw" / "latex_coagulation_dataset_raw.csv"
 REPORT_DIR = BASE_DIR / "outputs" / "reports"
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 

@@ -1,6 +1,6 @@
 column,valid_count,unique_values,minimum,maximum,mean,median,iqr_lower_screening_bound,iqr_upper_screening_bound,iqr_flagged_count,interpretation
-drc,2500,1600,19.4,45.75,32.654256,32.7,7.856249999999996,57.40625000000001,0,Review flagged values; do not delete automatically.
-latex_volume_L,2500,2345,5.03,199.92,102.17440800000001,103.345,-95.185,300.555,0,Review flagged values; do not delete automatically.
-water_amount_L,2500,1624,0.0,30.9,12.797264000000002,12.69,-11.11125,36.37875,0,Review flagged values; do not delete automatically.
-prepared_1pct_formic_acid_solution_mL,2500,2463,3.76,996.88,358.947144,336.765,-336.30500000000006,1024.9950000000001,0,Review flagged values; do not delete automatically.
-coagulation_time_hours,2500,632,3.49,12.28,8.220432,8.23,3.5762499999999986,12.86625,1,Review flagged values; do not delete automatically.
+drc,2514,1572,-3.2,120.5,32.67105807478123,32.655,7.646249999999998,57.556250000000006,5,Review flagged values; do not delete automatically.
+latex_volume_L,2526,2295,-25.0,199.92,101.8232779097387,102.57,-95.00875,299.80125,0,Review flagged values; do not delete automatically.
+water_amount_L,2597,1626,-1.5,30.9,12.781467077396997,12.69,-11.180000000000001,36.42,0,Review flagged values; do not delete automatically.
+prepared_1pct_formic_acid_solution_mL,2598,2465,-120.0,996.88,358.9751385681293,336.765,-338.1612500000001,1026.7087500000002,0,Review flagged values; do not delete automatically.
+coagulation_time_hours,2597,635,-2.1,12.28,8.213057373892953,8.23,3.564999999999998,12.885000000000002,5,Review flagged values; do not delete automatically.

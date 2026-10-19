@@ -2,14 +2,14 @@
 from pathlib import Path
 import pandas as pd
 ROOT=Path(__file__).resolve().parents[1]
-RAW=ROOT/"data"/"raw"/"latex_coagulation_dataset_final.csv"
+DATA=ROOT/"data"/"processed"/"latex_coagulation_dataset_final.csv"
 OUT=ROOT/"data"/"processed"; REP=ROOT/"outputs"/"reports"
 FEATURES=["drc","latex_volume_L"]
 TARGETS=["water_amount_L","prepared_1pct_formic_acid_solution_mL","coagulation_time_hours"]
 def main():
-    if not RAW.exists(): raise FileNotFoundError(RAW)
+    if not DATA.exists(): raise FileNotFoundError(DATA)
     OUT.mkdir(parents=True,exist_ok=True); REP.mkdir(parents=True,exist_ok=True)
-    df=pd.read_csv(RAW)
+    df=pd.read_csv(DATA)
     needed=["batch_id","record_date"]+FEATURES+TARGETS
     missing=[c for c in needed if c not in df]
     if missing: raise ValueError(f"Missing columns: {missing}")

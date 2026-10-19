@@ -1,2 +1,8 @@
-rows,missing_cells,duplicate_rows,note
-2500,0,0,Date parsing and copy only; no target values are changed.
+step,rows,removed,note
+raw dataset,2606,0,14 columns
+drop unwanted columns,2606,0,"dropped: Unnamed: 0, entry_no, recorded_by, weather_note, remarks"
+fix formats,2606,0,"trimmed batch ids, removed units (%, L) from numbers, unified dates"
+remove duplicate rows,2558,48,
+remove rows with missing values,2517,41,"targets are not filled in, these rows are dropped"
+remove impossible values,2500,17,
+final dataset,2500,0,latex_coagulation_dataset_final.csv

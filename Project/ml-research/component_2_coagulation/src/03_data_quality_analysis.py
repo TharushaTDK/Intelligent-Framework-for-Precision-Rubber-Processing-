@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 
 PROJECT_DIR = Path(__file__).resolve().parents[1]
-RAW_FILE = PROJECT_DIR / "data" / "raw" / "latex_coagulation_dataset_final.csv"
+RAW_FILE = PROJECT_DIR / "data" / "raw" / "latex_coagulation_dataset_raw.csv"
 REPORT_DIR = PROJECT_DIR / "outputs" / "reports"
 
 NUMERIC_COLUMNS = [
@@ -23,6 +23,7 @@ NUMERIC_COLUMNS = [
 ]
 DATE_COLUMN = "record_date"
 ID_COLUMN = "batch_id"
+EXPECTED_COLUMNS = [ID_COLUMN, DATE_COLUMN, "metrolac_reading", "latex_temperature_C"] + NUMERIC_COLUMNS
 
 def main():
     if not RAW_FILE.exists():
@@ -51,6 +52,13 @@ def main():
          "status": "PASS" if not df.duplicated().any() else "REVIEW",
          "details": "Exact duplicate rows; records are not removed."},
     ]
+
+    extra_columns = [c for c in df.columns if c not in EXPECTED_COLUMNS]
+    quality_rows.append({
+        "check": "unwanted_columns", "column": "ALL", "result": len(extra_columns),
+        "status": "PASS" if not extra_columns else "REVIEW",
+        "details": "Columns not needed for the models: " + ", ".join(extra_columns),
+    })
 
     if ID_COLUMN in df.columns:
         missing_ids = int(df[ID_COLUMN].isna().sum())
@@ -123,8 +131,14 @@ def main():
         })
 
     # Simple physical/semantic screening checks. These are review flags, not corrections.
-    # Note: drc is a numerical reading, not a bounded 0-100 percentage,
-    # so no percent-range screening check is applied to it.
+    if "drc" in numeric_data:
+        s = numeric_data["drc"]
+        count = int(((s <= 0) | (s > 100)).sum())
+        quality_rows.append({
+            "check": "drc_outside_0_100", "column": "drc",
+            "result": count, "status": "PASS" if count == 0 else "REVIEW",
+            "details": "DRC is a percentage and should be above 0 and up to 100.",
+        })
     if "latex_volume_L" in numeric_data:
         s = numeric_data["latex_volume_L"]
         count = int((s <= 0).sum())
