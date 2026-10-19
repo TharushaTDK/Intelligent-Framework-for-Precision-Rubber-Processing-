@@ -14,6 +14,11 @@ export function hoursAndMinutes(hours: number): string {
   return parts.join(' ');
 }
 
+// a time of zero or less is not a real duration, the saved model value is left as it is
+export function coagulationTimeText(hours: number): string {
+  return hours > 0 ? hoursAndMinutes(hours) : 'Not reliable for these inputs';
+}
+
 export function formatDate(iso: string): string {
   const date = new Date(iso);
   return Number.isNaN(date.getTime()) ? iso : date.toLocaleString();
@@ -62,9 +67,17 @@ export function BatchSummaryCard({ batch }: BatchSummaryCardProps) {
       {batch.coagulation_time_hours !== null ? (
         <View style={styles.resultCard}>
           <Text style={styles.resultLabel}>Predicted coagulation time</Text>
-          <Text style={styles.resultValue}>{hoursAndMinutes(batch.coagulation_time_hours)}</Text>
+          <Text style={styles.resultValue}>{coagulationTimeText(batch.coagulation_time_hours)}</Text>
         </View>
       ) : null}
+
+      {batch.outside_training_range
+        ? batch.notes.map((note) => (
+            <View key={note} style={styles.warningBox}>
+              <Text style={styles.warningText}>{note}</Text>
+            </View>
+          ))
+        : null}
     </View>
   );
 }
@@ -125,5 +138,17 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '700',
     color: colors.textOnPrimary,
+  },
+  warningBox: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.warning,
+    borderRadius: radii.md,
+    padding: spacing.md,
+  },
+  warningText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textPrimary,
   },
 });

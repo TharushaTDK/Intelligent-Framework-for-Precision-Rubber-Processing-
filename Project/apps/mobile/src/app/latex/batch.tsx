@@ -9,6 +9,12 @@ import { colors, radii, spacing, typography } from '../../constants/theme';
 import { createRecommendation, MANUAL_ESTATE_ID, toReadableMessage } from '../../services/latexApi';
 import type { CoagulationOutput } from '../../types/latex';
 
+// training data range of the Component 2 models
+const DRC_MIN = 19.4;
+const DRC_MAX = 45.56;
+const VOLUME_MIN = 5.13;
+const VOLUME_MAX = 199.92;
+
 const OUTPUT_OPTIONS: { key: string; label: string; caption: string; outputs: CoagulationOutput[] }[] = [
   { key: 'water_acid', label: 'Water & Acid', caption: 'Water and 1% formic acid solution', outputs: ['water_acid'] },
   { key: 'coagulation_time', label: 'Coagulation Time', caption: 'How long the batch takes', outputs: ['coagulation_time'] },
@@ -28,12 +34,11 @@ export default function NewBatch() {
     const drcValue = Number(drc);
     const volumeValue = Number(volume);
 
-    // same limits as the backend schema
-    if (!drc.trim() || !Number.isFinite(drcValue) || drcValue <= 0 || drcValue > 100) {
-      nextErrors.drc = 'Enter a DRC above 0 and up to 100 %.';
+    if (!drc.trim() || !Number.isFinite(drcValue) || drcValue < DRC_MIN || drcValue > DRC_MAX) {
+      nextErrors.drc = `Enter a DRC between ${DRC_MIN} and ${DRC_MAX} %.`;
     }
-    if (!volume.trim() || !Number.isFinite(volumeValue) || volumeValue <= 0) {
-      nextErrors.volume = 'Enter a latex volume above 0 L.';
+    if (!volume.trim() || !Number.isFinite(volumeValue) || volumeValue < VOLUME_MIN || volumeValue > VOLUME_MAX) {
+      nextErrors.volume = `Enter a latex volume between ${VOLUME_MIN} and ${VOLUME_MAX} L.`;
     }
     return nextErrors;
   }
@@ -88,6 +93,7 @@ export default function NewBatch() {
             keyboardType="decimal-pad"
             error={errors.drc}
           />
+          {!errors.drc ? <Text style={styles.rangeText}>Range: {DRC_MIN} – {DRC_MAX} %</Text> : null}
           <FormField
             label="Latex volume (L)"
             value={volume}
@@ -96,6 +102,9 @@ export default function NewBatch() {
             keyboardType="decimal-pad"
             error={errors.volume}
           />
+          {!errors.volume ? (
+            <Text style={styles.rangeText}>Range: {VOLUME_MIN} – {VOLUME_MAX} L</Text>
+          ) : null}
         </View>
 
         <View style={styles.card}>
@@ -179,6 +188,11 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: spacing.md,
     gap: spacing.sm,
+  },
+  rangeText: {
+    marginTop: -spacing.xs,
+    fontSize: 12,
+    color: colors.textSecondary,
   },
   cardTitle: {
     fontSize: 15,

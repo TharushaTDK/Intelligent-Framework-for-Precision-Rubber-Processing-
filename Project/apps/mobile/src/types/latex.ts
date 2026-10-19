@@ -26,6 +26,7 @@ export interface CoagulationRecommendationResponse {
   water_acid: WaterAcidResult | null;
   coagulation_time_hours: number | null;
   outside_training_range: boolean;
+  notes: string[];
   water_acid_model_version: string;
   coagulation_time_model_version: string | null;
   status: RecommendationStatus;

@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { colors, radii, spacing, typography } from '../../constants/theme';
-import { formatDate, formatDrc, hoursAndMinutes } from '../../features/latex/BatchSummaryCard';
+import { coagulationTimeText, formatDate, formatDrc } from '../../features/latex/BatchSummaryCard';
 import { listRecommendations, toReadableMessage } from '../../services/latexApi';
 import type { CoagulationRecommendationResponse } from '../../types/latex';
 
@@ -33,9 +33,12 @@ function BatchRow({ batch }: { batch: CoagulationRecommendationResponse }) {
           </>
         ) : null}
         {batch.coagulation_time_hours !== null ? (
-          <Text style={styles.rowValue}>Time {hoursAndMinutes(batch.coagulation_time_hours)}</Text>
+          <Text style={styles.rowValue}>Time {coagulationTimeText(batch.coagulation_time_hours)}</Text>
         ) : null}
       </View>
+      {batch.outside_training_range ? (
+        <Text style={styles.rowWarning}>Outside the range, less reliable</Text>
+      ) : null}
       <Text style={styles.rowLink}>View details ›</Text>
     </Pressable>
   );
@@ -192,6 +195,11 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: radii.sm,
     overflow: 'hidden',
+  },
+  rowWarning: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textSecondary,
   },
   rowLink: {
     marginTop: spacing.xs,
