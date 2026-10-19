@@ -5,6 +5,9 @@ from backend.app.database.models.smokehouse import (
     SmokehousePrediction,
     SmokehouseReading,
 )
+from backend.app.database.models.weather_tapping import (
+    TappingAdvisory,
+)
 
 __all__ = [
     "CoagulationRecommendation",
@@ -12,4 +15,5 @@ __all__ = [
     "SmokehouseLayer",
     "SmokehouseReading",
     "SmokehousePrediction",
+    "TappingAdvisory",
 ]

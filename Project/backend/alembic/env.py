@@ -14,6 +14,7 @@ from backend.app.database.models import (  # noqa: F401
     SmokehouseLayer,
     SmokehousePrediction,
     SmokehouseReading,
+    TappingAdvisory,
 )
 
 

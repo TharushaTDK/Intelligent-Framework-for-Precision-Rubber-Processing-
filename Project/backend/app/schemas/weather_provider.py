@@ -42,8 +42,9 @@ class WeatherSnapshotRequest(BaseModel):
         description=(
             "Observation time with an explicit UTC offset. "
             "Converted to Asia/Colombo and floored to the "
-            "containing hour. Past timestamps within the "
-            "provider's supported history range are allowed."
+            "containing hour. Allowed from about 89 days in the "
+            "past up to 7 days in the future; future times are "
+            "flagged as forecast-based in data_quality."
         ),
     )
 
@@ -105,6 +106,27 @@ class WeatherDataQuality(BaseModel):
             "which may differ from the requested longitude. "
             "None when the provider did not return one - "
             "never fabricated."
+        ),
+    )
+    observation_in_future: bool = Field(
+        default=False,
+        description=(
+            "True when the observation hour is after the current "
+            "hour. Every weather value is then a forecast, "
+            "including the rainfall_last_6h_mm / "
+            "rainfall_last_3days_mm windows; the models were "
+            "trained on observed weather, so predictions from it "
+            "are forecast-based and not validated."
+        ),
+    )
+    forecast_hours_in_history_window: int = Field(
+        default=0,
+        ge=0,
+        le=72,
+        description=(
+            "How many of the 72 hourly buckets in the t-71..t "
+            "rainfall window lie after the current hour, i.e. "
+            "are forecasts rather than observations."
         ),
     )
 
