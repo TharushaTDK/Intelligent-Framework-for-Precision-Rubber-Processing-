@@ -62,8 +62,6 @@ export default function Home() {
               description="Monitor drying progress and fire-risk conditions."
               icon={<ThermometerMark tone={colors.primaryDark} />}
               onPress={() => router.push('/smokehouse')}
-              emphasized
-              badge="Our Module"
             />
 
             <FeatureCard
