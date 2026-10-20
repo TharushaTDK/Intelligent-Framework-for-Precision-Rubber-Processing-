@@ -4,7 +4,7 @@ import pandas as pd
 ROOT=Path(__file__).resolve().parents[1]
 DATA=ROOT/"data"/"processed"/"07_feature_engineered.csv"; REP=ROOT/"outputs"/"reports"
 FEATURES=["drc","latex_volume_L"]
-TARGETS=["water_amount_L","prepared_1pct_formic_acid_solution_mL","coagulation_time_hours"]
+TARGETS=["water_amount_L","prepared_1pct_formic_acid_solution_mL","coagulation_time_minutes"]
 def main():
     if not DATA.exists(): raise FileNotFoundError("Run step 7 first.")
     REP.mkdir(parents=True,exist_ok=True); df=pd.read_csv(DATA)

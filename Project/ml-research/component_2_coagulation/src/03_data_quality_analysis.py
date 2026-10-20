@@ -19,7 +19,7 @@ NUMERIC_COLUMNS = [
     "latex_volume_L",
     "water_amount_L",
     "prepared_1pct_formic_acid_solution_mL",
-    "coagulation_time_hours",
+    "coagulation_time_minutes",
 ]
 DATE_COLUMN = "record_date"
 ID_COLUMN = "batch_id"
@@ -148,7 +148,7 @@ def main():
             "details": "Latex batch volume should be positive.",
         })
     for col in ["water_amount_L", "prepared_1pct_formic_acid_solution_mL",
-                "coagulation_time_hours"]:
+                "coagulation_time_minutes"]:
         if col in numeric_data:
             s = numeric_data[col]
             count = int((s < 0).sum())

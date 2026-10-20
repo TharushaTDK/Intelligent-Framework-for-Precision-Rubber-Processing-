@@ -1,6 +1,6 @@
 check,result,status
-"At least 2,000 rows",2606,PASS
-Duplicate batch IDs,48,CHECK
-Missing values,3136,CHECK
+"At least 2,000 rows",2614,PASS
+Duplicate batch IDs,52,CHECK
+Missing values,2600,CHECK
 Duplicate complete rows,0,PASS
 Required columns present,7,PASS

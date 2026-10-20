@@ -17,7 +17,7 @@ FEATURES=["drc","latex_volume_L"]
 FEATURES_TIME=FEATURES+["water_amount_L","prepared_1pct_formic_acid_solution_mL"]
 TASKS=[
   ("model_1_water_acid_best.joblib","water_acid_pipeline.joblib",FEATURES,["water_amount_L","prepared_1pct_formic_acid_solution_mL"]),
-  ("model_2_coagulation_time_best.joblib","coagulation_time_pipeline.joblib",FEATURES_TIME,["coagulation_time_hours"]),
+  ("model_2_coagulation_time_best.joblib","coagulation_time_pipeline.joblib",FEATURES_TIME,["coagulation_time_minutes"]),
 ]
 TOLERANCE=1e-6
 
