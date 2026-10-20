@@ -998,7 +998,7 @@
 
     function showPin() {
         const text = pin
-            ? `${pin.location} · DRC ${pin.drc.toFixed(1)} % from Component 1`
+            ? `${pin.location} · DRC ${pin.drc.toFixed(1)} %`
             : "Choose the location on the map in part 1.";
         $("tLocationInfo").textContent = text;
     }
@@ -1018,7 +1018,7 @@
             const data = await call(API + "/location-drc", "POST", { latitude: lat, longitude: lon });
             if (request !== pinRequest) return;
             pin = data;
-            $("drcInfo").textContent = `DRC from Component 1: ${data.drc.toFixed(1)} %`;
+            $("drcInfo").textContent = `DRC: ${data.drc.toFixed(1)} %`;
         } catch (err) {
             if (request !== pinRequest) return;
             $("drcInfo").textContent = err.message;

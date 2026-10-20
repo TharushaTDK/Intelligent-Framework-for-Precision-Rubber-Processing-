@@ -89,7 +89,7 @@ def get_point_drc(
         )
     except WeatherTappingServiceError as exc:
         raise EstateDrcUnavailableError(
-            "The Component 1 DRC model could not estimate the DRC for this location."
+            "The DRC could not be estimated for this location."
         ) from exc
 
     return EstateDrc(
