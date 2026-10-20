@@ -25,7 +25,16 @@ export function formatDate(iso: string): string {
 }
 
 export function formatDrc(drc: number): string {
-  return `${Number(drc.toFixed(2))} %`;
+  return `${drc.toFixed(1)} %`;
+}
+
+// measured with a jug and a cylinder, so water to 0.1 L and acid to 1 mL
+export function formatWater(litres: number): string {
+  return `${litres.toFixed(1)} L`;
+}
+
+export function formatAcid(millilitres: number): string {
+  return `${millilitres.toFixed(0)} mL`;
 }
 
 type BatchSummaryCardProps = {
@@ -37,6 +46,7 @@ export function BatchSummaryCard({ batch }: BatchSummaryCardProps) {
     <View style={styles.wrap}>
       <View style={styles.inputCard}>
         <Text style={styles.batchTag}>Batch #{batch.id}</Text>
+        <Text style={styles.locationText}>Location {batch.estate_id}</Text>
         <View style={styles.inputRow}>
           <View style={styles.inputItem}>
             <Text style={styles.inputLabel}>Dry rubber content</Text>
@@ -53,12 +63,12 @@ export function BatchSummaryCard({ batch }: BatchSummaryCardProps) {
         <>
           <View style={styles.resultCard}>
             <Text style={styles.resultLabel}>Water to add</Text>
-            <Text style={styles.resultValue}>{batch.water_acid.water_amount_L.toFixed(2)} L</Text>
+            <Text style={styles.resultValue}>{formatWater(batch.water_acid.water_amount_L)}</Text>
           </View>
           <View style={styles.resultCard}>
             <Text style={styles.resultLabel}>Prepared 1% formic acid solution</Text>
             <Text style={styles.resultValue}>
-              {batch.water_acid.prepared_1pct_formic_acid_solution_mL.toFixed(1)} mL
+              {formatAcid(batch.water_acid.prepared_1pct_formic_acid_solution_mL)}
             </Text>
           </View>
         </>
@@ -71,13 +81,6 @@ export function BatchSummaryCard({ batch }: BatchSummaryCardProps) {
         </View>
       ) : null}
 
-      {batch.outside_training_range
-        ? batch.notes.map((note) => (
-            <View key={note} style={styles.warningBox}>
-              <Text style={styles.warningText}>{note}</Text>
-            </View>
-          ))
-        : null}
     </View>
   );
 }
@@ -139,16 +142,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.textOnPrimary,
   },
-  warningBox: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.warning,
-    borderRadius: radii.md,
-    padding: spacing.md,
-  },
-  warningText: {
+  locationText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: colors.textPrimary,
+    color: colors.textSecondary,
   },
 });

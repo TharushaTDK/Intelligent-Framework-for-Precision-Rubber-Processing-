@@ -5,10 +5,22 @@ export type CoagulationOutput = 'water_acid' | 'coagulation_time';
 export type RecommendationStatus = 'recommended' | 'in_progress' | 'completed' | 'cancelled';
 
 export interface CoagulationRecommendationCreate {
-  estate_id: string;
+  // map point, the backend finds the DRC there
+  latitude: number;
+  longitude: number;
+  // weather hour from /location-drc, so the batch uses the DRC the farmer saw
+  observation_timestamp?: string;
   latex_volume_L: number;
   outputs: CoagulationOutput[];
-  drc?: number;
+}
+
+export interface LocationDrcResponse {
+  latitude: number;
+  longitude: number;
+  location: string;
+  drc: number;
+  drc_source: string;
+  observation_timestamp: string;
 }
 
 export interface WaterAcidResult {

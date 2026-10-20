@@ -61,7 +61,7 @@ export default function BatchDetails() {
               />
               <InfoRow
                 label="DRC source"
-                value={batch.drc_source === 'manual' ? 'Entered manually' : 'Component 1 estate DRC'}
+                value={batch.drc_source === 'manual' ? 'Entered manually' : 'From the chosen location'}
               />
               <InfoRow label="Water & acid model" value={batch.water_acid_model_version} />
               {batch.coagulation_time_model_version ? (

@@ -7,8 +7,8 @@ import { SecondaryButton } from '../../components/SecondaryButton';
 import { colors, radii, spacing, typography } from '../../constants/theme';
 
 const STEPS = [
-  { number: '1', title: 'Enter the batch', text: 'Dry rubber content and latex volume.' },
-  { number: '2', title: 'Choose what you need', text: 'Water and acid amount, coagulation time or both.' },
+  { number: '1', title: 'Choose the location', text: 'Tap the map or use your location, the DRC is found for you.' },
+  { number: '2', title: 'Enter the batch', text: 'Latex volume and what you need: water and acid, time or both.' },
   { number: '3', title: 'Get the recommendation', text: 'Predicted by the trained models and saved as a batch.' },
 ];
 

@@ -2,15 +2,13 @@ import type {
   CoagulationHistoryResponse,
   CoagulationRecommendationCreate,
   CoagulationRecommendationResponse,
+  LocationDrcResponse,
 } from '../types/latex';
 
 // emulator reaches the backend through: adb reverse tcp:8000 tcp:8000
 export const LATEX_API_BASE_URL = 'http://127.0.0.1:8000';
 
 const COAGULATION_PREFIX = '/api/v1/coagulation';
-
-// estate selection comes with Component 1, until then batches are saved under this id
-export const MANUAL_ESTATE_ID = 'MANUAL';
 
 export class LatexApiError extends Error {
   status: number;
@@ -75,17 +73,21 @@ export function createRecommendation(
   });
 }
 
+// DRC for a map point, worked out from the weather there now
+export function getLocationDrc(latitude: number, longitude: number): Promise<LocationDrcResponse> {
+  return request<LocationDrcResponse>('/location-drc', {
+    method: 'POST',
+    body: JSON.stringify({ latitude, longitude }),
+  });
+}
+
 export function getRecommendation(id: number): Promise<CoagulationRecommendationResponse> {
   return request<CoagulationRecommendationResponse>(`/recommendations/${id}`);
 }
 
-export function listRecommendations(
-  estateId: string = MANUAL_ESTATE_ID,
-  limit = 50,
-): Promise<CoagulationHistoryResponse> {
-  return request<CoagulationHistoryResponse>(
-    `/recommendations?estate_id=${encodeURIComponent(estateId)}&limit=${limit}`,
-  );
+// batches from every location, newest first
+export function listRecommendations(limit = 50): Promise<CoagulationHistoryResponse> {
+  return request<CoagulationHistoryResponse>(`/recommendations?limit=${limit}`);
 }
 
 // adds the time to a batch that was first asked only for water and acid
