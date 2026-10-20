@@ -18,7 +18,7 @@ def main():
         part.to_csv(SPLITS/f"Component2_{name}.csv",index=False)
         part[FEATURES].to_csv(READY/f"Component2_X_{name}.csv",index=False)
         part[["water_amount_L","prepared_1pct_formic_acid_solution_mL"]].to_csv(READY/f"Component2_y_water_acid_{name}.csv",index=False)
-        part[["coagulation_time_hours"]].to_csv(READY/f"Component2_y_time_{name}.csv",index=False)
+        part[["coagulation_time_minutes"]].to_csv(READY/f"Component2_y_time_{name}.csv",index=False)
     pd.DataFrame([{"train_rows":len(sets["Train"]),"validation_rows":len(sets["Validation"]),"test_rows":len(sets["Test"])}]).to_csv(REPORTS/"09_split_summary.csv",index=False)
     print("Created train, validation, test and model_ready files.")
 if __name__=="__main__": main()

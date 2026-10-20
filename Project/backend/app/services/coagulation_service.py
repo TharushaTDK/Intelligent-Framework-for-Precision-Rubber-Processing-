@@ -107,7 +107,8 @@ def _predict_time(models, drc: float, latex_volume_L: float, water: float, acid:
         raise CoagulationServiceError("Coagulation time prediction failed.") from exc
     if t.shape != (1,):
         raise CoagulationServiceError("Unexpected coagulation time prediction shape.")
-    return _finite(t[0], "coagulation time")
+    # the model predicts minutes, the API and timers work in hours
+    return _finite(t[0], "coagulation time") / 60
 
 
 def predict_time_for_batch(record: CoagulationRecommendation) -> tuple[float, str]:
@@ -204,7 +205,7 @@ def build_guidance(
     items = []
 
     if water_amount_L is not None:
-        water = f"{water_amount_L:.2f}"
+        water = f"{water_amount_L:.1f}"
         items.append(
             CoagulationGuidance(
                 output="water",
@@ -224,7 +225,7 @@ def build_guidance(
         )
 
     if acid_mL is not None:
-        acid = f"{acid_mL:.1f}"
+        acid = f"{acid_mL:.0f}"
         items.append(
             CoagulationGuidance(
                 output="acid",
@@ -268,30 +269,50 @@ def build_guidance(
     return items
 
 
-def _fetch_estate_drc(estate_id: str) -> coagulation_drc_provider.EstateDrc:
+def _checked(fetch, *args) -> coagulation_drc_provider.EstateDrc:
     try:
-        estate = coagulation_drc_provider.get_estate_drc(estate_id)
+        estate = fetch(*args)
     except coagulation_drc_provider.EstateNotFoundError as exc:
-        raise CoagulationNotFoundError(f"Estate '{estate_id}' was not found.") from exc
+        raise CoagulationNotFoundError(str(exc)) from exc
     except coagulation_drc_provider.EstateDrcUnavailableError as exc:
         raise CoagulationDrcUnavailableError(str(exc)) from exc
 
     # never recommend from a broken upstream DRC value
     if not (isinstance(estate.drc, (int, float)) and math.isfinite(estate.drc) and 0 < estate.drc <= 100):
         raise CoagulationDrcUnavailableError(
-            f"Estate DRC received for '{estate_id}' is not a valid percentage."
+            f"DRC received for location {estate.estate_id} is not a valid percentage."
         )
     return estate
+
+
+def _fetch_location_drc(db: Session, location_id: int) -> coagulation_drc_provider.EstateDrc:
+    return _checked(lambda: coagulation_drc_provider.get_location_drc(db, location_id))
+
+
+def fetch_point_drc(
+    latitude: float,
+    longitude: float,
+    observation_timestamp: datetime | None = None,
+) -> coagulation_drc_provider.EstateDrc:
+    return _checked(
+        lambda: coagulation_drc_provider.get_point_drc(latitude, longitude, observation_timestamp)
+    )
 
 
 def create_recommendation(
     db: Session,
     request: CoagulationRecommendationCreate,
 ) -> CoagulationRecommendation:
-    if request.drc is not None:
-        estate = coagulation_drc_provider.EstateDrc(request.estate_id, request.drc, source="manual")
+    if request.latitude is not None:
+        estate = fetch_point_drc(request.latitude, request.longitude, request.observation_timestamp)
+        if request.drc is not None:
+            estate = coagulation_drc_provider.EstateDrc(estate.estate_id, request.drc, source="manual")
+    elif request.location_id is not None:
+        estate = _fetch_location_drc(db, request.location_id)
+        if request.drc is not None:
+            estate = coagulation_drc_provider.EstateDrc(estate.estate_id, request.drc, source="manual")
     else:
-        estate = _fetch_estate_drc(request.estate_id)
+        estate = coagulation_drc_provider.EstateDrc(request.estate_id, request.drc, source="manual")
     include_time = "coagulation_time" in request.outputs
 
     result = run_coagulation_inference(
@@ -301,7 +322,7 @@ def create_recommendation(
     )
 
     record = CoagulationRecommendation(
-        estate_id=request.estate_id,
+        estate_id=estate.estate_id,
         latex_volume_l=request.latex_volume_L,
         drc=result.drc,
         drc_source=estate.source,

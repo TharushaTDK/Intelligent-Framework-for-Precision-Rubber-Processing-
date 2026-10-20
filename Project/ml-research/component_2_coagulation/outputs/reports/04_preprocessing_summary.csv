@@ -1,8 +1,9 @@
 step,rows,removed,note
-raw dataset,2606,0,14 columns
-drop unwanted columns,2606,0,"dropped: Unnamed: 0, entry_no, recorded_by, weather_note, remarks"
-fix formats,2606,0,"trimmed batch ids, removed units (%, L) from numbers, unified dates"
-remove duplicate rows,2558,48,
-remove rows with missing values,2517,41,"targets are not filled in, these rows are dropped"
-remove impossible values,2500,17,
+raw dataset,2614,0,15 columns
+drop unwanted columns,2614,0,"dropped: Unnamed: 0, entry_no, recorded_by, weather_note, tank_no, remarks"
+fix formats,2614,0,"trimmed batch ids, removed units (%, L, mL, °C, min) from numbers, unified dates"
+remove duplicate rows,2562,52,
+remove rows with missing values,2519,43,"empty drc is filled later, other values are not filled in"
+remove impossible values,2500,19,
+fill empty drc,2500,0,260 values from the temperature corrected Metrolac ready-reckoner (Kudaligama et al. 2014)
 final dataset,2500,0,latex_coagulation_dataset_final.csv

@@ -3,6 +3,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from drc_ready_reckoner import drc_percent
+
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "latex_coagulation_dataset_raw.csv"
 OUT = ROOT / "data" / "processed"
@@ -18,9 +20,10 @@ KEEP = [
     "latex_volume_L",
     "water_amount_L",
     "prepared_1pct_formic_acid_solution_mL",
-    "coagulation_time_hours",
+    "coagulation_time_minutes",
 ]
 NUMERIC = KEEP[2:]
+WHOLE_NUMBERS = ["metrolac_reading", "prepared_1pct_formic_acid_solution_mL", "coagulation_time_minutes"]
 DATE_FORMATS = ["%Y-%m-%d", "%d/%m/%Y", "%Y/%m/%d"]
 
 
@@ -33,15 +36,19 @@ def parse_dates(values: pd.Series) -> pd.Series:
 
 
 def invalid_reason(row: pd.Series) -> str:
-    if not 0 < row["drc"] <= 100:
+    if pd.notna(row["drc"]) and not 0 < row["drc"] <= 100:
         return "drc must be above 0 and up to 100 %"
+    if row["metrolac_reading"] <= 0:
+        return "metrolac reading must be positive"
+    if not 15 <= row["latex_temperature_C"] <= 35:
+        return "temperature must be within the chart range 15-35 C"
     if row["latex_volume_L"] <= 0:
         return "latex volume must be positive"
     if row["water_amount_L"] < 0:
         return "water amount cannot be negative"
     if row["prepared_1pct_formic_acid_solution_mL"] <= 0:
         return "acid solution amount must be positive"
-    if row["coagulation_time_hours"] <= 0:
+    if row["coagulation_time_minutes"] <= 0:
         return "coagulation time must be positive"
     return ""
 
@@ -70,18 +77,18 @@ def main():
         df[c] = pd.to_numeric(text, errors="coerce")
     df["record_date"] = parse_dates(df["record_date"].str.strip())
     steps.append({"step": "fix formats", "rows": len(df), "removed": 0,
-                  "note": "trimmed batch ids, removed units (%, L) from numbers, unified dates"})
+                  "note": "trimmed batch ids, removed units (%, L, mL, °C, min) from numbers, unified dates"})
 
     dup = df.duplicated()
     removed += [{"batch_id": b, "reason": "duplicate row"} for b in df.loc[dup, "batch_id"]]
     df = df[~dup]
     steps.append({"step": "remove duplicate rows", "rows": len(df), "removed": int(dup.sum()), "note": ""})
 
-    missing = df.isna().any(axis=1)
+    missing = df.drop(columns="drc").isna().any(axis=1)
     removed += [{"batch_id": b, "reason": "missing or unreadable value"} for b in df.loc[missing, "batch_id"]]
     df = df[~missing]
     steps.append({"step": "remove rows with missing values", "rows": len(df),
-                  "removed": int(missing.sum()), "note": "targets are not filled in, these rows are dropped"})
+                  "removed": int(missing.sum()), "note": "empty drc is filled later, other values are not filled in"})
 
     reasons = df.apply(invalid_reason, axis=1)
     bad = reasons != ""
@@ -89,9 +96,17 @@ def main():
     df = df[~bad]
     steps.append({"step": "remove impossible values", "rows": len(df), "removed": int(bad.sum()), "note": ""})
 
+    # empty drc comes from the ready-reckoner chart
+    empty = df["drc"].isna()
+    df.loc[empty, "drc"] = [drc_percent(m, t) for m, t in
+                            zip(df.loc[empty, "metrolac_reading"], df.loc[empty, "latex_temperature_C"])]
+    steps.append({"step": "fill empty drc", "rows": len(df), "removed": 0,
+                  "note": f"{int(empty.sum())} values from the temperature corrected Metrolac ready-reckoner (Kudaligama et al. 2014)"})
+
     if df["batch_id"].duplicated().any():
         raise ValueError("Some batch ids still appear more than once after cleaning.")
 
+    df[WHOLE_NUMBERS] = df[WHOLE_NUMBERS].astype(int)
     df = df.sort_values("batch_id").reset_index(drop=True)
     df.to_csv(FINAL, index=False, date_format="%Y-%m-%d", lineterminator="\n")
     steps.append({"step": "final dataset", "rows": len(df), "removed": 0, "note": FINAL.name})

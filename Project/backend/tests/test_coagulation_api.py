@@ -1,19 +1,25 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import delete, select
 
-from backend.app.database.models import CoagulationRecommendation
+from backend.app.database.models import CoagulationRecommendation, TappingAdvisory
 from backend.app.database.session import SessionLocal
 from backend.app.main import app
 from backend.app.services import coagulation_drc_provider, coagulation_service
+from backend.app.services.advisory_record_service import AdvisoryRecordStorageError
 from backend.app.services.coagulation_drc_provider import EstateDrc
+from backend.app.services.weather_provider import WeatherProviderError
 
 TEST_ESTATE_ID = "PYTEST_C2_EST"
-TEST_DRC = 35.26
+TEST_LOCATION_ID = 1
+UNKNOWN_LOCATION_ID = 404
+BAD_DRC_LOCATION_ID = 500
+TEST_DRC = 43.8
 BASE = "/api/v1/coagulation"
 
 client = TestClient(app)
@@ -45,21 +51,21 @@ def real_alert_interval(monkeypatch):
 
 @pytest.fixture
 def estate_drc(monkeypatch):
-    # stands in for Component 1 until its DRC service is merged
-    def fake(estate_id: str) -> EstateDrc:
-        if estate_id == "PYTEST_C2_UNKNOWN":
-            raise coagulation_drc_provider.EstateNotFoundError(estate_id)
-        if estate_id == "PYTEST_C2_BADDRC":
-            return EstateDrc(estate_id=estate_id, drc=float("nan"), source="component_1")
-        return EstateDrc(estate_id=estate_id, drc=TEST_DRC, source="component_1")
+    # stands in for a saved Component 1 location, the real lookup is tested below
+    def fake(db, location_id: int) -> EstateDrc:
+        if location_id == UNKNOWN_LOCATION_ID:
+            raise coagulation_drc_provider.EstateNotFoundError(str(location_id))
+        if location_id == BAD_DRC_LOCATION_ID:
+            return EstateDrc(estate_id=TEST_ESTATE_ID, drc=float("nan"), source="component_1")
+        return EstateDrc(estate_id=TEST_ESTATE_ID, drc=TEST_DRC, source="component_1")
 
-    monkeypatch.setattr(coagulation_drc_provider, "get_estate_drc", fake)
+    monkeypatch.setattr(coagulation_drc_provider, "get_location_drc", fake)
 
 
-def create(outputs, estate_id=TEST_ESTATE_ID, volume=162.58):
+def create(outputs, location_id=TEST_LOCATION_ID, volume=1.6):
     res = client.post(
         f"{BASE}/recommendations",
-        json={"estate_id": estate_id, "latex_volume_L": volume, "outputs": outputs},
+        json={"location_id": location_id, "latex_volume_L": volume, "outputs": outputs},
     )
     if res.status_code == 201:
         # backdate so tests can start timers in the past
@@ -81,7 +87,7 @@ def test_water_acid_only(estate_drc):
     assert body["water_acid"]["prepared_1pct_formic_acid_solution_mL"] > 0
     assert body["coagulation_time_hours"] is None
     assert body["coagulation_time_model_version"] is None
-    assert body["water_acid_model_version"] == "component2-water-acid-v1"
+    assert body["water_acid_model_version"] == "component2-water-acid-v2"
     assert body["status"] == "recommended"
 
 
@@ -92,14 +98,14 @@ def test_coagulation_time_only(estate_drc):
     assert body["outputs"] == ["coagulation_time"]
     assert body["water_acid"] is None
     assert body["coagulation_time_hours"] > 0
-    assert body["coagulation_time_model_version"] == "component2-coagulation-time-v1"
+    assert body["coagulation_time_model_version"] == "component2-coagulation-time-v2"
 
 
 def test_both_outputs_match_preview(estate_drc):
     res = create(["water_acid", "coagulation_time"])
     preview = client.post(
         f"{BASE}/predict-preview",
-        json={"drc": TEST_DRC, "latex_volume_L": 162.58, "outputs": ["water_acid", "coagulation_time"]},
+        json={"drc": TEST_DRC, "latex_volume_L": 1.6, "outputs": ["water_acid", "coagulation_time"]},
     )
     assert res.status_code == 201 and preview.status_code == 200
     body, prev = res.json(), preview.json()
@@ -224,12 +230,12 @@ def test_water_acid_only_batch_gets_alerts_when_started(estate_drc):
     body = start_batch(rec["id"], datetime.now(timezone.utc))
     preview = client.post(
         f"{BASE}/predict-preview",
-        json={"drc": TEST_DRC, "latex_volume_L": 162.58, "outputs": ["coagulation_time"]},
+        json={"drc": TEST_DRC, "latex_volume_L": 1.6, "outputs": ["coagulation_time"]},
     ).json()
 
     # same time as the normal water/acid -> time chain for this batch
     assert body["coagulation_time_hours"] == pytest.approx(preview["coagulation_time_hours"], rel=1e-9)
-    assert body["coagulation_time_model_version"] == "component2-coagulation-time-v1"
+    assert body["coagulation_time_model_version"] == "component2-coagulation-time-v2"
     assert body["alerts"] and body["next_alert_at"] is not None
     assert body["outputs"] == ["water_acid"]
 
@@ -255,15 +261,15 @@ def test_past_and_upcoming_alerts_are_marked(estate_drc):
 
 
 def test_two_estates_have_independent_alerts(monkeypatch):
-    drc_by_estate = {"PYTEST_C2_EST_A": 35.26, "PYTEST_C2_EST_B": 28.72}
+    estates = {11: ("PYTEST_C2_EST_A", 43.8), 12: ("PYTEST_C2_EST_B", 41.2)}
     monkeypatch.setattr(
         coagulation_drc_provider,
-        "get_estate_drc",
-        lambda estate_id: EstateDrc(estate_id, drc_by_estate[estate_id], "component_1"),
+        "get_location_drc",
+        lambda db, location_id: EstateDrc(*estates[location_id], "component_1"),
     )
     now = datetime.now(timezone.utc)
-    a = create(["coagulation_time"], estate_id="PYTEST_C2_EST_A", volume=50).json()
-    b = create(["coagulation_time"], estate_id="PYTEST_C2_EST_B", volume=30).json()
+    a = create(["coagulation_time"], location_id=11, volume=1.8).json()
+    b = create(["coagulation_time"], location_id=12, volume=1.2).json()
     assert a["drc"] != b["drc"]
     assert a["coagulation_time_hours"] != b["coagulation_time_hours"]
 
@@ -276,8 +282,8 @@ def test_two_estates_have_independent_alerts(monkeypatch):
     assert datetime.fromisoformat(body_a["expected_completion_at"]) == expected_done(body_a)
     assert datetime.fromisoformat(body_b["expected_completion_at"]) == expected_done(body_b)
     assert body_a["next_alert_at"] != body_b["next_alert_at"]
-    assert all("PYTEST_C2_EST_A" in x["message"] and "(50 L)" in x["message"] for x in body_a["alerts"])
-    assert all("PYTEST_C2_EST_B" in x["message"] and "(30 L)" in x["message"] for x in body_b["alerts"])
+    assert all("PYTEST_C2_EST_A" in x["message"] and "(1.8 L)" in x["message"] for x in body_a["alerts"])
+    assert all("PYTEST_C2_EST_B" in x["message"] and "(1.2 L)" in x["message"] for x in body_b["alerts"])
 
     running = client.get(f"{BASE}/recommendations", params={"status": "in_progress"}).json()["items"]
     ours = {item["id"] for item in running if item["estate_id"].startswith("PYTEST_C2_")}
@@ -307,7 +313,7 @@ def test_start_before_recommendation_is_rejected(estate_drc):
 
 def test_status_filter_returns_running_batches(estate_drc):
     running = create(["coagulation_time"]).json()["id"]
-    create(["coagulation_time"], estate_id="PYTEST_C2_EST_2")
+    create(["coagulation_time"], location_id=2)
     start_batch(running, datetime.now(timezone.utc))
 
     res = client.get(f"{BASE}/recommendations", params={"status": "in_progress"})
@@ -330,8 +336,8 @@ def test_guidance_matches_chosen_outputs(estate_drc, outputs, expected):
 
 
 def test_guidance_uses_this_batch_values(estate_drc):
-    small = create(["water_acid", "coagulation_time"], volume=20).json()
-    large = create(["water_acid", "coagulation_time"], volume=180).json()
+    small = create(["water_acid", "coagulation_time"], volume=1.0).json()
+    large = create(["water_acid", "coagulation_time"], volume=2.0).json()
 
     for body in (small, large):
         water, acid, time = body["guidance"]
@@ -339,11 +345,12 @@ def test_guidance_uses_this_batch_values(estate_drc):
         assert acid["value"] == body["water_acid"]["prepared_1pct_formic_acid_solution_mL"]
         assert time["value"] == body["coagulation_time_hours"]
         # first point carries this batch's own value
-        assert f"{water['value']:.2f} litres" in water["guidance"][0]
-        assert f"{acid['value']:.1f} millilitres" in acid["guidance"][0]
+        assert f"{water['value']:.1f} litres" in water["guidance"][0]
+        assert f"{acid['value']:.0f} millilitres" in acid["guidance"][0]
         assert time["display_value"] in time["guidance"][0]
         assert "minute" in time["display_value"] or "hour" in time["display_value"]
-        assert water["display_value"] == f"{water['value']:.2f} L"
+        assert water["display_value"] == f"{water['value']:.1f} L"
+        assert acid["display_value"] == f"{acid['value']:.0f} mL"
         assert acid["guidance"][-1] == "Do not confuse the prepared 1% solution with concentrated formic acid."
         assert [len(water["guidance"]), len(acid["guidance"]), len(time["guidance"])] == [3, 4, 4]
         assert [g["section"] for g in body["guidance"]] == [
@@ -386,11 +393,58 @@ def test_preview_returns_only_requested_output():
 # error handling
 
 
-def test_drc_unavailable_returns_503():
-    # real provider, Component 1 is not connected yet
+def test_location_storage_failure_returns_503(monkeypatch):
+    def broken(db, record_id):
+        raise AdvisoryRecordStorageError("down")
+
+    monkeypatch.setattr(coagulation_drc_provider, "get_advisory_record", broken)
     res = create(["water_acid"])
     assert res.status_code == 503
-    assert "not available" in res.json()["detail"]
+    assert "unavailable" in res.json()["detail"]
+
+
+def test_saved_component_1_location_gives_the_drc():
+    # real lookup in the Component 1 saved advisory table
+    with SessionLocal() as db:
+        advisory = TappingAdvisory(
+            latitude=-89.123456,
+            longitude=-179.654321,
+            location_source="typed",
+            observation_timestamp=datetime(2026, 10, 19, 15, 30, tzinfo=timezone.utc),
+            forecast_based=False,
+            temperature_c=27.5,
+            relative_humidity_pct=80.0,
+            wind_speed_kmh=3.1,
+            rainfall_last_6h_mm=0.0,
+            rainfall_last_3days_mm=8.1,
+            forecast_rain_next_6h_mm=3.6,
+            predicted_latex_drc_pct=41.3,
+            drc_model_name="drc_prediction",
+            drc_runtime_artifact_sha256="a" * 64,
+        )
+        db.add(advisory)
+        db.commit()
+        advisory_id = advisory.id
+    label = "-89.1235, -179.6543"
+    try:
+        res = create(["water_acid"], location_id=advisory_id, volume=40.0)
+        assert res.status_code == 201
+        body = res.json()
+        assert body["drc"] == 41.3
+        assert body["drc_source"] == "component_1"
+        assert body["estate_id"] == label
+    finally:
+        with SessionLocal() as db:
+            db.execute(delete(CoagulationRecommendation).where(CoagulationRecommendation.estate_id == label))
+            db.execute(delete(TappingAdvisory).where(TappingAdvisory.id == advisory_id))
+            db.commit()
+
+
+def test_unknown_saved_location_returns_404():
+    # real lookup, this id does not exist
+    res = create(["water_acid"], location_id=999999999)
+    assert res.status_code == 404
+    assert "999999999" in res.json()["detail"]
 
 
 def test_manual_drc_is_used_and_saved():
@@ -414,7 +468,7 @@ def test_manual_drc_is_used_and_saved():
 def test_manual_drc_overrides_component_1(estate_drc):
     res = client.post(
         f"{BASE}/recommendations",
-        json={"estate_id": TEST_ESTATE_ID, "drc": 30.0, "latex_volume_L": 40.0, "outputs": ["water_acid"]},
+        json={"location_id": TEST_LOCATION_ID, "drc": 30.0, "latex_volume_L": 40.0, "outputs": ["water_acid"]},
     )
     assert res.json()["drc"] == 30.0
     assert res.json()["drc_source"] == "manual"
@@ -441,7 +495,7 @@ def test_add_time_to_water_acid_batch(estate_drc):
 
     preview = client.post(
         f"{BASE}/predict-preview",
-        json={"drc": TEST_DRC, "latex_volume_L": 162.58, "outputs": ["coagulation_time"]},
+        json={"drc": TEST_DRC, "latex_volume_L": 1.6, "outputs": ["coagulation_time"]},
     ).json()
     assert body["coagulation_time_hours"] == pytest.approx(preview["coagulation_time_hours"])
     assert [g["output"] for g in body["guidance"]] == ["water", "acid", "coagulation_time"]
@@ -455,11 +509,16 @@ def test_add_time_to_closed_batch_returns_409(estate_drc):
 
 
 def test_unknown_estate_returns_404(estate_drc):
-    assert create(["water_acid"], estate_id="PYTEST_C2_UNKNOWN").status_code == 404
+    assert create(["water_acid"], location_id=UNKNOWN_LOCATION_ID).status_code == 404
 
 
 def test_invalid_upstream_drc_returns_503(estate_drc):
-    assert create(["water_acid"], estate_id="PYTEST_C2_BADDRC").status_code == 503
+    assert create(["water_acid"], location_id=BAD_DRC_LOCATION_ID).status_code == 503
+
+
+def test_location_or_manual_drc_is_required():
+    res = client.post(f"{BASE}/recommendations", json={"latex_volume_L": 40.0, "outputs": ["water_acid"]})
+    assert res.status_code == 422
 
 
 def test_missing_recommendation_returns_404():
@@ -475,7 +534,7 @@ def test_invalid_payload_returns_422():
     assert create(["water_acid"], volume=-1).status_code == 422
     assert client.post(
         f"{BASE}/recommendations",
-        content='{"estate_id": "EST-001", "latex_volume_L": NaN, "outputs": ["water_acid"]}',
+        content='{"location_id": 1, "latex_volume_L": NaN, "outputs": ["water_acid"]}',
         headers={"content-type": "application/json"},
     ).status_code == 422
 
@@ -516,3 +575,109 @@ def test_dashboard_is_served():
     assert res.status_code == 200
     assert "text/html" in res.headers["content-type"]
     assert "innerHTML" not in res.text
+
+
+# map point: Component 1 weather and DRC model
+
+MAP_POINT = {"latitude": -89.5, "longitude": -179.5}
+MAP_LABEL = "-89.5000, -179.5000"
+
+
+def remove_map_batches() -> None:
+    with SessionLocal() as db:
+        db.execute(delete(CoagulationRecommendation).where(CoagulationRecommendation.estate_id == MAP_LABEL))
+        db.commit()
+
+
+@pytest.fixture
+def map_drc(monkeypatch):
+    # stands in for the Component 1 weather provider and DRC model, no internet needed
+    seen = {}
+    weather = SimpleNamespace(
+        observation_timestamp=datetime(2026, 10, 20, 6, 30, tzinfo=timezone.utc),
+        temperature_c=27.5,
+        relative_humidity_pct=80.0,
+        rainfall_last_6h_mm=0.0,
+        forecast_rain_next_6h_mm=3.6,
+        rainfall_last_3days_mm=8.1,
+        wind_speed_kmh=3.1,
+    )
+
+    def fake_weather(latitude, longitude, observation_timestamp):
+        seen["point"] = (latitude, longitude)
+        seen["when"] = observation_timestamp
+        return weather
+
+    def fake_drc(request):
+        seen["request"] = request
+        return SimpleNamespace(predicted_latex_drc_pct=TEST_DRC)
+
+    monkeypatch.setattr(coagulation_drc_provider, "fetch_weather_snapshot", fake_weather)
+    monkeypatch.setattr(coagulation_drc_provider, "predict_drc", fake_drc)
+    remove_map_batches()
+    yield seen
+    remove_map_batches()
+
+
+def test_location_drc_uses_component_1_weather_and_model(map_drc):
+    res = client.post(f"{BASE}/location-drc", json=MAP_POINT)
+    assert res.status_code == 200
+    body = res.json()
+    assert body["drc"] == TEST_DRC
+    assert body["location"] == MAP_LABEL
+    assert body["drc_source"] == "component_1"
+    assert map_drc["point"] == (-89.5, -179.5)
+    assert map_drc["request"].temperature_c == 27.5
+    assert map_drc["request"].wind_speed_kmh == 3.1
+
+
+def test_map_point_recommendation(map_drc):
+    res = client.post(
+        f"{BASE}/recommendations",
+        json={
+            **MAP_POINT,
+            "observation_timestamp": "2026-10-20T12:00:00+05:30",
+            "latex_volume_L": 1.6,
+            "outputs": ["water_acid", "coagulation_time"],
+        },
+    )
+    assert res.status_code == 201
+    body = res.json()
+    assert body["drc"] == TEST_DRC
+    assert body["drc_source"] == "component_1"
+    assert body["estate_id"] == MAP_LABEL
+    assert map_drc["when"] == datetime(2026, 10, 20, 6, 30, tzinfo=timezone.utc)
+
+    preview = client.post(
+        f"{BASE}/predict-preview",
+        json={"drc": TEST_DRC, "latex_volume_L": 1.6, "outputs": ["water_acid", "coagulation_time"]},
+    ).json()
+    assert body["water_acid"] == pytest.approx(preview["water_acid"])
+    assert body["coagulation_time_hours"] == pytest.approx(preview["coagulation_time_hours"])
+
+
+def test_weather_unavailable_returns_503(monkeypatch):
+    def down(**kwargs):
+        raise WeatherProviderError("down")
+
+    monkeypatch.setattr(coagulation_drc_provider, "fetch_weather_snapshot", down)
+    res = client.post(f"{BASE}/location-drc", json=MAP_POINT)
+    assert res.status_code == 503
+    assert "Weather" in res.json()["detail"]
+    res = client.post(f"{BASE}/recommendations", json={**MAP_POINT, "latex_volume_L": 1.6, "outputs": ["water_acid"]})
+    assert res.status_code == 503
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"latitude": 7.0},
+        {"longitude": 80.0},
+        {**MAP_POINT, "location_id": 1},
+        {"latitude": 95.0, "longitude": 80.0},
+        {**MAP_POINT, "observation_timestamp": "2026-10-20T12:00:00"},
+    ],
+)
+def test_bad_map_point_returns_422(body):
+    res = client.post(f"{BASE}/recommendations", json={**body, "latex_volume_L": 1.6, "outputs": ["water_acid"]})
+    assert res.status_code == 422

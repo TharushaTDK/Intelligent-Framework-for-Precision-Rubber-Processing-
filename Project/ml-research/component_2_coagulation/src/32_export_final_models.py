@@ -17,7 +17,7 @@ TASKS={
   "model_1_water_acid_best.joblib":{"description":"Water and prepared 1% formic acid solution recommendation",
       "features":FEATURES,"targets":["water_amount_L","prepared_1pct_formic_acid_solution_mL"],"selection":"water_acid_selected_model.json"},
   "model_2_coagulation_time_best.joblib":{"description":"Coagulation time prediction",
-      "features":FEATURES_TIME,"targets":["coagulation_time_hours"],"selection":"coagulation_time_selected_model.json"},
+      "features":FEATURES_TIME,"targets":["coagulation_time_minutes"],"selection":"coagulation_time_selected_model.json"},
 }
 
 def sha256(path):

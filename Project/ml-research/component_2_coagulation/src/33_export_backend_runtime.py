@@ -17,8 +17,9 @@ FEATURES=["drc","latex_volume_L"]
 FEATURES_TIME=FEATURES+["water_amount_L","prepared_1pct_formic_acid_solution_mL"]
 TASKS=[
   ("model_1_water_acid_best.joblib","water_acid_pipeline.joblib",FEATURES,["water_amount_L","prepared_1pct_formic_acid_solution_mL"]),
-  ("model_2_coagulation_time_best.joblib","coagulation_time_pipeline.joblib",FEATURES_TIME,["coagulation_time_hours"]),
+  ("model_2_coagulation_time_best.joblib","coagulation_time_pipeline.joblib",FEATURES_TIME,["coagulation_time_minutes"]),
 ]
+# relative, XGBoost predicts in float32 so values near 500 mL only match to about 1e-5 mL
 TOLERANCE=1e-6
 
 def sha256(path):
@@ -41,12 +42,15 @@ def main():
         y=train[targets] if len(targets)>1 else train[targets[0]]
         model.fit(train[features],y)
         pred=np.asarray(model.predict(test[features])).reshape(len(test),-1)
-        diffs={t:float(np.abs(pred[:,i]-ref[f"predicted_{t}"].to_numpy()).max()) for i,t in enumerate(targets)}
+        diffs={}
+        for i,t in enumerate(targets):
+            expected=ref[f"predicted_{t}"].to_numpy()
+            diffs[t]=float((np.abs(pred[:,i]-expected)/np.maximum(np.abs(expected),1)).max())
         worst=max(diffs.values())
         if worst>TOLERANCE: raise ValueError(f"{research_file}: refit predictions differ from research by {worst}, not saving.")
         out=RUNTIME/runtime_file
         joblib.dump(model,out)
-        report["models"][runtime_file]={"from":research_file,"max_abs_test_diff":diffs,"sha256":sha256(out)}
+        report["models"][runtime_file]={"from":research_file,"max_rel_test_diff":diffs,"sha256":sha256(out)}
         print(f"{runtime_file}: max diff {worst:.2e}, saved")
     print(json.dumps(report,indent=2))
 

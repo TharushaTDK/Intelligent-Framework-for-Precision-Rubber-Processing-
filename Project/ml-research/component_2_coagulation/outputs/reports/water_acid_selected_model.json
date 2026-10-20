@@ -1,8 +1,8 @@
 {
-  "selected_algorithm": "ExtraTrees",
+  "selected_algorithm": "XGBoost",
   "targets": [
     "water_amount_L",
     "prepared_1pct_formic_acid_solution_mL"
   ],
-  "cv_mae": -2.36127529016722
+  "cv_mae": -3.1074438095092773
 }

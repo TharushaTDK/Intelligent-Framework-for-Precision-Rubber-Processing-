@@ -1,17 +1,17 @@
 check,column,result,status,details
-row_count,ALL,2606,INFO,Number of records in the raw dataset.
+row_count,ALL,2614,INFO,Number of records in the raw dataset.
 duplicate_full_rows,ALL,0,PASS,Exact duplicate rows; records are not removed.
-unwanted_columns,ALL,5,REVIEW,"Columns not needed for the models: Unnamed: 0, entry_no, recorded_by, weather_note, remarks"
+unwanted_columns,ALL,6,REVIEW,"Columns not needed for the models: Unnamed: 0, entry_no, recorded_by, weather_note, tank_no, remarks"
 missing_ids,batch_id,0,PASS,Missing batch identifiers.
-duplicate_ids,batch_id,48,REVIEW,Repeated batch identifiers.
-unparseable_dates,record_date,256,REVIEW,Date values that could not be parsed.
-missing_or_non_numeric,drc,92,REVIEW,Includes blank values and values that cannot be converted to numbers.
-missing_or_non_numeric,latex_volume_L,80,REVIEW,Includes blank values and values that cannot be converted to numbers.
-missing_or_non_numeric,water_amount_L,9,REVIEW,Includes blank values and values that cannot be converted to numbers.
-missing_or_non_numeric,prepared_1pct_formic_acid_solution_mL,8,REVIEW,Includes blank values and values that cannot be converted to numbers.
-missing_or_non_numeric,coagulation_time_hours,9,REVIEW,Includes blank values and values that cannot be converted to numbers.
-drc_outside_0_100,drc,5,REVIEW,DRC is a percentage and should be above 0 and up to 100.
-non_positive_latex_volume,latex_volume_L,4,REVIEW,Latex batch volume should be positive.
+duplicate_ids,batch_id,52,REVIEW,Repeated batch identifiers.
+unparseable_dates,record_date,172,REVIEW,Date values that could not be parsed.
+missing_or_non_numeric,drc,342,REVIEW,Includes blank values and values that cannot be converted to numbers.
+missing_or_non_numeric,latex_volume_L,70,REVIEW,Includes blank values and values that cannot be converted to numbers.
+missing_or_non_numeric,water_amount_L,58,REVIEW,Includes blank values and values that cannot be converted to numbers.
+missing_or_non_numeric,prepared_1pct_formic_acid_solution_mL,51,REVIEW,Includes blank values and values that cannot be converted to numbers.
+missing_or_non_numeric,coagulation_time_minutes,74,REVIEW,Includes blank values and values that cannot be converted to numbers.
+drc_outside_0_100,drc,0,PASS,DRC is a percentage and should be above 0 and up to 100.
+non_positive_latex_volume,latex_volume_L,5,REVIEW,Latex batch volume should be positive.
 negative_values,water_amount_L,2,REVIEW,Negative target values need review.
-negative_values,prepared_1pct_formic_acid_solution_mL,1,REVIEW,Negative target values need review.
-negative_values,coagulation_time_hours,2,REVIEW,Negative target values need review.
+negative_values,prepared_1pct_formic_acid_solution_mL,0,PASS,Negative target values need review.
+negative_values,coagulation_time_minutes,2,REVIEW,Negative target values need review.

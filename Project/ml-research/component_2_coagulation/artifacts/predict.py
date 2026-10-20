@@ -17,6 +17,14 @@ water_acid=joblib.load(HERE/"models"/"model_1_water_acid_best.joblib")
 coag_time=joblib.load(HERE/"models"/"model_2_coagulation_time_best.joblib")
 schema=json.loads((HERE/"input_schema.json").read_text(encoding="utf-8"))
 
+def hours_minutes(minutes):
+    """121 -> '2 hours 1 minute'."""
+    h,m=divmod(int(round(minutes)),60)
+    parts=[]
+    if h: parts.append(f"{h} hour{'s' if h!=1 else ''}")
+    if m or not h: parts.append(f"{m} minute{'s' if m!=1 else ''}")
+    return " ".join(parts)
+
 def predict(df):
     out=df.copy()
     wa=water_acid.predict(out[["drc","latex_volume_L"]])
@@ -27,7 +35,8 @@ def predict(df):
         "water_amount_L":out.get("water_amount_L",out["recommended_water_amount_L"]),
         "prepared_1pct_formic_acid_solution_mL":out.get("prepared_1pct_formic_acid_solution_mL",out["recommended_1pct_formic_acid_mL"]),
     })
-    out["predicted_coagulation_time_hours"]=coag_time.predict(time_in)
+    out["predicted_coagulation_time_minutes"]=coag_time.predict(time_in)
+    out["predicted_coagulation_time"]=out["predicted_coagulation_time_minutes"].map(hours_minutes)
     # flag rows outside the training range, predictions there are less trustworthy
     outside=pd.Series(False,index=out.index)
     for col in ["drc","latex_volume_L"]:

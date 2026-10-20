@@ -23,7 +23,7 @@ required_columns = [
     "latex_volume_L",
     "water_amount_L",
     "prepared_1pct_formic_acid_solution_mL",
-    "coagulation_time_hours",
+    "coagulation_time_minutes",
 ]
 
 missing_columns = [col for col in required_columns if col not in df.columns]

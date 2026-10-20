@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 CoagulationOutput = Literal["water_acid", "coagulation_time"]
 RecommendationStatus = Literal["recommended", "in_progress", "completed", "cancelled"]
@@ -28,15 +28,32 @@ class _CoagulationInput(BaseModel):
         return value
 
 
-class CoagulationRecommendationCreate(_CoagulationInput):
-    estate_id: str = Field(max_length=50, description="Estate identifier from Component 1.")
-    # manual DRC until the Component 1 DRC service is connected
+class _MapPoint(BaseModel):
+    latitude: float | None = Field(default=None, ge=-90, le=90, allow_inf_nan=False)
+    longitude: float | None = Field(default=None, ge=-180, le=180, allow_inf_nan=False)
+
+
+class CoagulationRecommendationCreate(_CoagulationInput, _MapPoint):
+    location_id: int | None = Field(
+        default=None,
+        ge=1,
+        description="Saved Component 1 location (advisory id). Its DRC is used and its coordinates become the estate.",
+    )
+    estate_id: str | None = Field(
+        default=None,
+        max_length=50,
+        description="Only used with a manual DRC when no location is chosen.",
+    )
     drc: float | None = Field(
         default=None,
         gt=0,
         le=100,
         allow_inf_nan=False,
-        description="Dry rubber content in %. If left out, the estate DRC from Component 1 is used.",
+        description="Manual dry rubber content in %. Overrides the Component 1 DRC.",
+    )
+    observation_timestamp: datetime | None = Field(
+        default=None,
+        description="Weather hour for a map point, as returned by /location-drc. Defaults to now.",
     )
 
     @field_validator("estate_id", mode="before")
@@ -47,6 +64,38 @@ class CoagulationRecommendationCreate(_CoagulationInput):
             if not value:
                 raise ValueError("estate_id must not be empty.")
         return value
+
+    @field_validator("observation_timestamp")
+    @classmethod
+    def _aware(cls, value: datetime | None) -> datetime | None:
+        return _require_timezone(value)
+
+    @model_validator(mode="after")
+    def _location_or_manual_drc(self) -> "CoagulationRecommendationCreate":
+        if (self.latitude is None) != (self.longitude is None):
+            raise ValueError("latitude and longitude must be given together.")
+        if self.latitude is not None and self.location_id is not None:
+            raise ValueError("Give either a map point or a location_id, not both.")
+        has_location = self.location_id is not None or self.latitude is not None
+        if not has_location and (self.estate_id is None or self.drc is None):
+            raise ValueError("Pick a map point or location_id, or give estate_id and drc for a manual DRC.")
+        return self
+
+
+class LocationDrcRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    latitude: float = Field(ge=-90, le=90, allow_inf_nan=False)
+    longitude: float = Field(ge=-180, le=180, allow_inf_nan=False)
+
+
+class LocationDrcResponse(BaseModel):
+    latitude: float
+    longitude: float
+    location: str
+    drc: float
+    drc_source: str
+    observation_timestamp: datetime
 
 
 class CoagulationPreviewRequest(_CoagulationInput):

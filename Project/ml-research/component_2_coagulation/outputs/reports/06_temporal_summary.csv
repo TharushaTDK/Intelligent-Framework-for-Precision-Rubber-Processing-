@@ -1,6 +1,5 @@
-,water_amount_L,water_amount_L,water_amount_L,water_amount_L,prepared_1pct_formic_acid_solution_mL,prepared_1pct_formic_acid_solution_mL,prepared_1pct_formic_acid_solution_mL,prepared_1pct_formic_acid_solution_mL,coagulation_time_hours,coagulation_time_hours,coagulation_time_hours,coagulation_time_hours
+,water_amount_L,water_amount_L,water_amount_L,water_amount_L,prepared_1pct_formic_acid_solution_mL,prepared_1pct_formic_acid_solution_mL,prepared_1pct_formic_acid_solution_mL,prepared_1pct_formic_acid_solution_mL,coagulation_time_minutes,coagulation_time_minutes,coagulation_time_minutes,coagulation_time_minutes
 ,count,mean,min,max,count,mean,min,max,count,mean,min,max
 record_month,,,,,,,,,,,,
-2026-08,125,12.840639999999999,0.76,28.5,125,359.41456,23.17,914.61,125,8.31176,4.49,11.31
-2026-09,2094,12.735090735434575,0.0,30.9,2094,357.0272540592168,3.76,996.88,2094,8.223486150907354,3.49,12.28
-2026-10,281,13.241281138790036,0.6,28.95,281,373.0461565836299,17.59,944.49,281,8.157046263345196,4.66,11.6
+2026-08,1223,3.0595257563368765,1.8,4.4,1223,232.04578904333607,102,507,1223,212.6443172526574,56,629
+2026-09,1277,2.9929522317932653,1.8,4.4,1277,227.96711041503525,102,482,1277,212.12685982772123,54,782
