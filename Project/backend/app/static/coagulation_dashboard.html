@@ -6,6 +6,10 @@
     <title>Latex Coagulation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <style>
         :root {
             --green-900: #12321d;
@@ -151,6 +155,43 @@
             font: inherit;
             background: #fcfbf8;
             transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .map-block {
+            margin-bottom: 16px;
+        }
+
+        .map-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .map {
+            height: 320px;
+            border: 1.5px solid var(--line);
+            border-radius: 6px;
+            background: #fcfbf8;
+        }
+
+        .map-fallback {
+            padding: 20px;
+            color: var(--muted);
+        }
+
+        .drc-info {
+            margin: 8px 0 0;
+            font-weight: 600;
+        }
+
+        .location-info {
+            margin: 4px 0 0;
+            padding: 12px 14px;
+            border: 1.5px solid var(--line);
+            border-radius: 6px;
+            background: #fcfbf8;
         }
 
         input:focus {
@@ -670,6 +711,10 @@
                 padding: 20px;
             }
 
+            .map {
+                height: 260px;
+            }
+
             .timer-body {
                 justify-content: center;
             }
@@ -697,14 +742,16 @@
         </div>
 
         <form id="waterAcidForm">
-            <div class="row">
-                <div class="field">
-                    <label for="waDrc">Dry rubber content</label>
-                    <div class="input-wrap">
-                        <input id="waDrc" type="number" min="0.01" max="100" step="0.01" placeholder="e.g. 35.2" required>
-                        <span class="unit">%</span>
-                    </div>
+            <div class="map-block">
+                <div class="map-head">
+                    <label>Location</label>
+                    <button type="button" id="gpsBtn" class="plain-btn small">Use my location</button>
                 </div>
+                <div id="map" class="map"></div>
+                <p id="pinInfo" class="hint">Tap the map where this latex was collected.</p>
+                <p id="drcInfo" class="drc-info"></p>
+            </div>
+            <div class="row">
                 <div class="field">
                     <label for="waVolume">Latex volume</label>
                     <div class="input-wrap">
@@ -731,11 +778,8 @@
         <form id="timeForm">
             <div class="row">
                 <div class="field">
-                    <label for="tDrc">Dry rubber content</label>
-                    <div class="input-wrap">
-                        <input id="tDrc" type="number" min="0.01" max="100" step="0.01" placeholder="e.g. 35.2" required>
-                        <span class="unit">%</span>
-                    </div>
+                    <label>Location</label>
+                    <p id="tLocationInfo" class="location-info">Choose the location on the map in part 1.</p>
                 </div>
                 <div class="field">
                     <label for="tVolume">Latex volume</label>
@@ -780,8 +824,9 @@
 
 <script>
     const API = "/api/v1/coagulation";
-    // estate selection comes with Component 1, until then batches are saved under this id
-    const ESTATE_ID = "MANUAL";
+    // starts over Sri Lanka, like the Component 1 page
+    const MAP_START = { latitude: 7.8731, longitude: 80.7718, zoom: 7 };
+    const PIN_ZOOM = 13;
     const SVG_NS = "http://www.w3.org/2000/svg";
     const RING = 2 * Math.PI * 76;
 
@@ -799,6 +844,12 @@
     const live = new Map();
     // batch made in part 1, part 2 adds its time to the same batch
     let currentBatch = null;
+    // chosen map point with its Component 1 DRC
+    let pin = null;
+    let map = null;
+    let marker = null;
+    // only the latest DRC request may update the page
+    let pinRequest = 0;
 
     const $ = id => document.getElementById(id);
 
@@ -868,7 +919,7 @@
     }
 
     function batchTag(data) {
-        return make("div", `Batch #${data.id} · DRC ${data.drc}% · ${data.latex_volume_L} L`, "batch-tag");
+        return make("div", `Batch #${data.id} · DRC ${data.drc.toFixed(1)} % · ${data.latex_volume_L} L`, "batch-tag");
     }
 
     function clockText(ms) {
@@ -904,8 +955,99 @@
         return new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     }
 
-    function sameInputs(batch, drc, volume) {
-        return batch && Number(drc) === batch.drc && Number(volume) === batch.latex_volume_L;
+    function pinKey(point) {
+        return point ? `${point.latitude}|${point.longitude}` : "";
+    }
+
+    function sameInputs(batch, volume) {
+        return batch && pin && batch.pinKey === pinKey(pin) && Number(volume) === batch.latex_volume_L;
+    }
+
+    // map and pin
+
+    function initMap() {
+        if (typeof L === "undefined") {
+            $("map").append(make("div", "The map could not be loaded, check the internet connection. You can still use your current location.", "map-fallback"));
+            return;
+        }
+        map = L.map("map").setView([MAP_START.latitude, MAP_START.longitude], MAP_START.zoom);
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(map);
+        map.on("click", e => {
+            const p = e.latlng.wrap();
+            choosePoint(p.lat, p.lng, false);
+        });
+    }
+
+    function placeMarker(latitude, longitude, pan) {
+        if (!map) return;
+        const latLng = [latitude, longitude];
+        if (!marker) {
+            marker = L.marker(latLng, { draggable: true }).addTo(map);
+            marker.on("dragend", () => {
+                const p = marker.getLatLng().wrap();
+                choosePoint(p.lat, p.lng, false);
+            });
+        } else {
+            marker.setLatLng(latLng);
+        }
+        if (pan) map.setView(latLng, Math.max(map.getZoom(), PIN_ZOOM));
+    }
+
+    function showPin() {
+        const text = pin
+            ? `${pin.location} · DRC ${pin.drc.toFixed(1)} %`
+            : "Choose the location on the map in part 1.";
+        $("tLocationInfo").textContent = text;
+    }
+
+    // map point -> weather now -> Component 1 DRC
+    async function choosePoint(latitude, longitude, pan) {
+        const lat = Number(latitude.toFixed(6));
+        const lon = Number(longitude.toFixed(6));
+        placeMarker(lat, lon, pan);
+        pin = null;
+        showPin();
+        updateLinkHint();
+        $("pinInfo").textContent = `Location: ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+        $("drcInfo").textContent = "Getting the DRC for this location...";
+        const request = ++pinRequest;
+        try {
+            const data = await call(API + "/location-drc", "POST", { latitude: lat, longitude: lon });
+            if (request !== pinRequest) return;
+            pin = data;
+            $("drcInfo").textContent = `DRC: ${data.drc.toFixed(1)} %`;
+        } catch (err) {
+            if (request !== pinRequest) return;
+            $("drcInfo").textContent = err.message;
+        }
+        showPin();
+        updateLinkHint();
+    }
+
+    $("gpsBtn").addEventListener("click", () => {
+        if (!navigator.geolocation) {
+            $("pinInfo").textContent = "This browser cannot share its location. Tap the map instead.";
+            return;
+        }
+        $("pinInfo").textContent = "Finding your location...";
+        navigator.geolocation.getCurrentPosition(
+            pos => choosePoint(pos.coords.latitude, pos.coords.longitude, true),
+            () => ($("pinInfo").textContent = "Your location could not be found. Tap the map instead."),
+            { enableHighAccuracy: true, timeout: 15000 },
+        );
+    });
+
+    function pointBody(volume, outputs) {
+        return {
+            latitude: pin.latitude,
+            longitude: pin.longitude,
+            observation_timestamp: pin.observation_timestamp,
+            latex_volume_L: Number(volume),
+            outputs,
+        };
     }
 
     // part 1
@@ -913,26 +1055,23 @@
     $("waterAcidForm").addEventListener("submit", async e => {
         e.preventDefault();
         const box = $("waterAcidAnswer");
-        const drc = $("waDrc").value;
         const volume = $("waVolume").value;
+        if (!pin) {
+            showError(box, "Choose the location on the map first.");
+            return;
+        }
         try {
-            const data = await call(API + "/recommendations", "POST", {
-                estate_id: ESTATE_ID,
-                drc: Number(drc),
-                latex_volume_L: Number(volume),
-                outputs: ["water_acid"],
-            });
-            currentBatch = data;
+            const data = await call(API + "/recommendations", "POST", pointBody(volume, ["water_acid"]));
+            currentBatch = { ...data, pinKey: pinKey(pin) };
             box.replaceChildren(batchTag(data));
             const tiles = make("div", null, "tiles");
             tiles.append(
-                tile("water", "Water to add", data.water_acid.water_amount_L.toFixed(2) + " L"),
-                tile("acid", "1% formic acid solution", data.water_acid.prepared_1pct_formic_acid_solution_mL.toFixed(1) + " mL"),
+                tile("water", "Water to add", data.water_acid.water_amount_L.toFixed(1) + " L"),
+                tile("acid", "1% formic acid solution", data.water_acid.prepared_1pct_formic_acid_solution_mL.toFixed(0) + " mL"),
             );
             box.append(tiles);
             addGuidance(box, data.guidance);
 
-            $("tDrc").value = drc;
             $("tVolume").value = volume;
             $("timeAnswer").replaceChildren();
             updateLinkHint();
@@ -945,32 +1084,29 @@
 
     function updateLinkHint() {
         const hint = $("linkHint");
-        if (currentBatch && sameInputs(currentBatch, $("tDrc").value, $("tVolume").value)) {
+        if (currentBatch && sameInputs(currentBatch, $("tVolume").value)) {
             hint.textContent = `This time will be added to batch #${currentBatch.id} from part 1.`;
         } else {
             hint.textContent = "A new batch will be created for this latex.";
         }
     }
 
-    $("tDrc").addEventListener("input", updateLinkHint);
     $("tVolume").addEventListener("input", updateLinkHint);
 
     $("timeForm").addEventListener("submit", async e => {
         e.preventDefault();
         const box = $("timeAnswer");
-        const drc = $("tDrc").value;
         const volume = $("tVolume").value;
+        if (!pin) {
+            showError(box, "Choose the location on the map in part 1 first.");
+            return;
+        }
         try {
             let data;
-            if (currentBatch && sameInputs(currentBatch, drc, volume)) {
+            if (currentBatch && sameInputs(currentBatch, volume)) {
                 data = await call(`${API}/recommendations/${currentBatch.id}/coagulation-time`, "POST");
             } else {
-                data = await call(API + "/recommendations", "POST", {
-                    estate_id: ESTATE_ID,
-                    drc: Number(drc),
-                    latex_volume_L: Number(volume),
-                    outputs: ["coagulation_time"],
-                });
+                data = await call(API + "/recommendations", "POST", pointBody(volume, ["coagulation_time"]));
             }
             currentBatch = null;
             updateLinkHint();
@@ -993,13 +1129,14 @@
 
     // clears both parts for the next latex batch, running timers stay below
     function resetForms() {
-        ["waDrc", "waVolume", "tDrc", "tVolume"].forEach(id => ($(id).value = ""));
+        // the pin stays, the next batch is usually from the same place
+        ["waVolume", "tVolume"].forEach(id => ($(id).value = ""));
         $("waterAcidAnswer").replaceChildren();
         $("timeAnswer").replaceChildren();
         currentBatch = null;
         updateLinkHint();
         window.scrollTo({ top: 0, behavior: "smooth" });
-        $("waDrc").focus({ preventScroll: true });
+        $("waVolume").focus({ preventScroll: true });
     }
 
     // batch timers
@@ -1116,10 +1253,11 @@
             item.append(make("small", label), make("strong", value));
             facts.append(item);
         };
-        add("DRC", `${b.drc} %`);
+        add("Location", b.estate_id);
+        add("DRC", `${b.drc.toFixed(1)} %`);
         add("Latex volume", `${b.latex_volume_L} L`);
-        add("Water", b.water_acid ? `${b.water_acid.water_amount_L.toFixed(2)} L` : "Not asked");
-        add("1% formic acid solution", b.water_acid ? `${b.water_acid.prepared_1pct_formic_acid_solution_mL.toFixed(1)} mL` : "Not asked");
+        add("Water", b.water_acid ? `${b.water_acid.water_amount_L.toFixed(1)} L` : "Not asked");
+        add("1% formic acid solution", b.water_acid ? `${b.water_acid.prepared_1pct_formic_acid_solution_mL.toFixed(0)} mL` : "Not asked");
         add("Predicted time", b.coagulation_time_hours === null ? "Not asked" : hoursText(b.coagulation_time_hours));
         return facts;
     }
@@ -1130,8 +1268,8 @@
         const box = $("historyList");
         try {
             const [done, cancelled] = await Promise.all([
-                call(`${API}/recommendations?estate_id=${ESTATE_ID}&status=completed&limit=50`),
-                call(`${API}/recommendations?estate_id=${ESTATE_ID}&status=cancelled&limit=50`),
+                call(`${API}/recommendations?status=completed&limit=50`),
+                call(`${API}/recommendations?status=cancelled&limit=50`),
             ]);
             drawHistory([...done.items, ...cancelled.items].sort((a, b) => b.id - a.id));
         } catch (err) {
@@ -1169,10 +1307,10 @@
             [
                 `#${b.id}`,
                 dateTime(b.created_at),
-                `${b.drc} %`,
+                `${b.drc.toFixed(1)} %`,
                 `${b.latex_volume_L} L`,
-                b.water_acid ? `${b.water_acid.water_amount_L.toFixed(2)} L` : "—",
-                b.water_acid ? `${b.water_acid.prepared_1pct_formic_acid_solution_mL.toFixed(1)} mL` : "—",
+                b.water_acid ? `${b.water_acid.water_amount_L.toFixed(1)} L` : "—",
+                b.water_acid ? `${b.water_acid.prepared_1pct_formic_acid_solution_mL.toFixed(0)} mL` : "—",
                 b.coagulation_time_hours === null ? "—" : shortHours(b.coagulation_time_hours),
                 hasActual ? shortHours(b.actual_coagulation_time_hours) : "—",
                 hasActual ? (diff >= 0 ? "+" : "−") + shortHours(Math.abs(diff)) : "—",
@@ -1297,8 +1435,8 @@
     async function loadBatches() {
         try {
             const [running, waiting] = await Promise.all([
-                call(`${API}/recommendations?estate_id=${ESTATE_ID}&status=in_progress&limit=50`),
-                call(`${API}/recommendations?estate_id=${ESTATE_ID}&status=recommended&limit=50`),
+                call(`${API}/recommendations?status=in_progress&limit=50`),
+                call(`${API}/recommendations?status=recommended&limit=50`),
             ]);
             running.items.forEach(b => batches.set(b.id, b));
             waiting.items
@@ -1311,6 +1449,7 @@
     }
 
     updateLinkHint();
+    initMap();
     loadBatches();
     loadHistory();
 </script>

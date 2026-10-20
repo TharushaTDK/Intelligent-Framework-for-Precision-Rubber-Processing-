@@ -5,35 +5,37 @@
   "research_environment": {
     "python": "3.13.5",
     "scikit-learn": "1.7.2",
-    "exported_on": "2026-10-16"
+    "xgboost": "3.0.5",
+    "exported_on": "2026-10-20"
   },
   "runtime_export": {
     "script": "ml-research/component_2_coagulation/src/33_export_backend_runtime.py",
     "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1",
     "method": "clone of the selected research pipelines refit on the same training split",
-    "verification": "all 375 test predictions match the research predictions, max abs diff 3.4e-13"
+    "verification": "all 375 test predictions match the research predictions, max relative diff 5.2e-8 (water/acid, float32) and 6.6e-16 (time)"
   },
   "water_acid": {
-    "model_version": "component2-water-acid-v1",
-    "algorithm": "ExtraTrees",
+    "model_version": "component2-water-acid-v2",
+    "algorithm": "XGBoost",
     "pipeline": "water_acid_pipeline.joblib",
     "research_file": "model_1_water_acid_best.joblib",
-    "research_sha256": "b67b79a644ffe1c236c5713ebba0e244acda37123a49bebb6ceb250904bd0e7a",
-    "sha256": "3ca7a2d44fca8395fd2faf23e8889b0df9d2a234a6f549fd334b0071fca7a03b",
+    "research_sha256": "74cf28019641a8edd92748a6128a3a138eea7c10d66bd39f0fef3284b8ff313e",
+    "sha256": "b7071fd6d2002c640a5fd2af8366aa54facc7160a2683d24851e36291454daa2",
     "test_metrics": {
-      "water_amount_L": {"MAE": 0.3127, "RMSE": 0.3836, "R2": 0.9970},
-      "prepared_1pct_formic_acid_solution_mL": {"MAE": 4.2435, "RMSE": 5.5286, "R2": 0.9993}
+      "water_amount_L": {"MAE": 0.0758, "RMSE": 0.0958, "R2": 0.9788},
+      "prepared_1pct_formic_acid_solution_mL": {"MAE": 5.5438, "RMSE": 7.1666, "R2": 0.9825}
     }
   },
   "coagulation_time": {
-    "model_version": "component2-coagulation-time-v1",
-    "algorithm": "Ridge",
+    "model_version": "component2-coagulation-time-v2",
+    "algorithm": "RandomForest",
     "pipeline": "coagulation_time_pipeline.joblib",
     "research_file": "model_2_coagulation_time_best.joblib",
-    "research_sha256": "581dd60842dafbc8fb351a5b591193f6900a97fbbf856404e805970031cff15c",
-    "sha256": "41a4d50fc212bc25edb2af57d792755ad21849cfd6456d5b1d91335f941c5d4c",
+    "research_sha256": "d968c3c36b10474bf7fc3a1f53c7620a6c3e759bb9858a8a8010f52e62d87cb5",
+    "sha256": "f74d244663b0938c90b78a46c2d008c7b66eb9cf5ea4d3d6b39f48d831a0f6c1",
     "test_metrics": {
-      "coagulation_time_hours": {"MAE": 0.6405, "RMSE": 0.8132, "R2": 0.7043}
+      "coagulation_time_minutes": {"MAE": 17.8674, "RMSE": 23.9342, "R2": 0.9234}
     }
   },
   "limitations": "Trained on a synthetic dataset. Outputs are decision support only and are not validated on real factory batches."
