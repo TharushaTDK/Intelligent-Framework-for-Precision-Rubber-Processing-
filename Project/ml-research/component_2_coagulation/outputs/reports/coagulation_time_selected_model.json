@@ -1,5 +1,5 @@
 {
-  "selected_algorithm": "Ridge",
-  "target": "coagulation_time_hours",
-  "cv_mae": -0.6279441662686931
+  "selected_algorithm": "RandomForest",
+  "target": "coagulation_time_minutes",
+  "cv_mae": -18.086906993998067
 }

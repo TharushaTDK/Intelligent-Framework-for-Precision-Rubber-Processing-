@@ -1,6 +1,6 @@
 {
   "component": "Component 2 - latex coagulation",
-  "exported_on": "2026-10-16",
+  "exported_on": "2026-10-20",
   "environment": {
     "python": "3.13.5",
     "scikit-learn": "1.7.2",
@@ -12,12 +12,12 @@
     "train_rows": 1750,
     "validation_rows": 375,
     "test_rows": 375,
-    "train_file_sha256": "2bf24786ee1a198e4085caf43cc337ab27dbe85780cba33db4b213c64ef063ad"
+    "train_file_sha256": "f0d9ccd9906880b9fd332a2465bbeffe08b3d417b4d982d6fe381276132f09bd"
   },
   "models": {
     "model_1_water_acid_best.joblib": {
       "description": "Water and prepared 1% formic acid solution recommendation",
-      "algorithm": "ExtraTrees",
+      "algorithm": "XGBoost",
       "input_features": [
         "drc",
         "latex_volume_L"
@@ -26,38 +26,38 @@
         "water_amount_L",
         "prepared_1pct_formic_acid_solution_mL"
       ],
-      "cv_mae_train_5fold": 2.36127529016722,
-      "file_sha256": "b67b79a644ffe1c236c5713ebba0e244acda37123a49bebb6ceb250904bd0e7a",
+      "cv_mae_train_5fold": 3.1074438095092773,
+      "file_sha256": "74cf28019641a8edd92748a6128a3a138eea7c10d66bd39f0fef3284b8ff313e",
       "metrics": {
         "validation": {
           "water_amount_L": {
-            "MAE": 0.3217170853208731,
-            "RMSE": 0.4162085531676631,
-            "R2": 0.9967627755366056
+            "MAE": 0.07277453009287516,
+            "RMSE": 0.09322822920741412,
+            "R2": 0.9794800971234566
           },
           "prepared_1pct_formic_acid_solution_mL": {
-            "MAE": 4.451824078103949,
-            "RMSE": 6.469168164731482,
-            "R2": 0.9991603106061975
+            "MAE": 6.806209087371826,
+            "RMSE": 8.574684550986454,
+            "R2": 0.9756267070770264
           }
         },
         "test": {
           "water_amount_L": {
-            "MAE": 0.3126773626737249,
-            "RMSE": 0.38356391963866177,
-            "R2": 0.9970171131307042
+            "MAE": 0.0757967846552531,
+            "RMSE": 0.09580856857056236,
+            "R2": 0.9787940185849723
           },
           "prepared_1pct_formic_acid_solution_mL": {
-            "MAE": 4.24347514973883,
-            "RMSE": 5.528636092827137,
-            "R2": 0.9993140693528956
+            "MAE": 5.543846130371094,
+            "RMSE": 7.1665870602940025,
+            "R2": 0.9825156927108765
           }
         }
       }
     },
     "model_2_coagulation_time_best.joblib": {
       "description": "Coagulation time prediction",
-      "algorithm": "Ridge",
+      "algorithm": "RandomForest",
       "input_features": [
         "drc",
         "latex_volume_L",
@@ -65,23 +65,23 @@
         "prepared_1pct_formic_acid_solution_mL"
       ],
       "targets": [
-        "coagulation_time_hours"
+        "coagulation_time_minutes"
       ],
-      "cv_mae_train_5fold": 0.6279441662686931,
-      "file_sha256": "581dd60842dafbc8fb351a5b591193f6900a97fbbf856404e805970031cff15c",
+      "cv_mae_train_5fold": 18.086906993998067,
+      "file_sha256": "d968c3c36b10474bf7fc3a1f53c7620a6c3e759bb9858a8a8010f52e62d87cb5",
       "metrics": {
         "validation": {
-          "coagulation_time_hours": {
-            "MAE": 0.6439689327893724,
-            "RMSE": 0.7988932180881119,
-            "R2": 0.7264504252721189
+          "coagulation_time_minutes": {
+            "MAE": 19.812800216302218,
+            "RMSE": 26.54922175768199,
+            "R2": 0.8703323252040689
           }
         },
         "test": {
-          "coagulation_time_hours": {
-            "MAE": 0.6404760993469131,
-            "RMSE": 0.8131733445032227,
-            "R2": 0.7043124027098009
+          "coagulation_time_minutes": {
+            "MAE": 17.8673574021904,
+            "RMSE": 23.934227387602974,
+            "R2": 0.9233838302847716
           }
         }
       }

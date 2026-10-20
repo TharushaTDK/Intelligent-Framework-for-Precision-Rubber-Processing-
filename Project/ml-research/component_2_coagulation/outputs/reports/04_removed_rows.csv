@@ -1,107 +1,115 @@
 batch_id,reason
-BATCH_01591,duplicate row
-BATCH_00247,duplicate row
-BATCH_01056,duplicate row
-BATCH_01840,duplicate row
-BATCH_00750,duplicate row
-BATCH_02498,duplicate row
-BATCH_02034,duplicate row
-BATCH_00357,duplicate row
-BATCH_01359,duplicate row
-BATCH_02405,duplicate row
-BATCH_02041,duplicate row
-BATCH_00905,duplicate row
-BATCH_01021,duplicate row
-BATCH_01136,duplicate row
-BATCH_00875,duplicate row
-BATCH_01444,duplicate row
-BATCH_00804,duplicate row
-BATCH_01324,duplicate row
-BATCH_01704,duplicate row
-BATCH_01384,duplicate row
-BATCH_02330,duplicate row
-BATCH_01641,duplicate row
-BATCH_00719,duplicate row
-BATCH_01905,duplicate row
-BATCH_01465,duplicate row
-BATCH_02421,duplicate row
-BATCH_01469,duplicate row
+BATCH_01275,duplicate row
+BATCH_01165,duplicate row
+BATCH_01904,duplicate row
+BATCH_01281,duplicate row
+BATCH_01546,duplicate row
+BATCH_01884,duplicate row
+BATCH_02290,duplicate row
+BATCH_01776,duplicate row
+BATCH_00435,duplicate row
+BATCH_01808,duplicate row
+BATCH_01996,duplicate row
+BATCH_02049,duplicate row
+BATCH_01993,duplicate row
+BATCH_01747,duplicate row
+BATCH_00789,duplicate row
+BATCH_02240,duplicate row
+BATCH_01022,duplicate row
+BATCH_02465,duplicate row
+BATCH_01735,duplicate row
+BATCH_00452,duplicate row
+BATCH_01981,duplicate row
+BATCH_01150,duplicate row
+BATCH_01584,duplicate row
+BATCH_02168,duplicate row
+BATCH_00709,duplicate row
+BATCH_01416,duplicate row
+BATCH_02329,duplicate row
+BATCH_01332,duplicate row
+BATCH_02039,duplicate row
+BATCH_02187,duplicate row
+BATCH_00520,duplicate row
+BATCH_01988,duplicate row
+BATCH_01025,duplicate row
 BATCH_01385,duplicate row
+BATCH_02444,duplicate row
+BATCH_02283,duplicate row
+BATCH_02108,duplicate row
+BATCH_01782,duplicate row
+BATCH_00958,duplicate row
+BATCH_00633,duplicate row
+BATCH_01927,duplicate row
 BATCH_02388,duplicate row
-BATCH_01938,duplicate row
-BATCH_02396,duplicate row
-BATCH_01067,duplicate row
-BATCH_01145,duplicate row
-BATCH_00027,duplicate row
-BATCH_01708,duplicate row
-BATCH_01919,duplicate row
-BATCH_01722,duplicate row
-BATCH_01882,duplicate row
-BATCH_01779,duplicate row
-BATCH_01971,duplicate row
-BATCH_02487,duplicate row
-BATCH_01794,duplicate row
-BATCH_02481,duplicate row
-BATCH_00117,duplicate row
-BATCH_01914,duplicate row
-BATCH_02373,duplicate row
-BATCH_00100,duplicate row
-BATCH_02169,duplicate row
-BATCH_02532,missing or unreadable value
-BATCH_02507,missing or unreadable value
-BATCH_02528,missing or unreadable value
-BATCH_02516,missing or unreadable value
-BATCH_02555,missing or unreadable value
-BATCH_02535,missing or unreadable value
-BATCH_02510,missing or unreadable value
-BATCH_02512,missing or unreadable value
-BATCH_02504,missing or unreadable value
-BATCH_02505,missing or unreadable value
-BATCH_02557,missing or unreadable value
-BATCH_02523,missing or unreadable value
-BATCH_02522,missing or unreadable value
-BATCH_02531,missing or unreadable value
-BATCH_02518,missing or unreadable value
-BATCH_02519,missing or unreadable value
-BATCH_02530,missing or unreadable value
-BATCH_02556,missing or unreadable value
-BATCH_02558,missing or unreadable value
-BATCH_02513,missing or unreadable value
-BATCH_02503,missing or unreadable value
-BATCH_02536,missing or unreadable value
-BATCH_02508,missing or unreadable value
-BATCH_02524,missing or unreadable value
-BATCH_02534,missing or unreadable value
-BATCH_02517,missing or unreadable value
-BATCH_02506,missing or unreadable value
-BATCH_02501,missing or unreadable value
-BATCH_02515,missing or unreadable value
-BATCH_02554,missing or unreadable value
-BATCH_02502,missing or unreadable value
-BATCH_02527,missing or unreadable value
-BATCH_02533,missing or unreadable value
-BATCH_02526,missing or unreadable value
+BATCH_01253,duplicate row
+BATCH_01046,duplicate row
+BATCH_01799,duplicate row
+BATCH_01613,duplicate row
+BATCH_00956,duplicate row
+BATCH_02337,duplicate row
+BATCH_02370,duplicate row
+BATCH_00281,duplicate row
+BATCH_01156,duplicate row
+BATCH_01320,duplicate row
+BATCH_02537,missing or unreadable value
 BATCH_02520,missing or unreadable value
-BATCH_02521,missing or unreadable value
-BATCH_02525,missing or unreadable value
-BATCH_02509,missing or unreadable value
-BATCH_02514,missing or unreadable value
+BATCH_02535,missing or unreadable value
+BATCH_02505,missing or unreadable value
+BATCH_02506,missing or unreadable value
+BATCH_02532,missing or unreadable value
+BATCH_02543,missing or unreadable value
+BATCH_02517,missing or unreadable value
+BATCH_02515,missing or unreadable value
 BATCH_02511,missing or unreadable value
+BATCH_02528,missing or unreadable value
+BATCH_02503,missing or unreadable value
+BATCH_02524,missing or unreadable value
+BATCH_02540,missing or unreadable value
+BATCH_02502,missing or unreadable value
+BATCH_02522,missing or unreadable value
+BATCH_02516,missing or unreadable value
+BATCH_02538,missing or unreadable value
+BATCH_02507,missing or unreadable value
+BATCH_02504,missing or unreadable value
 BATCH_02529,missing or unreadable value
-BATCH_02550,coagulation time must be positive
-BATCH_02545,latex volume must be positive
-BATCH_02541,drc must be above 0 and up to 100 %
-BATCH_02547,water amount cannot be negative
-BATCH_02537,drc must be above 0 and up to 100 %
-BATCH_02552,coagulation time must be positive
-BATCH_02549,acid solution amount must be positive
-BATCH_02543,latex volume must be positive
-BATCH_02544,latex volume must be positive
-BATCH_02538,drc must be above 0 and up to 100 %
-BATCH_02540,drc must be above 0 and up to 100 %
+BATCH_02526,missing or unreadable value
+BATCH_02541,missing or unreadable value
+BATCH_02539,missing or unreadable value
+BATCH_02512,missing or unreadable value
+BATCH_02523,missing or unreadable value
+BATCH_02534,missing or unreadable value
+BATCH_02525,missing or unreadable value
+BATCH_02510,missing or unreadable value
+BATCH_02519,missing or unreadable value
+BATCH_02513,missing or unreadable value
+BATCH_02509,missing or unreadable value
+BATCH_02533,missing or unreadable value
+BATCH_02518,missing or unreadable value
+BATCH_02536,missing or unreadable value
+BATCH_02521,missing or unreadable value
+BATCH_02508,missing or unreadable value
+BATCH_02527,missing or unreadable value
+BATCH_02530,missing or unreadable value
+BATCH_02542,missing or unreadable value
+BATCH_02531,missing or unreadable value
+BATCH_02514,missing or unreadable value
+BATCH_02501,missing or unreadable value
+BATCH_02555,latex volume must be positive
+BATCH_02562,latex volume must be positive
+BATCH_02559,coagulation time must be positive
+BATCH_02554,latex volume must be positive
+BATCH_02548,water amount cannot be negative
+BATCH_02561,temperature must be within the chart range 15-35 C
+BATCH_02545,temperature must be within the chart range 15-35 C
+BATCH_02552,metrolac reading must be positive
+BATCH_02556,water amount cannot be negative
+BATCH_02558,coagulation time must be positive
+BATCH_02546,latex volume must be positive
+BATCH_02544,metrolac reading must be positive
 BATCH_02551,coagulation time must be positive
-BATCH_02553,coagulation time must be positive
-BATCH_02548,acid solution amount must be positive
-BATCH_02542,latex volume must be positive
-BATCH_02539,drc must be above 0 and up to 100 %
-BATCH_02546,water amount cannot be negative
+BATCH_02560,metrolac reading must be positive
+BATCH_02557,acid solution amount must be positive
+BATCH_02549,acid solution amount must be positive
+BATCH_02547,latex volume must be positive
+BATCH_02550,coagulation time must be positive
+BATCH_02553,temperature must be within the chart range 15-35 C

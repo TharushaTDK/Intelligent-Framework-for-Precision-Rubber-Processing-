@@ -16,7 +16,7 @@ df = pd.read_csv(RAW_FILE)
 targets = {
     "water_amount_L": "Model 1 target: water amount (L)",
     "prepared_1pct_formic_acid_solution_mL": "Model 1 target: prepared 1% formic acid solution amount (mL)",
-    "coagulation_time_hours": "Model 2 target: coagulation time (hours)",
+    "coagulation_time_minutes": "Model 2 target: coagulation time (minutes)",
 }
 expected_inputs = [
     "drc",
@@ -74,7 +74,7 @@ notes = [
     "TARGET VALIDATION NOTES",
     "=" * 30,
     "Model 1 predicts water_amount_L and prepared_1pct_formic_acid_solution_mL.",
-    "Model 2 predicts coagulation_time_hours.",
+    "Model 2 predicts coagulation_time_minutes.",
     "Expected available inputs in this dataset: drc, latex_volume_L, water_amount_L, prepared_1pct_formic_acid_solution_mL.",
     "",
     "This script checks column presence and basic numeric completeness only.",
