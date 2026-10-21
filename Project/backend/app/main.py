@@ -17,6 +17,10 @@ from backend.app.api.routes.weather_tapping import (
     router as weather_tapping_router,
 )
 
+from backend.app.api.routes.thud_test import (
+    router as thud_test_router,
+)
+
 from backend.app.core.config import settings
 
 from backend.app.ml.component_1_weather_tapping.model_loader import (
@@ -107,6 +111,10 @@ app.include_router(
 
 app.include_router(
     weather_tapping_router
+)
+
+app.include_router(
+    thud_test_router
 )
 
 

@@ -8,6 +8,7 @@ from backend.app.database.models.smokehouse import (
 from backend.app.database.models.weather_tapping import (
     TappingAdvisory,
 )
+from backend.app.database.models.thud_test import AcousticMeasurement
 
 __all__ = [
     "CoagulationRecommendation",
@@ -16,4 +17,5 @@ __all__ = [
     "SmokehouseReading",
     "SmokehousePrediction",
     "TappingAdvisory",
+    "AcousticMeasurement",
 ]
