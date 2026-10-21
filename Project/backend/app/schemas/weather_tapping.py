@@ -14,11 +14,18 @@ from pydantic import (
 # COMPONENT 1 REQUEST CONTRACTS
 # ============================================================
 #
-# Three independent stateless prediction contracts:
+# Three independent stateless prediction contracts, matching the
+# models retrained in October 2026 on the condition-matched farmer
+# dataset:
 #
 #   1. DRC prediction            (target: latex_drc_pct)
 #   2. Tapping suitability proxy (target: tapping_suitability_proxy)
-#   3. Rubber price estimation   (target: price_lkr_per_kg)
+#   3. Field latex price         (target: price_lkr_per_kg, per kg of
+#                                 field latex)
+#
+# Tree count, tapping system, days since last tap and previous
+# yield are no longer model inputs (the farmer records do not
+# contain them), so they are no longer accepted.
 #
 # Clients never supply engineered ML features. month and
 # day_of_year are derived by the backend from the explicit
@@ -80,9 +87,7 @@ def _reject_empty_identifier(
     Reject empty or whitespace-only identifier strings
     WITHOUT rewriting the value.
 
-    Category values are passed through exactly as supplied
-    (tapping_system is normalized later using the documented
-    training policy, not here).
+    Category values are passed through exactly as supplied.
     """
 
     if not isinstance(value, str):
@@ -95,6 +100,10 @@ def _reject_empty_identifier(
         )
 
     return value
+
+
+# The three visible latex conditions the DRC model was trained on.
+LatexCondition = Literal["Normal", "Watery", "Early coagulation"]
 
 
 # ============================================================
@@ -117,13 +126,14 @@ class DrcPredictionRequest(BaseModel):
         wind_speed_kmh
         soil_moisture_pct
         soil_ph
+        visible_latex_condition
         estate_id
-        tree_count
-        tapping_system
-        days_since_last_tap
-        previous_collection_yield_litres
         month        (derived from observation_timestamp)
         day_of_year  (derived from observation_timestamp)
+
+    visible_latex_condition drives almost all of the
+    prediction; without it the pipeline assumes the most
+    common training condition (Normal).
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -203,9 +213,9 @@ class DrcPredictionRequest(BaseModel):
         default=None,
         allow_inf_nan=False,
         description=(
-            "Soil moisture in percent. "
-            "Research policy: values outside [0, 100] are "
-            "treated as missing and median-imputed."
+            "Soil moisture in percent, as recorded by the "
+            "farmer. Research policy: values outside [0, 100] "
+            "are treated as missing and median-imputed."
         ),
     )
 
@@ -219,53 +229,26 @@ class DrcPredictionRequest(BaseModel):
         ),
     )
 
+    visible_latex_condition: LatexCondition | None = Field(
+        default=None,
+        description=(
+            "What the latex looks like at collection, as seen "
+            "by the farmer: Normal, Watery or Early "
+            "coagulation. Missing values are filled with the "
+            "most common training value (Normal) inside the "
+            "pipeline."
+        ),
+    )
+
     estate_id: str | None = Field(
         default=None,
         max_length=50,
         description=(
             "Estate identifier as a categorical feature "
-            "(for example EST-001). Unseen categories are "
-            "handled by the fitted one-hot encoder's "
-            "unknown-ignore behaviour. estate_name is never "
-            "used as a model feature."
-        ),
-    )
-
-    tree_count: float | None = Field(
-        default=None,
-        allow_inf_nan=False,
-        description=(
-            "Number of trees on the estate block. "
-            "No research range rule applies."
-        ),
-    )
-
-    tapping_system: str | None = Field(
-        default=None,
-        max_length=20,
-        description=(
-            "Tapping system category (for example S/2, D2, "
-            "D3, D4). Normalized like training: trimmed and "
-            "upper-cased. Missing values are "
-            "most-frequency-imputed inside the pipeline."
-        ),
-    )
-
-    days_since_last_tap: float | None = Field(
-        default=None,
-        allow_inf_nan=False,
-        description=(
-            "Days elapsed since the last tap. "
-            "No research range rule applies."
-        ),
-    )
-
-    previous_collection_yield_litres: float | None = Field(
-        default=None,
-        allow_inf_nan=False,
-        description=(
-            "Previous collection yield in litres. "
-            "No research range rule applies."
+            "(training estates: Estate 01 to Estate 05). "
+            "Other values are ignored by the fitted one-hot "
+            "encoder. estate_name is never used as a model "
+            "feature."
         ),
     )
 
@@ -281,7 +264,7 @@ class DrcPredictionRequest(BaseModel):
             info.field_name,
         )
 
-    @field_validator("estate_id", "tapping_system")
+    @field_validator("estate_id")
     @classmethod
     def validate_identifier_strings(
         cls,
@@ -304,9 +287,8 @@ class TappingSuitabilityRequest(BaseModel):
     Stateless request for one tapping-suitability PROXY
     prediction.
 
-    The target is a rule-derived research proxy with
-    simulated label noise - NOT expert-verified tapping
-    advice.
+    The target is a rule-derived research proxy (rainfall
+    thresholds) - NOT expert-verified tapping advice.
 
     Ordered features (from the verified runtime manifest):
 
@@ -318,9 +300,6 @@ class TappingSuitabilityRequest(BaseModel):
         wind_speed_kmh
         soil_moisture_pct
         soil_ph
-        tree_count
-        tapping_system
-        days_since_last_tap
         month        (derived from observation_timestamp)
         day_of_year  (derived from observation_timestamp)
 
@@ -377,21 +356,6 @@ class TappingSuitabilityRequest(BaseModel):
         allow_inf_nan=False,
     )
 
-    tree_count: float | None = Field(
-        default=None,
-        allow_inf_nan=False,
-    )
-
-    tapping_system: str | None = Field(
-        default=None,
-        max_length=20,
-    )
-
-    days_since_last_tap: float | None = Field(
-        default=None,
-        allow_inf_nan=False,
-    )
-
     @field_validator("observation_timestamp")
     @classmethod
     def validate_observation_timestamp_timezone(
@@ -404,18 +368,6 @@ class TappingSuitabilityRequest(BaseModel):
             info.field_name,
         )
 
-    @field_validator("tapping_system")
-    @classmethod
-    def validate_tapping_system_string(
-        cls,
-        value: object,
-        info: ValidationInfo,
-    ) -> object:
-        return _reject_empty_identifier(
-            value,
-            info.field_name,
-        )
-
 
 # ============================================================
 # PRICE ESTIMATION REQUEST
@@ -424,7 +376,8 @@ class TappingSuitabilityRequest(BaseModel):
 
 class PriceEstimationRequest(BaseModel):
     """
-    Stateless request for one rubber price estimation.
+    Stateless request for one field latex price estimation
+    (LKR per kg of field latex).
 
     Ordered features (from the verified runtime manifest):
 
@@ -434,15 +387,15 @@ class PriceEstimationRequest(BaseModel):
         rainfall_last_6h_mm
         soil_moisture_pct
         soil_ph
-        tree_count
-        tapping_system
         month        (derived from observation_timestamp)
         day_of_year  (derived from observation_timestamp)
 
-    latex_drc_pct may be a measured value or a value
-    produced by the DRC prediction operation; the caller
-    supplies it explicitly - the service never chains the
-    models implicitly.
+    The training price was farm-gate latex price x DRC / 100,
+    so latex_drc_pct is by far the most important input:
+    watery (low-DRC) latex is worth less per kg. It may be a
+    measured value or a value produced by the DRC prediction
+    operation; the caller supplies it explicitly - the service
+    never chains the models implicitly.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -489,16 +442,6 @@ class PriceEstimationRequest(BaseModel):
         allow_inf_nan=False,
     )
 
-    tree_count: float | None = Field(
-        default=None,
-        allow_inf_nan=False,
-    )
-
-    tapping_system: str | None = Field(
-        default=None,
-        max_length=20,
-    )
-
     @field_validator("observation_timestamp")
     @classmethod
     def validate_observation_timestamp_timezone(
@@ -507,18 +450,6 @@ class PriceEstimationRequest(BaseModel):
         info: ValidationInfo,
     ) -> datetime:
         return _require_timezone_aware_datetime(
-            value,
-            info.field_name,
-        )
-
-    @field_validator("tapping_system")
-    @classmethod
-    def validate_tapping_system_string(
-        cls,
-        value: object,
-        info: ValidationInfo,
-    ) -> object:
-        return _reject_empty_identifier(
             value,
             info.field_name,
         )
@@ -646,11 +577,11 @@ class TappingSuitabilityResponse(
     """
     Tapping-suitability PROXY prediction.
 
-    This is a rule-derived research proxy trained on
-    synthetic labels with approximately 30% simulated label
-    noise (fixed seed 340). It is NOT expert-verified
-    tapping advice and must not be presented as agronomic
-    fact or field-validated guidance.
+    This is a rule-derived research proxy: the training
+    labels came from rainfall thresholds (heavy rain in the
+    last or next 6 hours), with no added noise. It is NOT
+    expert-verified tapping advice and must not be presented
+    as agronomic fact or field-validated guidance.
     """
 
     target_name: Literal["tapping_suitability_proxy"] = (
@@ -686,11 +617,12 @@ class PriceEstimationResponse(
     Raw price estimation produced by the finalized
     regression pipeline.
 
-    The value is preserved exactly as produced by the model
-    (no clamping or rounding). The research validation
-    tolerance for this task is +/- 9.0 LKR per kg; that
-    tolerance is documentation of research uncertainty, not
-    a runtime adjustment.
+    The value is the price per kg of field latex, preserved
+    exactly as produced by the model (no clamping or
+    rounding). The research validation tolerance for this
+    task is +/- 5.0 LKR per kg; that tolerance is
+    documentation of research uncertainty, not a runtime
+    adjustment.
     """
 
     target_name: Literal["price_lkr_per_kg"] = (

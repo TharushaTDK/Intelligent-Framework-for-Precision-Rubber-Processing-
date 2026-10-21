@@ -21,7 +21,7 @@ REPORTS.mkdir(parents=True, exist_ok=True)
 
 
 def load_data():
-    return pd.read_excel(RAW, sheet_name="RawStyle_Data_600")
+    return load_raw()
 
 
 def save_json(path, payload):

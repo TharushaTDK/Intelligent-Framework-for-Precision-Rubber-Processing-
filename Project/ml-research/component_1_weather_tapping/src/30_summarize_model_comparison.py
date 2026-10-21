@@ -12,7 +12,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import REPORTS, ensure_dirs, write_json  # noqa: E402
+from common import REPORTS, REG_TASKS, DATASET_PROVENANCE, TARGET_WARNING, ensure_dirs, write_json  # noqa: E402
 
 
 def _read_json(name):
@@ -28,12 +28,12 @@ def main():
     payload = {
         "project": "RubberSense Component 1",
         "stage": "30_consolidated_model_summary",
-        "dataset_provenance": "Synthetic raw-style dataset with simulated target relationships; "
-                              "no metric in this project is real-world evidence.",
+        "dataset_provenance": DATASET_PROVENANCE,
         "selection_basis": "Cross-validation on the training partition (k-fold regression RMSE; "
                            "stratified macro-F1 classification). The held-out test set is used once, in stage 31.",
         "regression_accuracy_definition": "Percentage of predictions whose absolute error falls within a "
-                                          "declared illustrative tolerance (DRC +/-1.0 pp; price +/-LKR 9/kg). "
+                                          f"declared tolerance (DRC +/-{REG_TASKS['drc_prediction'][2]} pp; "
+                                          f"price +/-LKR {REG_TASKS['price_estimation'][2]}/kg of field latex). "
                                           "This is NOT accuracy and NOT R-squared.",
         "candidates": {
             "regression": "dummy_mean, linear_regression, random_forest, extra_trees, gradient_boosting, "
@@ -45,10 +45,14 @@ def main():
         "cv_classification_ranking_top": {},
         "selected": {},
         "limitations": [
-            "Synthetic DRC and price targets are not measured ground truth.",
+            "DRC values were normalized to Kudaligama chart entries by the dataset author; they are "
+            "not original field measurements.",
+            "Price is derived as farm-gate latex price x DRC / 100, so a model with DRC as an input is "
+            "close to relearning that formula; Jun-Sep 2026 farm-gate levels are estimates.",
             "Collection-time prediction is excluded; no collection-time training data exists.",
-            "Tapping suitability labels are rule-derived with ~30% simulated label noise (seed 340); "
-            "they are not expert labels or validated agronomic advice.",
+            TARGET_WARNING,
+            "Only 5 estates and 4 months (Jun-Sep 2026) of farmer records; results may not hold for "
+            "other estates or seasons.",
             "The stored split is row-wise, so most test estates also appear in training; see the "
             "estate-grouped CV for the unseen-estate estimate.",
             "Within-tolerance percentage is not the same as classification accuracy or R-squared.",

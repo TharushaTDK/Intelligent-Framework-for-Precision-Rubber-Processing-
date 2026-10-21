@@ -1,19 +1,25 @@
+import * as Location from 'expo-location';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { FormField } from '../../components/FormField';
 import { PrimaryButton } from '../../components/PrimaryButton';
+import { SecondaryButton } from '../../components/SecondaryButton';
 import { colors, radii, spacing, typography } from '../../constants/theme';
-import { createRecommendation, MANUAL_ESTATE_ID, toReadableMessage } from '../../services/latexApi';
-import type { CoagulationOutput } from '../../types/latex';
+import { formatDrc } from '../../features/latex/BatchSummaryCard';
+import { FieldMap } from '../../features/plantAdvisory/FieldMap';
+import { fromGps, fromMap, type FieldLocation } from '../../features/plantAdvisory/fieldLocation';
+import { createRecommendation, getLocationDrc, toReadableMessage } from '../../services/latexApi';
+import type { CoagulationOutput, LocationDrcResponse } from '../../types/latex';
 
-// training data range of the Component 2 models
-const DRC_MIN = 19.4;
-const DRC_MAX = 45.56;
-const VOLUME_MIN = 5.13;
-const VOLUME_MAX = 199.92;
+// latex volume range of the Component 2 training data
+const VOLUME_MIN = 1.0;
+const VOLUME_MAX = 2.0;
+
+// GPS can hang indoors or on a cold start, so give up after a while
+const GPS_TIMEOUT_MS = 20000;
 
 const OUTPUT_OPTIONS: { key: string; label: string; caption: string; outputs: CoagulationOutput[] }[] = [
   { key: 'water_acid', label: 'Water & Acid', caption: 'Water and 1% formic acid solution', outputs: ['water_acid'] },
@@ -22,23 +28,95 @@ const OUTPUT_OPTIONS: { key: string; label: string; caption: string; outputs: Co
 ];
 
 export default function NewBatch() {
-  const [drc, setDrc] = useState('');
+  const [location, setLocation] = useState<FieldLocation | null>(null);
+  const [locationDrc, setLocationDrc] = useState<LocationDrcResponse | null>(null);
+  const [drcLoading, setDrcLoading] = useState(false);
+  const [drcError, setDrcError] = useState<string | null>(null);
+  const [gpsLoading, setGpsLoading] = useState(false);
+  const [gpsMessage, setGpsMessage] = useState<string | null>(null);
+  // only the latest location may set the DRC, a slow answer for an old pin is dropped
+  const pickVersion = useRef(0);
   const [volume, setVolume] = useState('');
   const [option, setOption] = useState('both');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // a new location means a new DRC, worked out from the weather there now
+  async function chooseLocation(picked: FieldLocation) {
+    const version = ++pickVersion.current;
+    setLocation(picked);
+    setLocationDrc(null);
+    setDrcError(null);
+    setSubmitError(null);
+    setDrcLoading(true);
+
+    try {
+      const result = await getLocationDrc(picked.latitude, picked.longitude);
+      if (version === pickVersion.current) {
+        setLocationDrc(result);
+      }
+    } catch (error) {
+      if (version === pickVersion.current) {
+        setDrcError(toReadableMessage(error));
+      }
+    } finally {
+      if (version === pickVersion.current) {
+        setDrcLoading(false);
+      }
+    }
+  }
+
+  function onMapPick(lat: number, lng: number) {
+    setGpsMessage(null);
+    chooseLocation(fromMap(lat, lng));
+  }
+
+  // only runs when the farmer taps the button, Android asks for permission the first time
+  async function useMyLocation() {
+    setGpsLoading(true);
+    setGpsMessage(null);
+    const versionAtStart = pickVersion.current;
+
+    try {
+      const permission = await Location.requestForegroundPermissionsAsync();
+      if (permission.status !== 'granted') {
+        setGpsMessage('Location permission was not given. Tap the map instead.');
+        return;
+      }
+
+      const servicesOn = await Location.hasServicesEnabledAsync();
+      if (!servicesOn) {
+        setGpsMessage('Location is turned off on this phone. Turn it on, or tap the map.');
+        return;
+      }
+
+      const position = await Promise.race([
+        Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), GPS_TIMEOUT_MS)),
+      ]);
+
+      // the farmer tapped the map while GPS was searching, keep their pin
+      if (pickVersion.current !== versionAtStart) {
+        return;
+      }
+      chooseLocation(fromGps(position.coords.latitude, position.coords.longitude, position.coords.accuracy));
+    } catch {
+      setGpsMessage('Your location could not be found. Try again, or tap the map.');
+    } finally {
+      setGpsLoading(false);
+    }
+  }
+
   function validate(): Record<string, string> {
     const nextErrors: Record<string, string> = {};
-    const drcValue = Number(drc);
     const volumeValue = Number(volume);
 
-    if (!drc.trim() || !Number.isFinite(drcValue) || drcValue < DRC_MIN || drcValue > DRC_MAX) {
-      nextErrors.drc = `Enter a DRC between ${DRC_MIN} and ${DRC_MAX} %.`;
+    if (!locationDrc) {
+      nextErrors.location = 'Choose the location on the map first.';
     }
     if (!volume.trim() || !Number.isFinite(volumeValue) || volumeValue < VOLUME_MIN || volumeValue > VOLUME_MAX) {
-      nextErrors.volume = `Enter a latex volume between ${VOLUME_MIN} and ${VOLUME_MAX} L.`;
+      nextErrors.volume = `Enter a latex volume between ${VOLUME_MIN.toFixed(1)} and ${VOLUME_MAX.toFixed(1)} L.`;
     }
     return nextErrors;
   }
@@ -46,7 +124,7 @@ export default function NewBatch() {
   async function handleSubmit() {
     const nextErrors = validate();
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) {
+    if (Object.keys(nextErrors).length > 0 || !locationDrc) {
       return;
     }
 
@@ -57,8 +135,9 @@ export default function NewBatch() {
 
     try {
       const batch = await createRecommendation({
-        estate_id: MANUAL_ESTATE_ID,
-        drc: Number(drc),
+        latitude: locationDrc.latitude,
+        longitude: locationDrc.longitude,
+        observation_timestamp: locationDrc.observation_timestamp,
         latex_volume_L: Number(volume),
         outputs: selected.outputs,
       });
@@ -82,28 +161,56 @@ export default function NewBatch() {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.title}>New Batch</Text>
-        <Text style={styles.subtitle}>Enter the latex batch details.</Text>
+        <Text style={styles.subtitle}>Choose where the latex was collected, then enter the batch.</Text>
 
         <View style={styles.card}>
-          <FormField
-            label="Dry rubber content (%)"
-            value={drc}
-            onChangeText={setDrc}
-            placeholder="e.g. 35.2"
-            keyboardType="decimal-pad"
-            error={errors.drc}
+          <Text style={styles.cardTitle}>Location</Text>
+          <Text style={styles.rangeText}>Tap the map where the latex was collected.</Text>
+          <FieldMap
+            pin={location}
+            onPick={onMapPick}
+            onUnavailable={() => setGpsMessage('The map could not be loaded. Use your current location instead.')}
           />
-          {!errors.drc ? <Text style={styles.rangeText}>Range: {DRC_MIN} – {DRC_MAX} %</Text> : null}
+          <SecondaryButton
+            label={gpsLoading ? 'Finding your location...' : 'Use My Current Location'}
+            onPress={() => {
+              if (!gpsLoading) {
+                useMyLocation();
+              }
+            }}
+          />
+          {gpsMessage ? <Text style={styles.errorText}>{gpsMessage}</Text> : null}
+
+          {drcLoading ? (
+            <View style={styles.drcRow}>
+              <ActivityIndicator color={colors.primary} />
+              <Text style={styles.loadingText}>Getting the DRC for this location...</Text>
+            </View>
+          ) : null}
+          {locationDrc && !drcLoading ? (
+            <View style={styles.drcBox}>
+              <Text style={styles.drcLabel}>Dry rubber content</Text>
+              <Text style={styles.drcValue}>{formatDrc(locationDrc.drc)}</Text>
+              <Text style={styles.rangeText}>Location {locationDrc.location}</Text>
+            </View>
+          ) : null}
+          {drcError ? <Text style={styles.errorText}>{drcError}</Text> : null}
+          {errors.location && !locationDrc && !drcLoading ? (
+            <Text style={styles.errorText}>{errors.location}</Text>
+          ) : null}
+        </View>
+
+        <View style={styles.card}>
           <FormField
             label="Latex volume (L)"
             value={volume}
             onChangeText={setVolume}
-            placeholder="e.g. 100"
+            placeholder="e.g. 1.5"
             keyboardType="decimal-pad"
             error={errors.volume}
           />
           {!errors.volume ? (
-            <Text style={styles.rangeText}>Range: {VOLUME_MIN} – {VOLUME_MAX} L</Text>
+            <Text style={styles.rangeText}>Range: {VOLUME_MIN.toFixed(1)} – {VOLUME_MAX.toFixed(1)} L</Text>
           ) : null}
         </View>
 
@@ -143,7 +250,14 @@ export default function NewBatch() {
             <Text style={styles.loadingText}>Getting the recommendation...</Text>
           </View>
         ) : (
-          <PrimaryButton label="Get Recommendation" onPress={handleSubmit} />
+          <PrimaryButton
+            label="Get Recommendation"
+            onPress={() => {
+              if (!drcLoading) {
+                handleSubmit();
+              }
+            }}
+          />
         )}
       </ScrollView>
     </SafeAreaView>
@@ -198,6 +312,31 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: colors.textPrimary,
+  },
+  drcRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  drcBox: {
+    backgroundColor: colors.background,
+    borderRadius: radii.md,
+    padding: spacing.md,
+  },
+  drcLabel: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  drcValue: {
+    marginTop: 2,
+    fontSize: 22,
+    fontWeight: '700',
+    color: colors.primary,
+  },
+  errorText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.critical,
   },
   option: {
     flexDirection: 'row',

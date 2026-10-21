@@ -9,12 +9,12 @@
   },
   "candidates_considered": 9,
   "tapping_advisory": {
-    "selected_model": "tuned_gradient_boosting",
-    "selected_role": "tuned",
-    "cv_macro_f1_mean": 0.6610312235260597,
-    "cv_accuracy_mean": 0.6666666666666667
+    "selected_model": "gradient_boosting",
+    "selected_role": "candidates",
+    "cv_macro_f1_mean": 0.9676116713534675,
+    "cv_accuracy_mean": 0.9692615190406059
   },
-  "dataset_provenance": "synthetic; not real-world evidence",
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
   "test_loaded": false,
   "test_evaluated": false
 }

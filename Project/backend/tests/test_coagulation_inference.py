@@ -34,8 +34,8 @@ def test_models_load_once_and_expose_predict():
 
 def test_metadata_versions_and_feature_order():
     meta = model_loader.get_metadata()
-    assert meta.water_acid_version == "component2-water-acid-v1"
-    assert meta.coagulation_time_version == "component2-coagulation-time-v1"
+    assert meta.water_acid_version == "component2-water-acid-v2"
+    assert meta.coagulation_time_version == "component2-coagulation-time-v2"
     assert meta.water_acid_features == ("drc", "latex_volume_L")
     assert meta.coagulation_time_features == (
         "drc",
@@ -63,8 +63,9 @@ def test_water_acid_reproduces_research_test_predictions(research_test_data):
     split, ref = research_test_data
     models = model_loader.get_models()
     pred = models.water_acid.predict(split[["drc", "latex_volume_L"]])
-    np.testing.assert_allclose(pred[:, 0], ref["predicted_water_amount_L"], atol=1e-6)
-    np.testing.assert_allclose(pred[:, 1], ref["predicted_prepared_1pct_formic_acid_solution_mL"], atol=1e-6)
+    # XGBoost predicts in float32, so compare relative to the value
+    np.testing.assert_allclose(pred[:, 0], ref["predicted_water_amount_L"], rtol=1e-6)
+    np.testing.assert_allclose(pred[:, 1], ref["predicted_prepared_1pct_formic_acid_solution_mL"], rtol=1e-6)
 
 
 def test_coagulation_time_reproduces_research_test_predictions(research_test_data):
@@ -72,7 +73,7 @@ def test_coagulation_time_reproduces_research_test_predictions(research_test_dat
     models = model_loader.get_models()
     cols = ["drc", "latex_volume_L", "water_amount_L", "prepared_1pct_formic_acid_solution_mL"]
     pred = models.coagulation_time.predict(split[cols])
-    np.testing.assert_allclose(pred, ref["predicted_coagulation_time_hours"], atol=1e-6)
+    np.testing.assert_allclose(pred, ref["predicted_coagulation_time_minutes"], atol=1e-6)
 
 
 def test_time_uses_water_acid_model_output():
@@ -82,8 +83,9 @@ def test_time_uses_water_acid_model_output():
         [[35.26, 162.58, result.water_amount_L, result.prepared_1pct_formic_acid_solution_mL]],
         columns=list(model_loader.get_metadata().coagulation_time_features),
     )
-    assert result.coagulation_time_hours == pytest.approx(float(models.coagulation_time.predict(x)[0]))
-    assert result.coagulation_time_model_version == "component2-coagulation-time-v1"
+    # model minutes come back as hours
+    assert result.coagulation_time_hours == pytest.approx(float(models.coagulation_time.predict(x)[0]) / 60)
+    assert result.coagulation_time_model_version == "component2-coagulation-time-v2"
 
 
 def test_water_acid_only_skips_time_model():
@@ -105,7 +107,7 @@ def test_same_input_gives_same_output():
 
 @pytest.mark.parametrize(
     "drc, volume, outside",
-    [(32.0, 100.0, False), (19.4, 5.13, False), (50.0, 100.0, True), (32.0, 250.0, True)],
+    [(43.8, 1.5, False), (40.9, 1.0, False), (46.9, 2.0, False), (38.6, 1.5, True), (43.8, 2.5, True)],
 )
 def test_training_range_flag(drc, volume, outside):
     result = run_coagulation_inference(drc=drc, latex_volume_L=volume, include_time=False)

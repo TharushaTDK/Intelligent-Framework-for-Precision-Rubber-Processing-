@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 ROOT=Path(__file__).resolve().parents[1]
 DATA=ROOT/"data"/"processed"/"latex_coagulation_dataset_final.csv"
 REP=ROOT/"outputs"/"reports"; FIG=ROOT/"outputs"/"figures"
-COLS=["drc","latex_volume_L","water_amount_L","prepared_1pct_formic_acid_solution_mL","coagulation_time_hours"]
+COLS=["drc","latex_volume_L","water_amount_L","prepared_1pct_formic_acid_solution_mL","coagulation_time_minutes"]
 def main():
     if not DATA.exists(): raise FileNotFoundError(DATA)
     REP.mkdir(parents=True,exist_ok=True); FIG.mkdir(parents=True,exist_ok=True)

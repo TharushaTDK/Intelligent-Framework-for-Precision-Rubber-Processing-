@@ -1,4 +1,4 @@
-from common import ensure_dirs, load_raw, REPORTS
+from common import ensure_dirs, load_raw, REPORTS, DATASET_PROVENANCE
 def main():
     ensure_dirs()
     df = load_raw()
@@ -10,9 +10,9 @@ def main():
         "Columns:",
         *[f"- {c} ({df[c].dtype})" for c in df.columns],
         "",
-        "Dataset provenance: synthetic raw-style data; not real field measurements.",
-        "Expected target columns: latex_drc_pct, tapping_suitability_proxy, price_lkr_per_kg. Collection-time prediction is excluded because no suitable collection-time training data is available. Tapping labels are simulated and include annotation uncertainty for demonstration only."
+        f"Dataset provenance: {DATASET_PROVENANCE}.",
+        "Expected target columns: latex_drc_pct, tapping_suitability_proxy, price_lkr_per_kg. Collection-time prediction is excluded because no suitable collection-time training data is available. Tapping labels are a rainfall-rule proxy, not expert advice."
     ]
-    (REPORTS / "01_dataset_overview.txt").write_text("\\n".join(lines), encoding="utf-8")
-    print("\\n".join(lines[:5]))
+    (REPORTS / "01_dataset_overview.txt").write_text("\n".join(lines), encoding="utf-8")
+    print("\n".join(lines[:5]))
 if __name__ == "__main__": main()

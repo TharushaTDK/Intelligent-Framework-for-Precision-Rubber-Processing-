@@ -1,31 +1,40 @@
 DATASET OVERVIEW — RubberSense Component 1
-Rows: 600
-Columns: 23
+Rows: 610
+Columns: 32
 
 Columns:
-- record_id (object)
-- timestamp_local (object)
-- village_code (object)
-- temperature_c (float64)
-- relative_humidity_pct (float64)
-- rainfall_last_6h_mm (float64)
-- forecast_rain_next_6h_mm (float64)
-- rainfall_last_3days_mm (float64)
-- wind_speed_kmh (float64)
+- record_id (str)
+- date (str)
+- timestamp_local (str)
+- tapping_time (str)
+- estate_id (str)
+- latexometer_measurement (int64)
+- latex_temperature_c (float64)
+- drc_pct_kudaligama_chart (int64)
+- kudaligama_chart_factor (float64)
+- visible_latex_condition (str)
 - soil_moisture_pct (float64)
 - soil_ph (float64)
-- latex_drc_pct (float64)
-- tree_count (int64)
-- tapping_system (object)
-- days_since_last_tap (int64)
-- planned_tapping_time (object)
-- previous_collection_yield_litres (float64)
-- actual_collection_time (object)
-- actual_collection_yield_litres (float64)
-- price_lkr_per_kg (int64)
-- price_source_status (object)
-- estate_id (object)
-- estate_name (object)
+- tree_count (float64)
+- tapping_system (str)
+- days_since_last_tap (float64)
+- latex_drc_pct (int64)
+- data_quality_note (str)
+- temperature_c (float64)
+- relative_humidity_pct (float64)
+- wind_speed_kmh (float64)
+- weather_rain_mm_at_hour (float64)
+- rainfall_last_6h_mm (float64)
+- rainfall_last_3days_mm (float64)
+- rainfall_next_6h_observed_mm (float64)
+- modelled_soil_moisture_pct (float64)
+- openmeteo_soil_temperature_0_7_c (float64)
+- record_group (str)
+- usable_for_weather_models (bool)
+- farmgate_latex_lkr_per_kg_dry_rubber (float64)
+- price_basis_status (str)
+- price_lkr_per_kg (float64)
+- forecast_rain_next_6h_mm (float64)
 
-Dataset provenance: synthetic raw-style data; not real field measurements.
-Expected target columns: latex_drc_pct, tapping_suitability_proxy, price_lkr_per_kg. Collection-time prediction is excluded because no suitable collection-time training data is available. Tapping labels are simulated and include annotation uncertainty for demonstration only.
+Dataset provenance: condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated).
+Expected target columns: latex_drc_pct, tapping_suitability_proxy, price_lkr_per_kg. Collection-time prediction is excluded because no suitable collection-time training data is available. Tapping labels are a rainfall-rule proxy, not expert advice.

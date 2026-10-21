@@ -14,6 +14,8 @@ from backend.app.schemas.coagulation import (
     CoagulationRecommendationCreate,
     CoagulationRecommendationResponse,
     CoagulationStatusUpdate,
+    LocationDrcRequest,
+    LocationDrcResponse,
     RecommendationStatus,
     WaterAcidResult,
 )
@@ -26,6 +28,7 @@ from backend.app.services.coagulation_service import (
     add_coagulation_time,
     build_guidance,
     create_recommendation,
+    fetch_point_drc,
     get_recommendation,
     list_recommendations,
     notes_for,
@@ -86,7 +89,7 @@ def create(
     request: CoagulationRecommendationCreate,
     db: Session = Depends(get_db),
 ) -> CoagulationRecommendationResponse:
-    """Farmer selects an estate and enters latex volume, DRC is entered manually or comes from Component 1."""
+    """Farmer picks a location on the map and enters latex volume, Component 1 gives the DRC there."""
     try:
         record = create_recommendation(db, request)
     except CoagulationServiceError as exc:
@@ -158,6 +161,26 @@ def add_time(
     except CoagulationServiceError as exc:
         raise _http_error(exc) from exc
     return to_response(record)
+
+
+@router.post(
+    "/location-drc",
+    response_model=LocationDrcResponse,
+)
+def location_drc(request: LocationDrcRequest) -> LocationDrcResponse:
+    """DRC for a map point from Component 1 (weather now, then its DRC model), nothing is saved."""
+    try:
+        estate = fetch_point_drc(request.latitude, request.longitude)
+    except CoagulationServiceError as exc:
+        raise _http_error(exc) from exc
+    return LocationDrcResponse(
+        latitude=request.latitude,
+        longitude=request.longitude,
+        location=estate.estate_id,
+        drc=estate.drc,
+        drc_source=estate.source,
+        observation_timestamp=estate.observation_timestamp,
+    )
 
 
 @router.post(

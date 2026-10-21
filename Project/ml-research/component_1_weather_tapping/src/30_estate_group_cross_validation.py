@@ -17,7 +17,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import (  # noqa: E402
-    REPORTS, REG_TASKS, CLS_TASK, ensure_dirs, load_raw, clean_basic, write_json,
+    REPORTS, REG_TASKS, CLS_TASK, DATASET_PROVENANCE, ensure_dirs, load_raw, clean_basic, write_json,
 )
 from train_candidate import (  # noqa: E402
     prep, split_indices, _reg_data, _cls_data,
@@ -107,7 +107,7 @@ def main():
         "stage": "30_estate_group_cross_validation",
         "purpose": "Unseen-estate generalisation estimate. Folds are grouped on estate_id so an "
                    "estate never appears in both the fit and the evaluation fold.",
-        "dataset_provenance": "synthetic; not real-world evidence",
+        "dataset_provenance": DATASET_PROVENANCE,
         "test_loaded": False,
         "results": {},
     }

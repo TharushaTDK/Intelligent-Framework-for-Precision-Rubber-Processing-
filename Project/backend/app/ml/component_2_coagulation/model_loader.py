@@ -17,10 +17,10 @@ CONTRACT_PATH = MODEL_DIR / "component2_inference_contract.json"
 
 # trusted hashes of the runtime models re-exported by src/33_export_backend_runtime.py
 EXPECTED_WATER_ACID_SHA256 = (
-    "3ca7a2d44fca8395fd2faf23e8889b0df9d2a234a6f549fd334b0071fca7a03b"
+    "b7071fd6d2002c640a5fd2af8366aa54facc7160a2683d24851e36291454daa2"
 )
 EXPECTED_COAGULATION_TIME_SHA256 = (
-    "41a4d50fc212bc25edb2af57d792755ad21849cfd6456d5b1d91335f941c5d4c"
+    "f74d244663b0938c90b78a46c2d008c7b66eb9cf5ea4d3d6b39f48d831a0f6c1"
 )
 
 

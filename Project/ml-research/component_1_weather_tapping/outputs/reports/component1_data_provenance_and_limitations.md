@@ -1,25 +1,20 @@
 # Component 1 - Data Provenance and Limitations
 
-- File: `data/raw/RubberSense_RawStyle_Synthetic_Dataset.xlsx`, sheet `RawStyle_Data_600`.
-- SHA-256: `0bd6c3b2b5de0a0d53c9309f52805c9de9ae3042395207039251d4a925119534`.
-- 600 rows, synthetic raw-style weather/estate records for demonstration.
-- `estate_id` (120 synthetic values) and `village_code` (4 synthetic values) are NOT real estates.
-- Targets: `latex_drc_pct`, `price_lkr_per_kg` (simulated), `tapping_suitability_proxy`
-  (rule-derived with ~30% simulated label noise, seed 340).
-- No real observations are fabricated or implied; the raw workbook is otherwise read-only.
-- `estate_name` (added 2026-10-17) contains temporary placeholders generated from the synthetic
-  `estate_id` (e.g. `EST-001` -> `TBD_EST-001`), one per estate and identical across all rows of the
-  same estate. These are **not** verified real-world estate names and must not be interpreted as
-  identifying actual estates; `estate_id` remains the stable identifier. Verified real names may
-  replace the placeholders in a future revision. `estate_name` is documentation-only and is **not**
-  an input feature of any model.
+- Source workbook: `data/raw/Combined_Rubber_Latex_Dataset_Condition_Matched.xlsx`,
+  sheet `Combined_Dataset`, SHA-256 `3b9fc3a3b45dc78b17059f0db1c68a0a44a781e113e7506069045c404c56c919` (read-only).
+- Prepared copy (stage 00): `data/validated/component1_realistic_prepared.csv`,
+  SHA-256 `05e05544758fef988d9ed8c7deef90070ffda2734149adce1fe56cb569b76631`.
+- 1210 workbook rows: 610 farmer records (Estate 01-05, Jun-Sep 2026, Open-Meteo weather) and 600
+  model-development rows (the earlier synthetic set, no weather). Models train on the farmer rows.
+- Weather and soil temperature/moisture estimates come from Open-Meteo (modelled, not sensors);
+  `soil_moisture_pct` used by the models is the farmer-recorded value.
+- `latex_drc_pct` and Metrolac readings were normalized to Kudaligama chart entries by the dataset
+  author; `visible_latex_condition` was aligned with DRC. Neither is an original field measurement.
+- `price_lkr_per_kg` (field latex) = farm-gate latex price x DRC / 100. Sources per month are in
+  `data/reference/latex_farmgate_price_reference.csv`: Rubber Development Department figures where
+  published, Central Bank of Sri Lanka FOB-scaled estimates for June-September 2026.
+- `forecast_rain_next_6h_mm` is the Open-Meteo forecast issued about a day earlier
+  (`data/reference/openmeteo_rain_forecast_issued_1day_before.csv`).
+- `tapping_suitability_proxy` is rule-derived from rainfall that actually fell (no added noise),
+  not expert advice.
 - Collection-time prediction is intentionally absent.
-- Every downstream report restates the synthetic provenance and the row-wise-split caveat.
-
-## Change history
-- 2026-10-17 - `estate_name` placeholders added. The only intended dataset schema additions are the
-  `estate_name` column in `RawStyle_Data_600` (column W) and in `Estate_Wise_DRC_Summary` (column H),
-  plus this note in the `Data_Provenance` sheet. No existing rows, columns, sheets, splits, models or
-  preprocessing artifacts were changed, and no model was retrained.
-  - Original workbook SHA-256 (superseded): `31eea4269e6aec28f109271b1323ad8ce42400d4a8fcd543eccdf1e9871c92e9`.
-  - Current workbook SHA-256: `0bd6c3b2b5de0a0d53c9309f52805c9de9ae3042395207039251d4a925119534`.

@@ -5,7 +5,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { colors, radii, spacing, typography } from '../../constants/theme';
-import { coagulationTimeText, formatDate, formatDrc } from '../../features/latex/BatchSummaryCard';
+import {
+  coagulationTimeText,
+  formatAcid,
+  formatDate,
+  formatDrc,
+  formatWater,
+} from '../../features/latex/BatchSummaryCard';
 import { listRecommendations, toReadableMessage } from '../../services/latexApi';
 import type { CoagulationRecommendationResponse } from '../../types/latex';
 
@@ -21,14 +27,14 @@ function BatchRow({ batch }: { batch: CoagulationRecommendationResponse }) {
         <Text style={styles.rowDate}>{formatDate(batch.created_at)}</Text>
       </View>
       <Text style={styles.rowInputs}>
-        DRC {formatDrc(batch.drc)} · {batch.latex_volume_L} L
+        {batch.estate_id} · DRC {formatDrc(batch.drc)} · {batch.latex_volume_L} L
       </Text>
       <View style={styles.rowValues}>
         {batch.water_acid ? (
           <>
-            <Text style={styles.rowValue}>Water {batch.water_acid.water_amount_L.toFixed(2)} L</Text>
+            <Text style={styles.rowValue}>Water {formatWater(batch.water_acid.water_amount_L)}</Text>
             <Text style={styles.rowValue}>
-              Acid {batch.water_acid.prepared_1pct_formic_acid_solution_mL.toFixed(1)} mL
+              Acid {formatAcid(batch.water_acid.prepared_1pct_formic_acid_solution_mL)}
             </Text>
           </>
         ) : null}
@@ -36,9 +42,6 @@ function BatchRow({ batch }: { batch: CoagulationRecommendationResponse }) {
           <Text style={styles.rowValue}>Time {coagulationTimeText(batch.coagulation_time_hours)}</Text>
         ) : null}
       </View>
-      {batch.outside_training_range ? (
-        <Text style={styles.rowWarning}>Outside the range, less reliable</Text>
-      ) : null}
       <Text style={styles.rowLink}>View details ›</Text>
     </Pressable>
   );
@@ -195,11 +198,6 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: radii.sm,
     overflow: 'hidden',
-  },
-  rowWarning: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.textSecondary,
   },
   rowLink: {
     marginTop: spacing.xs,

@@ -3,6 +3,7 @@ import type {
   SmokehouseBatchCreate,
   SmokehouseBatchListResponse,
   SmokehouseBatchResponse,
+  SmokehouseBatchStatusUpdate,
   SmokehouseLatestStatusResponse,
   SmokehouseLayerHistoryResponse,
   SmokehouseReadingCreate,
@@ -118,6 +119,35 @@ export function listSmokehouseBatches(
 ): Promise<SmokehouseBatchListResponse> {
   return request<SmokehouseBatchListResponse>(
     `${SMOKEHOUSE_PREFIX}/smokehouses/${encodeURIComponent(smokehouseId)}/batches`,
+  );
+}
+
+// ============================================================
+// GET ONE BATCH (used to restore a running batch into the flow)
+// ============================================================
+
+export function getSmokehouseBatch(
+  batchCode: string,
+): Promise<SmokehouseBatchResponse> {
+  return request<SmokehouseBatchResponse>(
+    `${SMOKEHOUSE_PREFIX}/batches/${encodeURIComponent(batchCode)}`,
+  );
+}
+
+// ============================================================
+// UPDATE BATCH STATUS (mark completed / cancelled)
+// ============================================================
+
+export function updateSmokehouseBatchStatus(
+  batchCode: string,
+  payload: SmokehouseBatchStatusUpdate,
+): Promise<SmokehouseBatchResponse> {
+  return request<SmokehouseBatchResponse>(
+    `${SMOKEHOUSE_PREFIX}/batches/${encodeURIComponent(batchCode)}/status`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    },
   );
 }
 

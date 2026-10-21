@@ -1,0 +1,5 @@
+Stage 04b - estimated DRC used as the price model's input
+DRC model family: xgboost; features: temperature_c, relative_humidity_pct, rainfall_last_6h_mm, forecast_rain_next_6h_mm, rainfall_last_3days_mm, wind_speed_kmh, soil_moisture_pct, soil_ph, visible_latex_condition, estate_id, month, day_of_year
+train rows (out-of-fold): 488; test rows (fitted on train only): 122
+MAE vs true DRC, train out-of-fold: 0.879 pp
+MAE vs true DRC, test: 0.847 pp

@@ -56,6 +56,11 @@ export default function SmokehouseOverview() {
         />
 
         <SecondaryButton
+          label="Current Batches"
+          onPress={() => router.push('/smokehouse/batches')}
+        />
+
+        <SecondaryButton
           label="Prediction History"
           onPress={() => router.push('/smokehouse/history')}
         />

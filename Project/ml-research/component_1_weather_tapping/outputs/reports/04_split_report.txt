@@ -1,1 +1,1 @@
-drc_prediction: target=latex_drc_pct; usable=594; train=475; test=119\ntapping_advisory: target=tapping_suitability_proxy; usable=600; train=480; test=120\nprice_estimation: target=price_lkr_per_kg; usable=600; train=480; test=120
+drc_prediction: target=latex_drc_pct; usable=610; train=488; test=122\ntapping_advisory: target=tapping_suitability_proxy; usable=610; train=488; test=122\nprice_estimation: target=price_lkr_per_kg; usable=610; train=488; test=122

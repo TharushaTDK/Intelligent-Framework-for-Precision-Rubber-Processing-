@@ -18,20 +18,20 @@
     "folds": 5,
     "primary_metric": "f1_macro",
     "accuracy": {
-      "mean": 0.4020833333333333,
-      "std": 0.005103103630798297
+      "mean": 0.4036818851251841,
+      "std": 0.003953829521573533
     },
     "precision_macro": {
-      "mean": 0.13402777777777777,
-      "std": 0.0017010345435994232
+      "mean": 0.13456062837506136,
+      "std": 0.0013179431738578472
     },
     "recall_macro": {
       "mean": 0.3333333333333333,
       "std": 0.0
     },
     "f1_macro": {
-      "mean": 0.19117744610281923,
-      "std": 0.0017331934056177137
+      "mean": 0.1917214786051943,
+      "std": 0.0013380076403532975
     }
   },
   "classes": [
@@ -39,8 +39,8 @@
     "Low",
     "Moderate"
   ],
-  "train_rows": 480,
-  "n_features": 13,
+  "train_rows": 488,
+  "n_features": 10,
   "feature_names": [
     "temperature_c",
     "relative_humidity_pct",
@@ -50,15 +50,12 @@
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice.",
-  "x_train_sha256": "0596b212f1fa08bbd9461f4fb5f791b449a69c2a88acd0eef08c7e76a36742e0",
-  "y_train_sha256": "ef2079b9bfdc99c74fe9b2cb468f3712857c2adf81d41a70700c7e57483b5f4f",
-  "model_sha256": "dc4b4a5326c5f5810ee3cb3c5d03b2d0756e79545e9340e0d98ffb32009e109c"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "target_warning": "Rule-derived proxy labels from rainfall thresholds, judged on rain that actually fell; the model sees only the forecast issued beforehand (no added noise). NOT expert-verified tapping advice.",
+  "x_train_sha256": "a39d59f3aa7099125b19f2440188bf4144f356f0ca939214e37ffcdc15c2c175",
+  "y_train_sha256": "62cf76887671542358937625972d120baecf42093f3d6fe7edcf5640bec62cb4",
+  "model_sha256": "27f3b5efd22bd4b007342e05e822e40589ba149c6e5e4e7c21252eb52ce529d4"
 }

@@ -1,15 +1,16 @@
 column_name,data_type,missing_values,unique_values
-Unnamed: 0,int64,0,2606
-entry_no,int64,0,2606
-batch_id,str,0,2558
-record_date,str,0,105
-metrolac_reading,float64,0,251
-latex_temperature_C,float64,0,101
-drc,str,10,1652
-latex_volume_L,str,8,2367
-water_amount_L,float64,9,1627
-prepared_1pct_formic_acid_solution_mL,float64,8,2466
-coagulation_time_hours,str,8,637
-recorded_by,str,480,5
-weather_note,str,267,5
-remarks,str,2346,7
+Unnamed: 0,int64,0,2614
+entry_no,int64,0,2614
+batch_id,str,0,2562
+record_date,str,1,150
+metrolac_reading,str,3,33
+latex_temperature_C,str,5,84
+drc,str,261,93
+latex_volume_L,str,3,27
+water_amount_L,str,3,52
+prepared_1pct_formic_acid_solution_mL,str,2,329
+coagulation_time_minutes,str,4,428
+recorded_by,str,268,5
+weather_note,str,387,5
+tank_no,str,182,4
+remarks,str,1481,4

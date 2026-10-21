@@ -2,10 +2,14 @@
 
 Saves Component 1 advisories (location, weather used, estimated
 DRC, tapping and price) so Component 2 can use the DRC and location.
-Only adds a new table; the smokehouse tables are not touched.
+Only adds a new table; the smokehouse and coagulation tables are not
+touched.
+
+Runs after the Component 2 coagulation migration so the history
+stays a single line (both used to start from the smokehouse one).
 
 Revision ID: b7c41e2a9d03
-Revises: e9b8f382dfa1
+Revises: 18ffbd7abbde
 Create Date: 2026-10-19 22:30:00
 
 """
@@ -17,7 +21,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = 'b7c41e2a9d03'
-down_revision: Union[str, Sequence[str], None] = 'e9b8f382dfa1'
+down_revision: Union[str, Sequence[str], None] = '18ffbd7abbde'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

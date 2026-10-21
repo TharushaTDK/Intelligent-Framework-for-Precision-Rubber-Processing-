@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parents[1]; SPLITS=ROOT/"data"/"splits"; MODELS=RO
 FEATURES=["drc","latex_volume_L"]
 FEATURES_TIME=FEATURES+["water_amount_L","prepared_1pct_formic_acid_solution_mL"]
 TASKS=[("model_1_water_acid_best.joblib",["water_amount_L","prepared_1pct_formic_acid_solution_mL"],FEATURES),
-       ("model_2_coagulation_time_best.joblib",["coagulation_time_hours"],FEATURES_TIME)]
+       ("model_2_coagulation_time_best.joblib",["coagulation_time_minutes"],FEATURES_TIME)]
 def main():
     path=SPLITS/"Component2_Test.csv"
     if not path.exists(): raise FileNotFoundError("Run 09_batch_aware_split.py first.")

@@ -5,19 +5,19 @@
       "kind": "regression",
       "task": "drc_prediction",
       "pipeline": "component1_drc_prediction_pipeline.pkl",
-      "sha256": "19475009a289d9c099a352cac94409a84cfa9a265cfac3f8cf44e5dd5bcb0290"
+      "sha256": "07a7124a51405ccc6433ee343a1c6c6fcd97894a41c248b542938802af2be251"
     },
     {
       "kind": "regression",
       "task": "price_estimation",
       "pipeline": "component1_price_estimation_pipeline.pkl",
-      "sha256": "341df031b5fed3743311be05441e483afba909d02ad51a92dc000c05af4de0ff"
+      "sha256": "7fbd7c7391c515bf63b706c4d17a77d120a5ae832f4d72d5bb8f8b64b24e7453"
     },
     {
       "kind": "classification",
       "task": "tapping_advisory",
       "pipeline": "component1_tapping_advisory_pipeline.pkl",
-      "sha256": "f24b149bc2638cad29bdccc111b66a376972cf7d975873f542379a0b7b54c230"
+      "sha256": "dbb4d9acb1e624c2a7d89218f8cddd26f37effa9778ae352ee45503cb8da4b60"
     }
   ],
   "artifact_count": 71,
@@ -28,5 +28,5 @@
     "component1_data_provenance_and_limitations.md"
   ],
   "deployment_note": "Exported pipelines are copies of the train-fitted, CV-selected models; not refit on the full dataset.",
-  "dataset_provenance": "synthetic; not real-world evidence"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)"
 }

@@ -58,11 +58,8 @@ def valid_drc_payload() -> dict:
         "wind_speed_kmh": 7.3,
         "soil_moisture_pct": 41.0,
         "soil_ph": 5.8,
-        "estate_id": "EST-001",
-        "tree_count": 150.0,
-        "tapping_system": "S/2",
-        "days_since_last_tap": 2.0,
-        "previous_collection_yield_litres": 38.0,
+        "visible_latex_condition": "Normal",
+        "estate_id": "Estate 01",
     }
 
 
@@ -77,9 +74,6 @@ def valid_tapping_payload() -> dict:
         "wind_speed_kmh": 7.3,
         "soil_moisture_pct": 41.0,
         "soil_ph": 5.8,
-        "tree_count": 150.0,
-        "tapping_system": "S/2",
-        "days_since_last_tap": 2.0,
     }
 
 
@@ -92,8 +86,6 @@ def valid_price_payload() -> dict:
         "rainfall_last_6h_mm": 4.2,
         "soil_moisture_pct": 41.0,
         "soil_ph": 5.8,
-        "tree_count": 150.0,
-        "tapping_system": "S/2",
     }
 
 
@@ -563,20 +555,22 @@ def test_models_endpoint_returns_verified_metadata():
         assert model["feature_count"] == len(
             model["features_in_pipeline_order"]
         )
-        assert model["dataset_provenance"] == (
-            "synthetic; not real-world evidence"
-        )
+        assert model["dataset_provenance"]
+        assert model["target_warning"]
 
     drc = body["models"][0]
     price = body["models"][1]
     tapping = body["models"][2]
 
-    assert drc["feature_count"] == 15
-    assert price["feature_count"] == 10
+    assert drc["feature_count"] == 12
+    assert "visible_latex_condition" in drc[
+        "features_in_pipeline_order"
+    ]
+    assert price["feature_count"] == 8
     assert "estate_id" not in price[
         "features_in_pipeline_order"
     ]
-    assert tapping["feature_count"] == 13
+    assert tapping["feature_count"] == 10
     assert tapping["classes_in_probability_order"] == [
         "High",
         "Low",

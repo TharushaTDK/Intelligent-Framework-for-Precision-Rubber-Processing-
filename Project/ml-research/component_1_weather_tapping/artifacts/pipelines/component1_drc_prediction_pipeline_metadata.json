@@ -10,7 +10,7 @@
   "test_stage": "31_final_test_evaluation",
   "source_final_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\regression\\drc_prediction\\final\\selected_model.joblib",
   "pipeline_path": "artifacts\\pipelines\\component1_drc_prediction_pipeline.pkl",
-  "pipeline_sha256": "19475009a289d9c099a352cac94409a84cfa9a265cfac3f8cf44e5dd5bcb0290",
+  "pipeline_sha256": "07a7124a51405ccc6433ee343a1c6c6fcd97894a41c248b542938802af2be251",
   "deployment_note": "Copy of the CV-selected, train-fitted pipeline. Not refit on the full dataset; the test partition was used only for one-time evaluation.",
-  "dataset_provenance": "synthetic; not real-world evidence"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)"
 }

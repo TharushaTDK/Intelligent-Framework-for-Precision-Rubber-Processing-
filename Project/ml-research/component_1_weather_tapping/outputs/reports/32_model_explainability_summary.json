@@ -3,49 +3,49 @@
   "method": "permutation importance on the held-out test partition + impurity importance for tree models",
   "shap_used": false,
   "shap_note": "SHAP is not installed and was deliberately not used. Permutation and impurity importance are computed with scikit-learn only. Correlation is not causation.",
-  "dataset_provenance": "synthetic; not real-world evidence",
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
   "regression": {
     "drc_prediction": {
       "top_permutation_features": [
         {
+          "feature": "visible_latex_condition",
+          "importance_mean": 1.6204940524474125,
+          "importance_std": 0.08396245318521413
+        },
+        {
+          "feature": "day_of_year",
+          "importance_mean": 0.012503858142432133,
+          "importance_std": 0.00622993899330457
+        },
+        {
           "feature": "relative_humidity_pct",
-          "importance_mean": 1.5100571779555128,
-          "importance_std": 0.08857585302554186
-        },
-        {
-          "feature": "rainfall_last_3days_mm",
-          "importance_mean": 0.2564988252025385,
-          "importance_std": 0.02630988547769084
-        },
-        {
-          "feature": "soil_moisture_pct",
-          "importance_mean": 0.20039725286164806,
-          "importance_std": 0.044993712833080894
-        },
-        {
-          "feature": "days_since_last_tap",
-          "importance_mean": 0.08695455920299872,
-          "importance_std": 0.016129439258840618
+          "importance_mean": 0.0032434670404164257,
+          "importance_std": 0.0034698257444435504
         },
         {
           "feature": "soil_ph",
-          "importance_mean": 0.05351828780605824,
-          "importance_std": 0.016633940361007456
-        },
-        {
-          "feature": "previous_collection_yield_litres",
-          "importance_mean": 0.0034309803188000477,
-          "importance_std": 0.00524854896393658
+          "importance_mean": 0.0032137181719727346,
+          "importance_std": 0.0022114735735337403
         },
         {
           "feature": "wind_speed_kmh",
-          "importance_mean": 0.0019945019704144086,
-          "importance_std": 0.002788984077392229
+          "importance_mean": 0.0007562709346880636,
+          "importance_std": 0.002154495214901749
         },
         {
-          "feature": "temperature_c",
-          "importance_mean": 6.467582578248977e-05,
-          "importance_std": 0.001600413740189368
+          "feature": "rainfall_last_6h_mm",
+          "importance_mean": 0.0007028856973757325,
+          "importance_std": 0.003594048980321833
+        },
+        {
+          "feature": "rainfall_last_3days_mm",
+          "importance_mean": 0.0005851029375090633,
+          "importance_std": 0.000790699245547389
+        },
+        {
+          "feature": "forecast_rain_next_6h_mm",
+          "importance_mean": 6.979118717587163e-06,
+          "importance_std": 0.001091863431163467
         }
       ],
       "has_impurity_importance": true
@@ -53,44 +53,44 @@
     "price_estimation": {
       "top_permutation_features": [
         {
-          "feature": "day_of_year",
-          "importance_mean": 9.053772341740586,
-          "importance_std": 0.83939283653822
+          "feature": "month",
+          "importance_mean": 19.89268322072791,
+          "importance_std": 0.958047117485816
         },
         {
           "feature": "latex_drc_pct",
-          "importance_mean": 3.2143872093856443,
-          "importance_std": 0.2893488942823353
+          "importance_mean": 12.27144595831966,
+          "importance_std": 0.514036986184321
         },
         {
-          "feature": "relative_humidity_pct",
-          "importance_mean": 0.42339576775774024,
-          "importance_std": 0.13811734812128615
-        },
-        {
-          "feature": "month",
-          "importance_mean": 0.1393266053233563,
-          "importance_std": 0.03444280194272675
-        },
-        {
-          "feature": "tree_count",
-          "importance_mean": 0.043783930634770395,
-          "importance_std": 0.035991245843990764
+          "feature": "day_of_year",
+          "importance_mean": 1.2309767614549785,
+          "importance_std": 0.2637758899197394
         },
         {
           "feature": "rainfall_last_6h_mm",
-          "importance_mean": 0.04197547576863272,
-          "importance_std": 0.028372090942144917
+          "importance_mean": -0.0009015150782099469,
+          "importance_std": 0.042654879074409215
         },
         {
-          "feature": "tapping_system",
-          "importance_mean": 0.0008456504880638427,
-          "importance_std": 0.022986376927309347
+          "feature": "soil_moisture_pct",
+          "importance_mean": -0.03123014266298041,
+          "importance_std": 0.10964802475564761
+        },
+        {
+          "feature": "relative_humidity_pct",
+          "importance_mean": -0.04076995189817358,
+          "importance_std": 0.11699670466190323
+        },
+        {
+          "feature": "temperature_c",
+          "importance_mean": -0.06417337224199952,
+          "importance_std": 0.052789387517643054
         },
         {
           "feature": "soil_ph",
-          "importance_mean": -0.004752341699212082,
-          "importance_std": 0.045616544488337255
+          "importance_mean": -0.07683180630184969,
+          "importance_std": 0.10641920162581366
         }
       ],
       "has_impurity_importance": true
@@ -101,43 +101,43 @@
       "top_permutation_features": [
         {
           "feature": "rainfall_last_6h_mm",
-          "importance_mean": 0.2892774968830479,
-          "importance_std": 0.029440639627375777
+          "importance_mean": 0.4609475706935144,
+          "importance_std": 0.039729755674396426
         },
         {
           "feature": "forecast_rain_next_6h_mm",
-          "importance_mean": 0.11043223444257921,
-          "importance_std": 0.025727863141399528
-        },
-        {
-          "feature": "relative_humidity_pct",
-          "importance_mean": 0.06604862500518113,
-          "importance_std": 0.013400435155314434
-        },
-        {
-          "feature": "soil_moisture_pct",
-          "importance_mean": 0.04986831010745977,
-          "importance_std": 0.021831876518693408
-        },
-        {
-          "feature": "soil_ph",
-          "importance_mean": 0.010844916437729658,
-          "importance_std": 0.01307056659188277
-        },
-        {
-          "feature": "temperature_c",
-          "importance_mean": 0.00868292653342827,
-          "importance_std": 0.001960765820436187
-        },
-        {
-          "feature": "tree_count",
-          "importance_mean": 0.005426014834505266,
-          "importance_std": 0.008287205820039315
+          "importance_mean": 0.10144918973921427,
+          "importance_std": 0.021144784317539144
         },
         {
           "feature": "rainfall_last_3days_mm",
-          "importance_mean": 0.0007094670487470811,
-          "importance_std": 0.01382652129288714
+          "importance_mean": 0.095716365189992,
+          "importance_std": 0.022710563061721225
+        },
+        {
+          "feature": "wind_speed_kmh",
+          "importance_mean": 0.006672158260135686,
+          "importance_std": 0.01321712675905774
+        },
+        {
+          "feature": "temperature_c",
+          "importance_mean": 0.004576776717596376,
+          "importance_std": 0.004578225170838307
+        },
+        {
+          "feature": "month",
+          "importance_mean": 0.004248188430334121,
+          "importance_std": 0.003468631328504533
+        },
+        {
+          "feature": "relative_humidity_pct",
+          "importance_mean": 0.0014160628101113736,
+          "importance_std": 0.0028321256202227473
+        },
+        {
+          "feature": "soil_moisture_pct",
+          "importance_mean": 0.0,
+          "importance_std": 0.0
         }
       ],
       "has_impurity_importance": true

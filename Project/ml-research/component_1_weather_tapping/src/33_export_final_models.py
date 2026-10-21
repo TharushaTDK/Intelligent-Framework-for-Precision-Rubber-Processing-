@@ -24,6 +24,9 @@ from train_candidate import HAS_XGB  # noqa: E402
 
 REG_ROLES = ("baseline", "candidates", "tuned")
 
+SOURCE_WORKBOOK = ROOT / "data" / "raw" / "Combined_Rubber_Latex_Dataset_Condition_Matched.xlsx"
+PRICE_REFERENCE = ROOT / "data" / "reference" / "latex_farmgate_price_reference.csv"
+
 
 def _final_meta(kind, task):
     return json.loads((role_dir(kind, task, "final") / "selected_model_metadata.json").read_text(encoding="utf-8"))
@@ -117,7 +120,7 @@ def export_training_status():
 
 def write_summary_md(test_summary):
     lines = ["# Component 1 - Final ML Model Summary", "",
-             "**Dataset provenance: SYNTHETIC. No metric here is real-world evidence.**", "",
+             f"**Dataset provenance:** {DATASET_PROVENANCE}.", "",
              "Models were selected by cross-validation on the training partition and evaluated once on the",
              "held-out test partition (stage 31). xgboost available at export time: "
              f"`{HAS_XGB}`.", "", "## Regression", "",
@@ -138,30 +141,59 @@ def write_summary_md(test_summary):
               "- Within-tolerance % is **not** accuracy and **not** R-squared.",
               "- The split is row-wise, so most test estates also appear in training; see",
               "  `outputs/reports/30_*_estate_grouped_cv.csv` for the unseen-estate estimate.",
-              "- Tapping labels are rule-derived with simulated label noise; not expert advice.",
+              "- Tapping labels come from a rainfall rule judged on rain that actually fell, while the model",
+              "  only sees the forecast issued a day earlier; its errors are real forecast misses. Labels",
+              "  are a proxy, not expert-verified tapping advice.",
+              "- Price is farm-gate latex price x DRC / 100. The model gets the estimated DRC (stage 04b),",
+              "  as in the app, so its error includes DRC estimation error. June-September 2026",
+              "  farm-gate levels are estimates.",
+              "- DRC values were normalized by the dataset author; they are not original field measurements.",
               "- Collection-time prediction is removed from the project entirely."]
     (REPORTS / "component1_final_ml_model_summary.md").write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_methodology_md():
-    raw_sha = sha256_file(RAW)
     md = f"""# Component 1 - Methodology and Limitations
 
 ## Scope
 RubberSense weather / tapping advisory. Three supervised tasks:
 1. `drc_prediction` - regress `latex_drc_pct` (dry rubber content, %).
-2. `price_estimation` - regress `price_lkr_per_kg`.
+2. `price_estimation` - regress `price_lkr_per_kg` (price per kg of field latex, LKR).
 3. `tapping_advisory` - 3-class classification of `tapping_suitability_proxy`.
 
 **Collection-time prediction is removed**: no collection-time target exists and no such model,
 comparison, report or artefact is produced.
 
 ## Data
-- Source: `data/raw/RubberSense_RawStyle_Synthetic_Dataset.xlsx` (sheet `RawStyle_Data_600`).
-- Raw workbook SHA-256: `{raw_sha}` (never rewritten by any stage).
-- 600 rows; `estate_id` values are synthetic and unverified; `village_code` synthetic.
-- **All targets are simulated.** DRC and price are not measured; tapping labels are rule-derived
-  with ~30% simulated label noise (seed 340) and are not expert agronomic advice.
+- Source workbook: `data/raw/Combined_Rubber_Latex_Dataset_Condition_Matched.xlsx`
+  (sheet `Combined_Dataset`, SHA-256 `{sha256_file(SOURCE_WORKBOOK)}`, never rewritten).
+- Prepared by stage 00 into `data/validated/component1_realistic_prepared.csv`
+  (SHA-256 `{sha256_file(RAW)}`).
+- Training rows: the 610 farmer records (Estate 01-05, June-September 2026) with Open-Meteo hourly
+  weather joined by the dataset author. The other 600 workbook rows are the earlier synthetic set
+  and have no weather, so weather-based models cannot use them.
+- DRC: chart-derived from Metrolac readings, but normalized by the dataset author to valid Kudaligama
+  chart entries near 41%; visible latex condition was aligned with DRC. Not original measurements.
+- `forecast_rain_next_6h_mm` is the Open-Meteo rain forecast for the next 6 hours issued about a
+  day earlier (Previous Runs API, `data/reference/openmeteo_rain_forecast_issued_1day_before.csv`).
+  The workbook's `rainfall_next_6h_observed_mm` (rain that actually fell) is used only to judge the
+  tapping label, never as a model input.
+- `soil_moisture_pct` is the farmer-recorded value.
+
+## Targets
+- **DRC** inputs: weather, farmer soil moisture, soil pH, visible latex condition, estate and date.
+  The Metrolac reading and latex temperature are excluded because they determine DRC exactly
+  through the Kudaligama chart.
+- **Price** = farm-gate latex price (Rs per kg dry rubber) x DRC / 100, using
+  `data/reference/latex_farmgate_price_reference.csv` (SHA-256 `{sha256_file(PRICE_REFERENCE)}`).
+  Field latex is paid on its dry rubber content, so watery (low-DRC) latex is worth less per kg.
+  Farm-gate levels: Rubber Development Department where published; June-September 2026 are
+  estimates scaled by Central Bank of Sri Lanka rubber FOB prices.
+  The price model's `latex_drc_pct` input is the estimated DRC (stage 04b: out-of-fold on train,
+  train-fitted on test), because the app always prices latex from an estimated DRC.
+- **Tapping** proxy: Low if >= 5 mm rain in the last 6 h or >= 5 mm in the next 6 h; Moderate for
+  >= 1.5 mm / >= 2 mm or >= 60 mm over 3 days; otherwise High. "Next 6 h" uses rain that actually
+  fell; the model only sees the forecast. No noise is added.
 
 ## Protocol
 - One deterministic 80/20 split per task is stored under `data/splits/` (seed 340).
@@ -180,11 +212,17 @@ comparison, report or artefact is produced.
   the full dataset, so it does not imply an independently tested full-data refit.
 
 ## Limitations
-- Synthetic data: none of the reported metrics constitute real-world evidence.
+- Small sample: 610 records from 5 estates over 4 wet-season months; results may not carry over
+  to other estates or seasons.
+- DRC values were normalized and aligned with latex condition by the dataset author, so the DRC
+  model mainly learns that alignment; weather alone shows almost no relationship with DRC here.
+- Price and tapping targets are constructed (formula and rule). Their scores are realistic only
+  because the models get what the app gets (estimated DRC, an issued forecast), not because they
+  discovered real market or agronomic behaviour.
 - Row-wise split: test metrics describe new observations from known estates, not unseen estates.
-- Tapping labels are simulated proxies, not verified advice.
 - Within-tolerance percentage is not accuracy.
-- Permutation importance describes the simulation; correlation is not causation. SHAP was not used.
+- Permutation importance describes these constructed targets; correlation is not causation.
+  SHAP was not used.
 """
     (REPORTS / "component1_final_methodology_and_limitations.md").write_text(md, encoding="utf-8")
 
@@ -192,15 +230,24 @@ comparison, report or artefact is produced.
 def write_provenance_md():
     md = f"""# Component 1 - Data Provenance and Limitations
 
-- File: `data/raw/RubberSense_RawStyle_Synthetic_Dataset.xlsx`, sheet `RawStyle_Data_600`.
-- SHA-256: `{sha256_file(RAW)}`.
-- 600 rows, synthetic raw-style weather/estate records for demonstration.
-- `estate_id` (120 synthetic values) and `village_code` (4 synthetic values) are NOT real estates.
-- Targets: `latex_drc_pct`, `price_lkr_per_kg` (simulated), `tapping_suitability_proxy`
-  (rule-derived with ~30% simulated label noise, seed 340).
-- No real observations are fabricated or implied; the raw workbook is read-only.
+- Source workbook: `data/raw/Combined_Rubber_Latex_Dataset_Condition_Matched.xlsx`,
+  sheet `Combined_Dataset`, SHA-256 `{sha256_file(SOURCE_WORKBOOK)}` (read-only).
+- Prepared copy (stage 00): `data/validated/component1_realistic_prepared.csv`,
+  SHA-256 `{sha256_file(RAW)}`.
+- 1210 workbook rows: 610 farmer records (Estate 01-05, Jun-Sep 2026, Open-Meteo weather) and 600
+  model-development rows (the earlier synthetic set, no weather). Models train on the farmer rows.
+- Weather and soil temperature/moisture estimates come from Open-Meteo (modelled, not sensors);
+  `soil_moisture_pct` used by the models is the farmer-recorded value.
+- `latex_drc_pct` and Metrolac readings were normalized to Kudaligama chart entries by the dataset
+  author; `visible_latex_condition` was aligned with DRC. Neither is an original field measurement.
+- `price_lkr_per_kg` (field latex) = farm-gate latex price x DRC / 100. Sources per month are in
+  `data/reference/latex_farmgate_price_reference.csv`: Rubber Development Department figures where
+  published, Central Bank of Sri Lanka FOB-scaled estimates for June-September 2026.
+- `forecast_rain_next_6h_mm` is the Open-Meteo forecast issued about a day earlier
+  (`data/reference/openmeteo_rain_forecast_issued_1day_before.csv`).
+- `tapping_suitability_proxy` is rule-derived from rainfall that actually fell (no added noise),
+  not expert advice.
 - Collection-time prediction is intentionally absent.
-- Every downstream report restates the synthetic provenance and the row-wise-split caveat.
 """
     (REPORTS / "component1_data_provenance_and_limitations.md").write_text(md, encoding="utf-8")
 

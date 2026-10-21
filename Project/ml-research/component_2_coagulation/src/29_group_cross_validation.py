@@ -13,7 +13,7 @@ DATA=ROOT/"data"/"processed"/"07_feature_engineered.csv"; REP=ROOT/"outputs"/"re
 FEATURES=["drc","latex_volume_L"]
 FEATURES_TIME=FEATURES+["water_amount_L","prepared_1pct_formic_acid_solution_mL"]
 WATER_ACID=["water_amount_L","prepared_1pct_formic_acid_solution_mL"]
-TIME=["coagulation_time_hours"]
+TIME=["coagulation_time_minutes"]
 def algos():
     return {
       "LinearRegression":LinearRegression(),

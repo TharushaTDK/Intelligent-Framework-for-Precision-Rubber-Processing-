@@ -3,31 +3,31 @@
   "task": "price_estimation",
   "target": "price_lkr_per_kg",
   "selection_scope": "DEVELOPMENT_ONLY",
-  "selected_model_family": "tuned_random_forest",
-  "selected_role": "tuned",
-  "model_class": "RandomForestRegressor",
+  "selected_model_family": "extra_trees",
+  "selected_role": "candidates",
+  "model_class": "ExtraTreesRegressor",
   "selection_rule": {
     "primary": "cv_RMSE_mean ascending",
     "tie_breaker_1": "cv_MAE_mean ascending",
     "tie_breaker_2": "cv_R2_mean descending"
   },
   "development_cv": {
-    "RMSE_mean": 7.485478222429592,
-    "MAE_mean": 5.956389207733297,
-    "R2_mean": 0.6961121219085528,
-    "within_tolerance_pct_mean": 77.91666666666667
+    "RMSE_mean": 7.957703689821509,
+    "MAE_mean": 6.541207983129446,
+    "R2_mean": 0.9139089800380538,
+    "within_tolerance_pct_mean": 43.446244477172314
   },
   "runner_up": {
     "model": "tuned_xgboost",
     "role": "tuned",
-    "cv_RMSE_mean": 7.527270260519994,
-    "cv_MAE_mean": 5.924187088012695
+    "cv_RMSE_mean": 8.012154361224708,
+    "cv_MAE_mean": 6.530682601405426
   },
   "artifact": {
-    "source_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\regression\\price_estimation\\tuned\\random_forest\\model.joblib",
+    "source_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\regression\\price_estimation\\candidates\\extra_trees\\model.joblib",
     "final_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\regression\\price_estimation\\final\\selected_model.joblib",
-    "source_sha256": "341df031b5fed3743311be05441e483afba909d02ad51a92dc000c05af4de0ff",
-    "final_sha256": "341df031b5fed3743311be05441e483afba909d02ad51a92dc000c05af4de0ff",
+    "source_sha256": "7fbd7c7391c515bf63b706c4d17a77d120a5ae832f4d72d5bb8f8b64b24e7453",
+    "final_sha256": "7fbd7c7391c515bf63b706c4d17a77d120a5ae832f4d72d5bb8f8b64b24e7453",
     "copy_identical": true
   },
   "test_loaded": false,
@@ -35,7 +35,7 @@
   "test_evaluation_stage": 31,
   "explainability_stage": 32,
   "export_stage": 33,
-  "dataset_provenance": "synthetic; not real-world evidence",
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
   "warnings": [
     "Row-wise split: most test estates also appear in training. Use stage-30 estate-grouped CV for the unseen-estate estimate.",
     "Within-tolerance % is not accuracy."

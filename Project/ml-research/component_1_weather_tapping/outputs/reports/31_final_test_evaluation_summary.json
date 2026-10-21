@@ -4,66 +4,66 @@
   "protocol": "Selected models were chosen by CV on the training partition. The test partition was loaded once here. Other candidates are also scored on test for transparency, but those numbers did not influence selection.",
   "test_loaded": true,
   "test_evaluated": true,
-  "dataset_provenance": "synthetic; not real-world evidence",
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
   "regression": {
     "drc_prediction": {
       "selected_model": "tuned_gradient_boosting",
       "selection_role": "tuned",
       "development_cv": {
-        "RMSE_mean": 0.8480759229299946,
-        "MAE_mean": 0.6733332620463139,
-        "R2_mean": 0.7983481581936641,
-        "within_tolerance_pct_mean": 75.15789473684211
+        "RMSE_mean": 1.0213970005562658,
+        "MAE_mean": 0.8343504551683676,
+        "R2_mean": 0.7345308309451952,
+        "within_tolerance_pct_mean": 62.911845150431304
       },
       "test": {
-        "MAE": 0.6857408325750253,
-        "RMSE": 0.8626585865075098,
-        "R2": 0.8013578438060657,
-        "within_tolerance_pct": 77.31092436974791,
+        "MAE": 0.8372527079258891,
+        "RMSE": 1.0191497263570115,
+        "R2": 0.7701837815948731,
+        "within_tolerance_pct": 61.47540983606557,
         "tolerance": 1.0
       },
-      "test_estates": 73,
-      "test_rows": 119,
-      "x_test_sha256": "cb238b9ba30a3e8ff51a20af5d4292b160066bb3a80419e74781d0b6b1c0569a",
-      "y_test_sha256": "fcf964e1730c7d8d623527fed4f9b14f2f2f9a3895a5eed4ff1bcf7b720f7fdc"
+      "test_estates": 5,
+      "test_rows": 122,
+      "x_test_sha256": "424b34dbfcba734a36a2c00667fdbb827dc36350bbdefe770ec18a892850be59",
+      "y_test_sha256": "d52c94fef634c7f9ce713d7050768e8973d9d1602b8b4ff8df062ff854126028"
     },
     "price_estimation": {
-      "selected_model": "tuned_random_forest",
-      "selection_role": "tuned",
+      "selected_model": "extra_trees",
+      "selection_role": "candidates",
       "development_cv": {
-        "RMSE_mean": 7.485478222429592,
-        "MAE_mean": 5.956389207733297,
-        "R2_mean": 0.6961121219085528,
-        "within_tolerance_pct_mean": 77.91666666666667
+        "RMSE_mean": 7.957703689821509,
+        "MAE_mean": 6.541207983129446,
+        "R2_mean": 0.9139089800380538,
+        "within_tolerance_pct_mean": 43.446244477172314
       },
       "test": {
-        "MAE": 6.229200403448244,
-        "RMSE": 7.662891397886357,
-        "R2": 0.7258782548325653,
-        "within_tolerance_pct": 74.16666666666667,
-        "tolerance": 9.0
+        "MAE": 6.7011792224824465,
+        "RMSE": 8.138574683979845,
+        "R2": 0.9010474415706774,
+        "within_tolerance_pct": 45.08196721311475,
+        "tolerance": 5.0
       },
-      "test_estates": 74,
-      "test_rows": 120,
-      "x_test_sha256": "d064ac608db45bee16407ee6a4c7519a3f786ccb8110d0cfeff9a1ade2329ce0",
-      "y_test_sha256": "d63ee6780c2e82e347e381813ad44337ab76542e8d98443548651732717c172e"
+      "test_estates": 5,
+      "test_rows": 122,
+      "x_test_sha256": "13c5e73a729877ac4e4ba9235d3734a9863ad86f5c4f7f65f44e2386ae91bfd8",
+      "y_test_sha256": "d4d25289fa42bf7f43477e1c28838e6ee0019507af4ba9038d3ce5d81a1e15d8"
     }
   },
   "classification": {
     "tapping_advisory": {
-      "selected_model": "tuned_gradient_boosting",
-      "selection_role": "tuned",
+      "selected_model": "gradient_boosting",
+      "selection_role": "candidates",
       "development_cv": {
-        "accuracy_mean": 0.6666666666666667,
-        "macro_precision_mean": 0.6801186064232427,
-        "macro_recall_mean": 0.6547429669776867,
-        "macro_f1_mean": 0.6610312235260597
+        "accuracy_mean": 0.9692615190406059,
+        "macro_precision_mean": 0.9689366800017206,
+        "macro_recall_mean": 0.9670477207977208,
+        "macro_f1_mean": 0.9676116713534675
       },
       "test": {
-        "accuracy": 0.775,
-        "macro_precision": 0.7949206349206349,
-        "macro_recall": 0.7585470085470085,
-        "macro_f1": 0.767721744733239
+        "accuracy": 0.9344262295081968,
+        "macro_precision": 0.9437321937321936,
+        "macro_recall": 0.9191919191919192,
+        "macro_f1": 0.9245141552694823
       },
       "confusion_matrix_labels": [
         "High",
@@ -72,25 +72,25 @@
       ],
       "confusion_matrix": [
         [
-          44,
-          2,
-          2
+          49,
+          0,
+          0
         ],
         [
-          5,
-          22,
-          6
+          3,
+          25,
+          5
         ],
         [
-          11,
-          1,
-          27
+          0,
+          0,
+          40
         ]
       ],
-      "test_estates": 81,
-      "test_rows": 120,
-      "x_test_sha256": "5102e3abd2df3462ed0f4dbc5e1ec6010808d13838b27b49e8fe3faa4ff72635",
-      "y_test_sha256": "2193fd2c6271527db7ae0fe5fe656ed8e1158198747e23ca6e74f2bcbe82a852"
+      "test_estates": 5,
+      "test_rows": 122,
+      "x_test_sha256": "43eea4aab70aee87c1e9aecfaddab39475fbfe444258038e4d968619947ff348",
+      "y_test_sha256": "bd1bd6770cbbbd8884849aa07d5c8ecac7541e12e336af1728c5140864cb3d99"
     }
   },
   "figures": {

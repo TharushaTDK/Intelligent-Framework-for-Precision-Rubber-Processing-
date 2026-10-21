@@ -29,29 +29,29 @@
     }
   },
   "best_params": {
-    "model__max_depth": 8,
-    "model__min_samples_leaf": 4,
+    "model__max_depth": null,
+    "model__min_samples_leaf": 2,
     "model__n_estimators": 100
   },
-  "best_search_score_cv_macro_f1": 0.6303857283216875,
+  "best_search_score_cv_macro_f1": 0.9397827300233593,
   "cv": {
     "folds": 5,
     "primary_metric": "f1_macro",
     "accuracy": {
-      "mean": 0.6499999999999999,
-      "std": 0.03061862178478973
+      "mean": 0.9569535030507048,
+      "std": 0.028631864385333338
     },
     "precision_macro": {
-      "mean": 0.6616614088776542,
-      "std": 0.031826414941326986
+      "mean": 0.9608796051621254,
+      "std": 0.025516042082866522
     },
     "recall_macro": {
-      "mean": 0.6381417814248884,
-      "std": 0.03019002381847362
+      "mean": 0.9526246438746439,
+      "std": 0.0315621480893083
     },
     "f1_macro": {
-      "mean": 0.6433514875513235,
-      "std": 0.03113139575995029
+      "mean": 0.955105109491108,
+      "std": 0.029566291508385675
     }
   },
   "parameters": {
@@ -59,12 +59,12 @@
     "ccp_alpha": 0.0,
     "class_weight": "balanced",
     "criterion": "gini",
-    "max_depth": 8,
+    "max_depth": null,
     "max_features": "sqrt",
     "max_leaf_nodes": null,
     "max_samples": null,
     "min_impurity_decrease": 0.0,
-    "min_samples_leaf": 4,
+    "min_samples_leaf": 2,
     "min_samples_split": 2,
     "min_weight_fraction_leaf": 0.0,
     "monotonic_cst": null,
@@ -80,7 +80,7 @@
     "Low",
     "Moderate"
   ],
-  "train_rows": 480,
+  "train_rows": 488,
   "feature_names": [
     "temperature_c",
     "relative_humidity_pct",
@@ -90,15 +90,12 @@
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice.",
-  "x_train_sha256": "10d756e724e29fde6394107d209e8208b13e0d58790fe408b5a8ebce2f8d56af",
-  "y_train_sha256": "97503a684d8bcafb96e99e7317cdfbae9203c91d693eafe797c9eea176894092",
-  "model_sha256": "6b5d4d829d7f79ccdaffb566ce908711071f8eccc74c23958867b5150ae3e396"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "target_warning": "Rule-derived proxy labels from rainfall thresholds, judged on rain that actually fell; the model sees only the forecast issued beforehand (no added noise). NOT expert-verified tapping advice.",
+  "x_train_sha256": "a39d59f3aa7099125b19f2440188bf4144f356f0ca939214e37ffcdc15c2c175",
+  "y_train_sha256": "f91cfec3c5ddf4f47df75d2666b22c958d7493a086466f3ff2d620445f9cdae9",
+  "model_sha256": "6beeb36a098f40ce7544034930786d69c9a373496c50654e9fa53adf447febd8"
 }

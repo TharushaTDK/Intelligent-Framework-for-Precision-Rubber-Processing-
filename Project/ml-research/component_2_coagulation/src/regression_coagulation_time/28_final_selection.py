@@ -12,7 +12,7 @@ ROOT=Path(__file__).resolve().parents[2]
 TRAIN=ROOT/"data"/"splits"/"Component2_Train.csv"
 MODELS=ROOT/"outputs"/"models"; REPORTS=ROOT/"outputs"/"reports"
 FEATURES=["drc","latex_volume_L","water_amount_L","prepared_1pct_formic_acid_solution_mL"]
-TARGET="coagulation_time_hours"
+TARGET="coagulation_time_minutes"
 def main():
     if not TRAIN.exists(): raise FileNotFoundError("Run src/09_batch_aware_split.py first.")
     MODELS.mkdir(parents=True,exist_ok=True); REPORTS.mkdir(parents=True,exist_ok=True)

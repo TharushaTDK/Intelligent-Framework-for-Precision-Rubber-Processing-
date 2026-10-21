@@ -22,7 +22,7 @@ import joblib
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import (  # noqa: E402
-    FIGURES, REPORTS, REG_TASKS, CLS_TASK, CLS_TARGET, CLS_FEATURES, CLS_CLASSES,
+    FIGURES, REPORTS, REG_TASKS, CLS_TASK, CLS_TARGET, CLS_FEATURES, CLS_CLASSES, DATASET_PROVENANCE,
     task_root, role_dir, ensure_dirs, load_raw, clean_basic, write_json, sha256_frame,
 )
 from train_candidate import _reg_data, _cls_data, split_indices  # noqa: E402
@@ -130,7 +130,7 @@ def evaluate_regression_task(task, summary):
         ax.scatter(yv, pred, alpha=.6, edgecolor="k", linewidth=.3)
         lo = min(yv.min(), pred.min()); hi = max(yv.max(), pred.max())
         ax.plot([lo, hi], [lo, hi], "--", color="crimson")
-        ax.set_xlabel("Actual (synthetic)"); ax.set_ylabel("Predicted")
+        ax.set_xlabel("Actual"); ax.set_ylabel("Predicted")
         ax.set_title(f"{task}: selected {selected_name} (test)")
         fig.tight_layout(); fig.savefig(FIGDIR_REGRESSION / f"{task}_actual_vs_predicted.png", dpi=140); plt.close(fig)
 
@@ -148,7 +148,7 @@ def evaluate_regression_task(task, summary):
         ax.set_ylabel("CV RMSE (train partition)")
         ax.set_xticks(range(len(cmp_df)))
         ax.set_xticklabels(list(cmp_df["model"]), rotation=30, ha="right")
-        ax.set_title(f"{task}: cross-validated candidate comparison (synthetic)")
+        ax.set_title(f"{task}: cross-validated candidate comparison")
         fig.tight_layout(); fig.savefig(FIGDIR_REGRESSION / f"{task}_cv_model_comparison.png", dpi=140); plt.close(fig)
 
     print(f"[{task}] selected {selected_name}: test RMSE={selected_test['RMSE']:.4f} "
@@ -237,7 +237,7 @@ def evaluate_classification_task(summary):
         ax.set_ylabel("CV macro-F1 (train partition)")
         ax.set_xticks(range(len(cmp_df)))
         ax.set_xticklabels(list(cmp_df["model"]), rotation=30, ha="right")
-        ax.set_title("Tapping advisory: cross-validated classifier comparison (synthetic proxy)")
+        ax.set_title("Tapping advisory: cross-validated classifier comparison (rule-based proxy label)")
         fig.tight_layout(); fig.savefig(FIGDIR_CLASSIFICATION / "tapping_advisory_cv_model_comparison.png", dpi=140); plt.close(fig)
 
         per = rep.loc[[c for c in labels if c in rep.index], ["precision", "recall", "f1-score"]]
@@ -269,7 +269,7 @@ def main():
                     "was loaded once here. Other candidates are also scored on test for transparency, "
                     "but those numbers did not influence selection.",
         "test_loaded": True, "test_evaluated": True,
-        "dataset_provenance": "synthetic; not real-world evidence",
+        "dataset_provenance": DATASET_PROVENANCE,
         "regression": {}, "classification": {},
         "figures": {"matplotlib_available": plt is not None},
         "warnings": [
@@ -298,7 +298,7 @@ def main():
         t = r["test"]
         report.append(f"  [{task}] {r['selected_model']}: accuracy={t['accuracy']:.4f} "
                       f"macro-P={t['macro_precision']:.4f} macro-R={t['macro_recall']:.4f} macro-F1={t['macro_f1']:.4f}")
-    report += ["", "Reminder: synthetic data. Not real-world evidence. Within-tolerance % is not accuracy."]
+    report += ["", f"Reminder: {DATASET_PROVENANCE}. Within-tolerance % is not accuracy."]
     (REPORTS / "31_final_test_evaluation_report.txt").write_text("\n".join(report), encoding="utf-8")
     print("\n".join(report))
     print(f"\nStage 31 complete. Figures available: {plt is not None}")

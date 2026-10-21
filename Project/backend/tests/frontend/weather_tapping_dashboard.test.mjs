@@ -240,10 +240,48 @@ test("DRC request sends only weather and timestamp, nothing invented", () => {
         "rainfall_last_6h_mm", "relative_humidity_pct", "temperature_c", "wind_speed_kmh",
     ]);
     assert.deepEqual(missing.sort(), [
-        "days_since_last_tap", "estate_id", "previous_collection_yield_litres",
-        "soil_moisture_pct", "soil_ph", "tapping_system", "tree_count",
+        "estate_id", "soil_moisture_pct", "soil_ph", "visible_latex_condition",
     ]);
     assert.ok(!("latitude" in payload) && !("longitude" in payload));
+});
+
+test("DRC request carries the latex condition the farmer picked", () => {
+    const { payload, missing } = page.buildPredictionPayload("drc", {
+        observationTimestamp: sampleWeather.observation_timestamp,
+        weather: sampleWeather,
+        latexCondition: "Watery",
+    });
+
+    assert.equal(payload.visible_latex_condition, "Watery");
+    assert.ok(!missing.includes("visible_latex_condition"));
+});
+
+test("unknown or empty latex condition is left out, not sent", () => {
+    for (const latexCondition of [null, "", "watery", "Very watery"]) {
+        const { payload, missing } = page.buildPredictionPayload("drc", {
+            observationTimestamp: sampleWeather.observation_timestamp,
+            weather: sampleWeather,
+            latexCondition,
+        });
+        assert.ok(!("visible_latex_condition" in payload), `${latexCondition} should not be sent`);
+        assert.ok(missing.includes("visible_latex_condition"));
+    }
+});
+
+test("latex condition only goes to the DRC model", () => {
+    for (const kind of ["tapping", "price"]) {
+        const { payload } = page.buildPredictionPayload(kind, {
+            observationTimestamp: sampleWeather.observation_timestamp,
+            weather: sampleWeather,
+            latexDrc: 36.3,
+            latexCondition: "Watery",
+        });
+        assert.ok(!("visible_latex_condition" in payload), `${kind} must not get the condition`);
+    }
+});
+
+test("latex condition choices match the backend schema", () => {
+    assert.deepEqual(page.LATEX_CONDITIONS, ["Normal", "Watery", "Early coagulation"]);
 });
 
 test("every sent field is one the schema accepts", () => {
@@ -309,11 +347,11 @@ test("missing weather values are left out, never zero-filled", () => {
 
 test("not-provided list merges all requests without duplicates", () => {
     const names = page.describeNotProvided([
-        ["estate_id", "soil_ph", "tree_count"],
-        ["soil_ph", "tree_count"],
+        ["estate_id", "soil_ph", "visible_latex_condition"],
+        ["soil_ph", "visible_latex_condition"],
         ["soil_ph"],
     ]);
-    assert.deepEqual(names, ["estate ID", "soil pH", "tree count"]);
+    assert.deepEqual(names, ["estate ID", "soil pH", "latex condition"]);
 });
 
 

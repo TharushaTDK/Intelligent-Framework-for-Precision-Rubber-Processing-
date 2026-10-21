@@ -3,8 +3,8 @@
   "task": "tapping_advisory",
   "target": "tapping_suitability_proxy",
   "selection_scope": "DEVELOPMENT_ONLY",
-  "selected_model_family": "tuned_gradient_boosting",
-  "selected_role": "tuned",
+  "selected_model_family": "gradient_boosting",
+  "selected_role": "candidates",
   "model_class": "GradientBoostingClassifier",
   "selection_rule": {
     "primary": "cv_macro_f1_mean descending",
@@ -12,22 +12,22 @@
     "tie_breaker_2": "cv_accuracy_mean descending"
   },
   "development_cv": {
-    "accuracy_mean": 0.6666666666666667,
-    "macro_precision_mean": 0.6801186064232427,
-    "macro_recall_mean": 0.6547429669776867,
-    "macro_f1_mean": 0.6610312235260597
+    "accuracy_mean": 0.9692615190406059,
+    "macro_precision_mean": 0.9689366800017206,
+    "macro_recall_mean": 0.9670477207977208,
+    "macro_f1_mean": 0.9676116713534675
   },
   "runner_up": {
-    "model": "tuned_xgboost",
+    "model": "tuned_gradient_boosting",
     "role": "tuned",
-    "cv_macro_f1_mean": 0.6543225533480835,
-    "cv_accuracy_mean": 0.6625
+    "cv_macro_f1_mean": 0.9652956086600464,
+    "cv_accuracy_mean": 0.9671996633705028
   },
   "artifact": {
-    "source_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\classification\\tapping_advisory\\tuned\\gradient_boosting\\model.joblib",
+    "source_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\classification\\tapping_advisory\\candidates\\gradient_boosting\\model.joblib",
     "final_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\classification\\tapping_advisory\\final\\selected_model.joblib",
-    "source_sha256": "f24b149bc2638cad29bdccc111b66a376972cf7d975873f542379a0b7b54c230",
-    "final_sha256": "f24b149bc2638cad29bdccc111b66a376972cf7d975873f542379a0b7b54c230",
+    "source_sha256": "dbb4d9acb1e624c2a7d89218f8cddd26f37effa9778ae352ee45503cb8da4b60",
+    "final_sha256": "dbb4d9acb1e624c2a7d89218f8cddd26f37effa9778ae352ee45503cb8da4b60",
     "copy_identical": true
   },
   "test_loaded": false,
@@ -35,8 +35,8 @@
   "test_evaluation_stage": 31,
   "explainability_stage": 32,
   "export_stage": 33,
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified agronomic advice.",
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "target_warning": "Rule-derived proxy labels from rainfall thresholds, judged on rain that actually fell; the model sees only the forecast issued beforehand (no added noise). NOT expert-verified tapping advice.",
   "warnings": [
     "Row-wise split: most test estates also appear in training."
   ]

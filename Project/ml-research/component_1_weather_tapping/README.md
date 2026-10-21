@@ -5,16 +5,24 @@ Component 3 project. It **adapts the organisational pattern only**; no Component
 data is copied. See `STRUCTURE_MAPPING.md` and
 `reference_structure/component_3_smokehouse_structure.md`.
 
-> **The dataset is synthetic.** Estate IDs are not verified estates, price/DRC targets are
-> simulated, and tapping labels are rule-derived with ~30% simulated label noise (seed 340).
-> No metric in this project is real-world evidence.
-> The `estate_name` column holds `TBD_EST-xxx` placeholders derived from `estate_id` (not verified
-> real estate names) and is documentation-only - it is not an input feature of any model.
+> **Dataset (October 2026):** `data/raw/Combined_Rubber_Latex_Dataset_Condition_Matched.xlsx`.
+> Models train on its **610 farmer records** (Estate 01-05, June-September 2026) with Open-Meteo
+> hourly weather. The other 600 rows are the earlier synthetic set and have no weather.
+> - DRC/Metrolac values were normalized by the dataset author to Kudaligama chart entries, and the
+>   visible latex condition was aligned with DRC; they are not original field measurements.
+> - Latex price is filled by stage 00 as **farm-gate latex price x DRC / 100** (field latex is paid
+>   on dry rubber content, so watery latex is worth less). Monthly farm-gate levels and their sources
+>   are in `data/reference/latex_farmgate_price_reference.csv`; June-September 2026 are estimates.
+> - Tapping labels come from a rainfall rule (no added noise) and are a proxy, not expert advice.
+> The previous synthetic workbook and the duplicate stage scripts were removed after this retrain
+> (a backup of the earlier version is kept outside the repository).
 
 ## Included tasks
-1. Estate-wise DRC regression (`latex_drc_pct`).
-2. Tapping suitability classification (`tapping_suitability_proxy`, synthetic proxy labels).
-3. Rubber price regression (`price_lkr_per_kg`).
+1. DRC regression (`latex_drc_pct`) from weather, farmer soil moisture, soil pH, visible latex
+   condition, estate and date. The Metrolac reading and latex temperature are excluded because
+   they give DRC exactly through the Kudaligama chart.
+2. Tapping suitability classification (`tapping_suitability_proxy`, rainfall-rule proxy labels).
+3. Field latex price regression (`price_lkr_per_kg`, price per kg of field latex).
 
 Collection-time prediction is **removed** — no collection-time target exists and no such model,
 comparison, report or artefact is produced anywhere.
@@ -31,11 +39,16 @@ comparison, report or artefact is produced anywhere.
   split is row-wise.
 
 ## Numbered workflow
+- `00_prepare_realistic_dataset.py`: reads the workbook (unchanged), maps column names, marks the
+  rows usable for weather models, fills the latex price, and writes
+  `data/validated/component1_realistic_prepared.csv` plus `00_dataset_preparation_report.md`.
 - `01_data_understanding.py`: raw data schema and overview.
-- `02_target_validation.py`, `02_data_quality_analysis.py`, `03_data_quality_analysis.py`: target
-  and quality checks.
-- `03_preprocessing.py` / `04_preprocessing.py`: preprocessing report and cleaned copy.
+- `02_target_validation.py`, `02_data_quality_analysis.py`: target and quality checks.
+- `03_preprocessing.py`: preprocessing report and cleaned copy.
 - `04_build_targets_and_splits.py`: builds the stored per-task splits.
+- `04b_estimate_drc_for_price.py`: leakage-safe estimated DRC that the price model takes as input
+  (out-of-fold on train, train-fitted on test), because in the app price is always worked out from
+  an estimated DRC, never a lab value.
 - `05_eda.py`: numeric summaries, cardinality, distributions (+ figures).
 - `06_temporal_estate_analysis.py`: monthly and estate-level summaries.
 - `07_feature_engineering.py`: derived time/weather features.
@@ -43,11 +56,12 @@ comparison, report or artefact is produced anywhere.
 - `09_split_integrity_audit.py`: split file audit.
 - `10_train_only_preprocessing.py`: leakage-safe preprocessing protocol.
 - `src/regression/11–16`: fit the Dummy Mean, Random Forest, Gradient Boosting, Extra Trees, XGBoost
-  and HistGradientBoosting candidates (train split only). `17` runs the CV comparison, `18` runs
-  cross-validated tuning, `19` selects the winner by CV and writes `final/`.
+  and HistGradientBoosting candidates (train split only). `11_compare_regression_models.py` runs the
+  CV comparison of all of them, and `19` selects the winner by CV and writes `final/`.
 - `src/classification/20–26`: fit the tapping baseline, Logistic Regression, Random Forest, Extra
-  Trees, Gradient Boosting and XGBoost candidates. `21` reports class distribution. `27` runs the CV
-  comparison, `28` runs cross-validated tuning, `29` selects by CV.
+  Trees, Gradient Boosting and XGBoost candidates. `21_class_imbalance_analysis.py` reports class
+  distribution, `21_compare_classification_models.py` runs the CV comparison, `29` selects by CV.
+- Tuning for both kinds of task is done by `40_tune_candidate_models.py`.
 - `30_cv_data_integrity_audit.py`: split integrity, index disjointness, estate-overlap, leakage notes.
 - `30_estate_group_cross_validation.py`: grouped (unseen-estate) CV.
 - `30_summarize_model_comparison.py`: CV-based consolidated summary.
@@ -81,16 +95,25 @@ outputs/
 ```
 
 ## Run
+On Windows the project path is too long for a virtual environment inside it, so create one at a
+short path, using the same library versions as the backend so the exported models load there:
+
+```bash
+python -m venv C:\Users\<you>\.venvs\rubbersense-c1
+C:\Users\<you>\.venvs\rubbersense-c1\Scripts\python.exe -m pip install pandas==3.0.6 numpy==2.5.3 scikit-learn==1.9.1 xgboost==3.4.1 joblib==1.6.0 "openpyxl>=3.1" "matplotlib>=3.7"
+```
+
 ```bash
 pip install -r requirements.txt
 
 # data stages
+python src/00_prepare_realistic_dataset.py
 python src/01_data_understanding.py
 python src/02_target_validation.py
 python src/02_data_quality_analysis.py
-python src/03_data_quality_analysis.py
 python src/03_preprocessing.py
 python src/04_build_targets_and_splits.py
+python src/04b_estimate_drc_for_price.py
 python src/05_eda.py
 python src/06_temporal_estate_analysis.py
 python src/07_feature_engineering.py
@@ -129,7 +152,7 @@ RUBBERSENSE_TRAIN_ONLY_DIR=/tmp/component1 python src/train_only_checkpoint.py
 
 ## Evaluation and limitations
 Regression metrics include MAE, RMSE, R² and a declared within-tolerance percentage (DRC ±1
-percentage point; price ±LKR 9/kg) — **within-tolerance % is not accuracy**. Classification reports
+percentage point; price ±LKR 5/kg of field latex) — **within-tolerance % is not accuracy**. Classification reports
 accuracy, macro precision, macro recall and macro-F1. For valid conclusions, collect measured DRC by
 estate, expert-verified tapping labels, and dated verified price records. For claims about
 unseen **estates**, use estate-grouped splits/CV and keep a final holdout untouched.
