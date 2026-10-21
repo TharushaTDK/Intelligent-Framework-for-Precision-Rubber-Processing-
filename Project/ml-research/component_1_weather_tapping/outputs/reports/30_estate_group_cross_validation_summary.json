@@ -1,217 +1,217 @@
 {
   "stage": "30_estate_group_cross_validation",
   "purpose": "Unseen-estate generalisation estimate. Folds are grouped on estate_id so an estate never appears in both the fit and the evaluation fold.",
-  "dataset_provenance": "synthetic; not real-world evidence",
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
   "test_loaded": false,
   "results": {
     "drc_prediction": {
       "best_grouped_model": "linear_regression",
-      "best_grouped_cv_RMSE": 0.7740404726080408,
+      "best_grouped_cv_RMSE": 1.0338510458847323,
       "models": [
         {
           "task": "drc_prediction",
           "model": "linear_regression",
           "grouping": "estate_id",
-          "cv_RMSE_mean": 0.7740404726080408,
-          "cv_RMSE_std": 0.03671553181448564,
-          "cv_MAE_mean": 0.6157584304817683,
-          "cv_R2_mean": 0.8324882368298854,
-          "cv_within_tolerance_pct_mean": 80.63157894736841
-        },
-        {
-          "task": "drc_prediction",
-          "model": "xgboost",
-          "grouping": "estate_id",
-          "cv_RMSE_mean": 0.8595707010306011,
-          "cv_RMSE_std": 0.06077238559704522,
-          "cv_MAE_mean": 0.6773844389524973,
-          "cv_R2_mean": 0.7934982424855861,
-          "cv_within_tolerance_pct_mean": 77.05263157894737
-        },
-        {
-          "task": "drc_prediction",
-          "model": "gradient_boosting",
-          "grouping": "estate_id",
-          "cv_RMSE_mean": 0.8752510882330966,
-          "cv_RMSE_std": 0.04773490305000335,
-          "cv_MAE_mean": 0.6859249878524463,
-          "cv_R2_mean": 0.7864457746747326,
-          "cv_within_tolerance_pct_mean": 76.21052631578948
-        },
-        {
-          "task": "drc_prediction",
-          "model": "extra_trees",
-          "grouping": "estate_id",
-          "cv_RMSE_mean": 0.9262677389080156,
-          "cv_RMSE_std": 0.049172756963522024,
-          "cv_MAE_mean": 0.7304968114939745,
-          "cv_R2_mean": 0.7596052155295102,
-          "cv_within_tolerance_pct_mean": 73.47368421052632
-        },
-        {
-          "task": "drc_prediction",
-          "model": "hist_gradient_boosting",
-          "grouping": "estate_id",
-          "cv_RMSE_mean": 0.9471787735814082,
-          "cv_RMSE_std": 0.09358387094934817,
-          "cv_MAE_mean": 0.7549636210800228,
-          "cv_R2_mean": 0.7476299860628407,
-          "cv_within_tolerance_pct_mean": 70.94736842105263
+          "cv_RMSE_mean": 1.0338510458847323,
+          "cv_RMSE_std": 0.06726621771895085,
+          "cv_MAE_mean": 0.84447977582943,
+          "cv_R2_mean": 0.7129489074020968,
+          "cv_within_tolerance_pct_mean": 60.17785990790223
         },
         {
           "task": "drc_prediction",
           "model": "random_forest",
           "grouping": "estate_id",
-          "cv_RMSE_mean": 0.9581386456190799,
-          "cv_RMSE_std": 0.05774271648771966,
-          "cv_MAE_mean": 0.7516793956851872,
-          "cv_R2_mean": 0.7435549014237097,
-          "cv_within_tolerance_pct_mean": 72.42105263157895
+          "cv_RMSE_mean": 1.0494176362162528,
+          "cv_RMSE_std": 0.042492722956319035,
+          "cv_MAE_mean": 0.8531261655985375,
+          "cv_R2_mean": 0.7040516935681532,
+          "cv_within_tolerance_pct_mean": 64.80059843165436
+        },
+        {
+          "task": "drc_prediction",
+          "model": "extra_trees",
+          "grouping": "estate_id",
+          "cv_RMSE_mean": 1.0530172593454719,
+          "cv_RMSE_std": 0.055686292562463255,
+          "cv_MAE_mean": 0.8520921870002536,
+          "cv_R2_mean": 0.7010590317107172,
+          "cv_within_tolerance_pct_mean": 62.989015608027046
+        },
+        {
+          "task": "drc_prediction",
+          "model": "xgboost",
+          "grouping": "estate_id",
+          "cv_RMSE_mean": 1.0908537681181636,
+          "cv_RMSE_std": 0.05986332275505336,
+          "cv_MAE_mean": 0.8873845128518951,
+          "cv_R2_mean": 0.6843450003251138,
+          "cv_within_tolerance_pct_mean": 61.62141052827894
+        },
+        {
+          "task": "drc_prediction",
+          "model": "hist_gradient_boosting",
+          "grouping": "estate_id",
+          "cv_RMSE_mean": 1.1210592662567735,
+          "cv_RMSE_std": 0.033961664784754486,
+          "cv_MAE_mean": 0.9056705335019813,
+          "cv_R2_mean": 0.664291835858436,
+          "cv_within_tolerance_pct_mean": 61.964051533952556
+        },
+        {
+          "task": "drc_prediction",
+          "model": "gradient_boosting",
+          "grouping": "estate_id",
+          "cv_RMSE_mean": 1.1237342219836344,
+          "cv_RMSE_std": 0.07452346805571873,
+          "cv_MAE_mean": 0.9120133116108141,
+          "cv_R2_mean": 0.6650914767468649,
+          "cv_within_tolerance_pct_mean": 61.282832775877544
         },
         {
           "task": "drc_prediction",
           "model": "dummy_mean",
           "grouping": "estate_id",
-          "cv_RMSE_mean": 1.9061491271330275,
-          "cv_RMSE_std": 0.10271923705429356,
-          "cv_MAE_mean": 1.5237923823775894,
-          "cv_R2_mean": -0.005915062679317717,
-          "cv_within_tolerance_pct_mean": 40.631578947368425
+          "cv_RMSE_mean": 2.0196253060250067,
+          "cv_RMSE_std": 0.17534802396546786,
+          "cv_MAE_mean": 1.6493006588712755,
+          "cv_R2_mean": -0.07133051526401304,
+          "cv_within_tolerance_pct_mean": 31.498331426135515
         }
       ]
     },
     "price_estimation": {
-      "best_grouped_model": "linear_regression",
-      "best_grouped_cv_RMSE": 7.541963127427472,
+      "best_grouped_model": "extra_trees",
+      "best_grouped_cv_RMSE": 8.104159767537224,
       "models": [
-        {
-          "task": "price_estimation",
-          "model": "linear_regression",
-          "grouping": "estate_id",
-          "cv_RMSE_mean": 7.541963127427472,
-          "cv_RMSE_std": 0.3484724429945655,
-          "cv_MAE_mean": 6.091238230526594,
-          "cv_R2_mean": 0.6916229725320115,
-          "cv_within_tolerance_pct_mean": 77.5
-        },
         {
           "task": "price_estimation",
           "model": "extra_trees",
           "grouping": "estate_id",
-          "cv_RMSE_mean": 7.649628231185358,
-          "cv_RMSE_std": 0.5474595976079284,
-          "cv_MAE_mean": 6.081085416666669,
-          "cv_R2_mean": 0.685045222444725,
-          "cv_within_tolerance_pct_mean": 75.0
-        },
-        {
-          "task": "price_estimation",
-          "model": "random_forest",
-          "grouping": "estate_id",
-          "cv_RMSE_mean": 7.75942854130526,
-          "cv_RMSE_std": 0.6520348604275545,
-          "cv_MAE_mean": 6.228222389069254,
-          "cv_R2_mean": 0.6762762211996172,
-          "cv_within_tolerance_pct_mean": 77.91666666666666
+          "cv_RMSE_mean": 8.104159767537224,
+          "cv_RMSE_std": 0.5482883363747549,
+          "cv_MAE_mean": 6.589434613102554,
+          "cv_R2_mean": 0.912110442474338,
+          "cv_within_tolerance_pct_mean": 42.017670464976625
         },
         {
           "task": "price_estimation",
           "model": "xgboost",
           "grouping": "estate_id",
-          "cv_RMSE_mean": 7.796511126332885,
-          "cv_RMSE_std": 0.641104683367746,
-          "cv_MAE_mean": 6.188951365152994,
-          "cv_R2_mean": 0.6731070513583494,
-          "cv_within_tolerance_pct_mean": 76.45833333333333
+          "cv_RMSE_mean": 8.161267737246792,
+          "cv_RMSE_std": 0.6286377175620576,
+          "cv_MAE_mean": 6.6428842243347335,
+          "cv_R2_mean": 0.9106402048108707,
+          "cv_within_tolerance_pct_mean": 39.79045805301378
+        },
+        {
+          "task": "price_estimation",
+          "model": "random_forest",
+          "grouping": "estate_id",
+          "cv_RMSE_mean": 8.206962302113803,
+          "cv_RMSE_std": 0.6135655979886067,
+          "cv_MAE_mean": 6.603825214268329,
+          "cv_R2_mean": 0.9095640786513322,
+          "cv_within_tolerance_pct_mean": 44.3688576459959
         },
         {
           "task": "price_estimation",
           "model": "gradient_boosting",
           "grouping": "estate_id",
-          "cv_RMSE_mean": 7.98767395042603,
-          "cv_RMSE_std": 0.6671050427229706,
-          "cv_MAE_mean": 6.330545601301971,
-          "cv_R2_mean": 0.6565357333378946,
-          "cv_within_tolerance_pct_mean": 74.79166666666666
+          "cv_RMSE_mean": 8.2547979136753,
+          "cv_RMSE_std": 0.6414750061941682,
+          "cv_MAE_mean": 6.71146298701112,
+          "cv_R2_mean": 0.9084278734356881,
+          "cv_within_tolerance_pct_mean": 40.258340685844864
         },
         {
           "task": "price_estimation",
           "model": "hist_gradient_boosting",
           "grouping": "estate_id",
-          "cv_RMSE_mean": 8.117854633024862,
-          "cv_RMSE_std": 0.5042180451735497,
-          "cv_MAE_mean": 6.454641958173643,
-          "cv_R2_mean": 0.64504565256317,
-          "cv_within_tolerance_pct_mean": 73.125
+          "cv_RMSE_mean": 8.31214114381893,
+          "cv_RMSE_std": 0.8368211273578641,
+          "cv_MAE_mean": 6.747453979426796,
+          "cv_R2_mean": 0.9067635064810806,
+          "cv_within_tolerance_pct_mean": 44.26726727150613
+        },
+        {
+          "task": "price_estimation",
+          "model": "linear_regression",
+          "grouping": "estate_id",
+          "cv_RMSE_mean": 15.301408832722965,
+          "cv_RMSE_std": 0.7620634570267482,
+          "cv_MAE_mean": 12.616683827679715,
+          "cv_R2_mean": 0.6869197814705184,
+          "cv_within_tolerance_pct_mean": 22.1221452354005
         },
         {
           "task": "price_estimation",
           "model": "dummy_mean",
           "grouping": "estate_id",
-          "cv_RMSE_mean": 13.651036280726624,
-          "cv_RMSE_std": 0.8795072521339641,
-          "cv_MAE_mean": 11.02390407986111,
-          "cv_R2_mean": -0.002853116601927752,
-          "cv_within_tolerance_pct_mean": 46.666666666666664
+          "cv_RMSE_mean": 27.66772562993999,
+          "cv_RMSE_std": 0.5785068933432749,
+          "cv_MAE_mean": 23.53482452814368,
+          "cv_R2_mean": -0.02190289886396455,
+          "cv_within_tolerance_pct_mean": 10.938511374683076
         }
       ]
     },
     "tapping_advisory": {
-      "best_grouped_model": "xgboost",
-      "best_grouped_cv_macro_f1": 0.6585119609705103,
+      "best_grouped_model": "gradient_boosting",
+      "best_grouped_cv_macro_f1": 0.9767448428795152,
       "models": [
         {
           "task": "tapping_advisory",
-          "model": "xgboost",
+          "model": "gradient_boosting",
           "grouping": "estate_id",
-          "cv_macro_f1_mean": 0.6585119609705103,
-          "cv_macro_f1_std": 0.02479658935453092,
-          "cv_accuracy_mean": 0.6707192783590447,
-          "cv_macro_recall_mean": 0.6606533163814456
+          "cv_macro_f1_mean": 0.9767448428795152,
+          "cv_macro_f1_std": 0.010639231310420372,
+          "cv_accuracy_mean": 0.9775853450207188,
+          "cv_macro_recall_mean": 0.9770825883780212
         },
         {
           "task": "tapping_advisory",
           "model": "random_forest",
           "grouping": "estate_id",
-          "cv_macro_f1_mean": 0.6195962520318595,
-          "cv_macro_f1_std": 0.009812727322217121,
-          "cv_accuracy_mean": 0.6310088631179245,
-          "cv_macro_recall_mean": 0.6208276102511854
+          "cv_macro_f1_mean": 0.9687381741695603,
+          "cv_macro_f1_std": 0.014440595095637642,
+          "cv_accuracy_mean": 0.9694360103970634,
+          "cv_macro_recall_mean": 0.968782549449179
         },
         {
           "task": "tapping_advisory",
-          "model": "gradient_boosting",
+          "model": "xgboost",
           "grouping": "estate_id",
-          "cv_macro_f1_mean": 0.6114174766292547,
-          "cv_macro_f1_std": 0.03443664710989848,
-          "cv_accuracy_mean": 0.6243684752022702,
-          "cv_macro_recall_mean": 0.6150687014728106
+          "cv_macro_f1_mean": 0.966115380790123,
+          "cv_macro_f1_std": 0.009726965513428778,
+          "cv_accuracy_mean": 0.9674942628242478,
+          "cv_macro_recall_mean": 0.9659526632859595
         },
         {
           "task": "tapping_advisory",
           "model": "extra_trees",
           "grouping": "estate_id",
-          "cv_macro_f1_mean": 0.5813582205883686,
-          "cv_macro_f1_std": 0.03062647355028333,
-          "cv_accuracy_mean": 0.5984806298347213,
-          "cv_macro_recall_mean": 0.5848037544948819
+          "cv_macro_f1_mean": 0.9614286549065953,
+          "cv_macro_f1_std": 0.021074810975666013,
+          "cv_accuracy_mean": 0.963129932567632,
+          "cv_macro_recall_mean": 0.9621709355243906
         },
         {
           "task": "tapping_advisory",
           "model": "logistic_regression",
           "grouping": "estate_id",
-          "cv_macro_f1_mean": 0.5150754817237112,
-          "cv_macro_f1_std": 0.022571740285115265,
-          "cv_accuracy_mean": 0.5302976377389556,
-          "cv_macro_recall_mean": 0.520629256353558
+          "cv_macro_f1_mean": 0.8301541384762409,
+          "cv_macro_f1_std": 0.021994510225484747,
+          "cv_accuracy_mean": 0.8395179685405392,
+          "cv_macro_recall_mean": 0.827302751613507
         },
         {
           "task": "tapping_advisory",
           "model": "dummy_most_frequent",
           "grouping": "estate_id",
-          "cv_macro_f1_mean": 0.1905322959320176,
-          "cv_macro_f1_std": 0.0193433660834475,
-          "cv_accuracy_mean": 0.40250424849791855,
+          "cv_macro_f1_mean": 0.19157556763054964,
+          "cv_macro_f1_std": 0.004250311908738218,
+          "cv_accuracy_mean": 0.40335130391527907,
           "cv_macro_recall_mean": 0.3333333333333333
         }
       ]

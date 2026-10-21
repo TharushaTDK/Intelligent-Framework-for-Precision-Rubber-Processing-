@@ -21,8 +21,9 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import (ROOT, SPLITS, REPORTS, load_raw, clean_basic, write_json)
-from train_candidate import prep, regression_model, classification_model, HAS_XGB
+from common import (ROOT, SPLITS, REPORTS, load_raw, clean_basic, write_json,
+                    REG_TASKS, CLS_TASK, CLS_TARGET, CLS_FEATURES, DATASET_PROVENANCE, TARGET_WARNING)
+from train_candidate import prep, regression_model, classification_model, HAS_XGB, _reg_data
 
 from sklearn.model_selection import KFold, StratifiedKFold, GroupKFold
 from sklearn.pipeline import Pipeline
@@ -33,38 +34,26 @@ from sklearn.metrics import (mean_absolute_error, mean_squared_error, r2_score,
 SEED = 340
 RNG = np.random.default_rng(SEED)
 
-REG_TASKS = {
-    "drc_prediction": ("latex_drc_pct",
-        ["temperature_c", "relative_humidity_pct", "rainfall_last_6h_mm", "forecast_rain_next_6h_mm",
-         "rainfall_last_3days_mm", "wind_speed_kmh", "soil_moisture_pct", "soil_ph", "estate_id",
-         "tree_count", "tapping_system", "days_since_last_tap", "previous_collection_yield_litres",
-         "month", "day_of_year"], 1.0),
-    "price_estimation": ("price_lkr_per_kg",
-        ["latex_drc_pct", "temperature_c", "relative_humidity_pct", "rainfall_last_6h_mm",
-         "soil_moisture_pct", "soil_ph", "tree_count", "tapping_system", "month", "day_of_year"], 9.0),
-}
-CLS_TASK = "tapping_advisory"
-CLS_TARGET = "tapping_suitability_proxy"
-CLS_FEATURES = ["temperature_c", "relative_humidity_pct", "rainfall_last_6h_mm", "forecast_rain_next_6h_mm",
-                "rainfall_last_3days_mm", "wind_speed_kmh", "soil_moisture_pct", "soil_ph", "tree_count",
-                "tapping_system", "days_since_last_tap", "month", "day_of_year"]
+# Task targets, features and tolerances come from common.py so this harness
+# always matches the main workflow.
 
 REG_CANDIDATES = ["dummy_mean", "linear_regression", "random_forest", "extra_trees",
                   "gradient_boosting", "hist_gradient_boosting"] + (["xgboost"] if HAS_XGB else [])
 CLS_CANDIDATES = ["dummy_most_frequent", "logistic_regression", "random_forest", "extra_trees",
                   "gradient_boosting"] + (["xgboost"] if HAS_XGB else [])
 
-TOL_JUSTIFICATION = ("Tolerance bands are the project-declared illustrative evaluation bands: "
-                     "DRC +/-1.0 percentage point and price +/-LKR 9/kg. They are not validated "
+TOL_JUSTIFICATION = ("Tolerance bands are the project-declared evaluation bands: "
+                     f"DRC +/-{REG_TASKS['drc_prediction'][2]} percentage point and price "
+                     f"+/-LKR {REG_TASKS['price_estimation'][2]}/kg of field latex. They are not validated "
                      "acceptance thresholds. The within-tolerance percentage is distinct from "
                      "classification accuracy and is never reported as accuracy.")
 
 WARNINGS = [
-    "Dataset is SYNTHETIC; estate_id values are not verified estates and price/DRC values are simulated.",
-    "tapping_suitability_proxy is rule-derived with ~30% simulated label noise (seed 340); NOT expert-verified agronomic ground truth.",
+    f"Dataset: {DATASET_PROVENANCE}.",
+    f"tapping_suitability_proxy: {TARGET_WARNING}",
     "Collection-time prediction is intentionally excluded; no collection-time target or model exists.",
     "Default split is row-wise, so most test estates also appear in training: results are for NEW OBSERVATIONS FROM KNOWN ESTATES unless the estate-grouped CV is used.",
-    "latex_drc_pct is used as a price input; it is a physical price covariate, not derived from price_lkr_per_kg.",
+    "Price is defined as farm-gate latex price x DRC / 100; the price model's latex_drc_pct input is the estimated DRC (stage 04b), as in the app, so its error includes DRC estimation error.",
 ]
 
 
@@ -134,9 +123,7 @@ _TOL = None
 def run_regression_task(task):
     target, features, tol = REG_TASKS[task]
     df = clean_basic(load_raw())
-    valid = pd.to_numeric(df[target], errors="coerce").notna()
-    X_all = df.loc[valid, features].copy()
-    y_all = pd.to_numeric(df.loc[valid, target], errors="coerce")
+    X_all, y_all, _ = _reg_data(task)
     tr, te = split_indices(task)
     tr = [i for i in tr if i in X_all.index]; te = [i for i in te if i in X_all.index]
     Xtr, ytr = X_all.loc[tr], y_all.loc[tr]
@@ -147,7 +134,7 @@ def run_regression_task(task):
     task_out = {"task": task, "target": target, "type": "regression", "tolerance": tol,
                 "tolerance_justification": TOL_JUSTIFICATION,
                 "n_train": len(Xtr), "n_test": len(Xte), "n_features": len(features),
-                "dataset_provenance": "synthetic", "candidates": {}, "skipped": [], "warnings": WARNINGS}
+                "dataset_provenance": DATASET_PROVENANCE, "candidates": {}, "skipped": [], "warnings": WARNINGS}
 
     for name in REG_CANDIDATES:
         entry = {"model": name, "training_completed": False}
@@ -161,7 +148,7 @@ def run_regression_task(task):
             test["within_tolerance_pct"] = float(100 * np.mean(np.abs(np.asarray(yte, float) - pred) <= tol))
             entry.update({"training_completed": True, "cv_kfold": cv, "cv_estate_grouped": gcv,
                           "test_metrics": test, "n_train": len(Xtr), "n_test": len(Xte),
-                          "cv_folds": 5, "dataset_provenance": "synthetic"})
+                          "cv_folds": 5, "dataset_provenance": DATASET_PROVENANCE})
         except Exception as e:
             entry["error"] = f"{type(e).__name__}: {e}"
         task_out["candidates"][name] = entry
@@ -186,8 +173,8 @@ def run_classification_task():
 
     task_out = {"task": CLS_TASK, "target": CLS_TARGET, "type": "classification",
                 "n_train": len(Xtr), "n_test": len(Xte), "n_features": len(CLS_FEATURES),
-                "dataset_provenance": "synthetic",
-                "label_provenance": "rule-derived proxy with ~30% simulated label noise (seed 340); NOT expert-verified",
+                "dataset_provenance": DATASET_PROVENANCE,
+                "label_provenance": TARGET_WARNING,
                 "classes": sorted(y_all.unique().tolist()), "candidates": {}, "skipped": [], "warnings": WARNINGS}
 
     for name in CLS_CANDIDATES:
@@ -205,7 +192,7 @@ def run_classification_task():
                           "confusion_matrix_labels": task_out["classes"],
                           "per_class": {c: per_class[c] for c in task_out["classes"] if c in per_class},
                           "n_train": len(Xtr), "n_test": len(Xte), "cv_folds": 5,
-                          "dataset_provenance": "synthetic"})
+                          "dataset_provenance": DATASET_PROVENANCE})
         except Exception as e:
             entry["error"] = f"{type(e).__name__}: {e}"
         task_out["candidates"][name] = entry
@@ -230,10 +217,10 @@ def main():
     results["tapping_advisory"] = run_classification_task()
 
     checkpoint = {"project": "RubberSense Component 1", "phase": "training-only checkpoint",
-                  "seed": SEED, "dataset_provenance": "synthetic",
+                  "seed": SEED, "dataset_provenance": DATASET_PROVENANCE,
                   "rng_note": "All model fits use random_state=340; CV shuffles use random_state=340.",
                   "collection_time": "removed (not trained, compared, reported or exported)",
-                  "tolerance_bands": "DRC +/-1.0 pp; price +/-LKR 9/kg (project-declared, illustrative)",
+                  "tolerance_bands": TOL_JUSTIFICATION,
                   "results": results}
     write_json(out_dir / "training_only_checkpoint.json", checkpoint)
 

@@ -20,26 +20,26 @@
     "folds": 5,
     "primary_metric": "RMSE",
     "MAE": {
-      "mean": 0.724368407468787,
-      "std": 0.05331224951023475
+      "mean": 0.843771316280588,
+      "std": 0.03198044838234244
     },
     "RMSE": {
-      "mean": 0.8986314567218685,
-      "std": 0.06456602557477978
+      "mean": 1.0320363525009681,
+      "std": 0.039176781703546694
     },
     "R2": {
-      "mean": 0.7737807826138295,
-      "std": 0.03504234923268159
+      "mean": 0.7288013500520625,
+      "std": 0.033489139894391444
     },
     "within_tolerance_pct": {
-      "mean": 71.57894736842107,
-      "std": 3.88191345570227
+      "mean": 62.299600252472125,
+      "std": 3.8265031019390334
     }
   },
   "tolerance": 1.0,
   "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
-  "train_rows": 475,
-  "n_features": 15,
+  "train_rows": 488,
+  "n_features": 12,
   "feature_names": [
     "temperature_c",
     "relative_humidity_pct",
@@ -49,16 +49,13 @@
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
+    "visible_latex_condition",
     "estate_id",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
-    "previous_collection_yield_litres",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "x_train_sha256": "c79edb5d010f1bc9c9076cec26c4ba983a8e30e44de11ed87099c5f100ee1355",
-  "y_train_sha256": "81d3f1a9366b61dcacdb2d4447fcc93deead96674864b6197ee3892162f47e96",
-  "model_sha256": "bd00c7144a04e13bafed8913721f3aacf3236ce4fb73ca6bb3ce82a7c4637d9d"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "x_train_sha256": "467dad2628787ebc0168e28525cec747ffcf6d67e98e6f514f06e844cdcc4bc0",
+  "y_train_sha256": "cd76fbff53c800678bffecd7f7854051489458c1a4344f5c02fe0ad8f8b9f221",
+  "model_sha256": "31cd1152aedadf09fabfb699d643ef4d7b580ac8c4e60e9887435cd3aa7c58b6"
 }

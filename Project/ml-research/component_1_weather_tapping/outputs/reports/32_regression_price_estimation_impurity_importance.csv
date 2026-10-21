@@ -1,13 +1,9 @@
 transformed_feature,impurity_importance
-num__day_of_year,0.5146590101872672
-num__latex_drc_pct,0.28058025603334447
-num__relative_humidity_pct,0.09568020422052885
-num__soil_moisture_pct,0.022505434086559584
-num__soil_ph,0.018754923714477723
-num__tree_count,0.018485941524027157
-num__temperature_c,0.01825853965447941
-num__month,0.012569291640099784
-num__rainfall_last_6h_mm,0.010709113768545877
-cat__tapping_system_S/2 D2,0.004166720843698229
-cat__tapping_system_S/2 D3,0.0030755708186129237
-cat__tapping_system_S/2 D4,0.0005549935083589826
+num__month,0.5768964190673143
+num__latex_drc_pct,0.2539150581197383
+num__day_of_year,0.12729864868905547
+num__soil_moisture_pct,0.011849235017788623
+num__soil_ph,0.008539786686397294
+num__relative_humidity_pct,0.0075364296876582635
+num__rainfall_last_6h_mm,0.00703176096599083
+num__temperature_c,0.0069326617660570794

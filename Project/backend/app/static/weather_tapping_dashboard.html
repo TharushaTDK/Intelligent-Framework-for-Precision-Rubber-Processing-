@@ -248,7 +248,17 @@
                     <label for="observationTimeInput">Advisory time <span class="unit">(Sri Lanka time)</span></label>
                     <input id="observationTimeInput" type="datetime-local" step="60">
                 </div>
+                <div class="field">
+                    <label for="latexConditionInput">How does the latex look?</label>
+                    <select id="latexConditionInput">
+                        <option value="">Not checked</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Watery">Watery</option>
+                        <option value="Early coagulation">Early coagulation</option>
+                    </select>
+                </div>
             </div>
+            <div class="hint">The latex condition matters most for DRC: watery latex has less rubber in it, so it is worth less.</div>
 
             <div class="actions">
                 <button id="getWeatherBtn" class="secondary">Get Weather</button>
@@ -337,10 +347,11 @@
             rainfall_last_6h_mm: "rain last 6 h", forecast_rain_next_6h_mm: "forecast rain",
             rainfall_last_3days_mm: "rain last 3 days", wind_speed_kmh: "wind speed",
             estate_id: "estate ID", soil_moisture_pct: "soil moisture", soil_ph: "soil pH",
-            tree_count: "tree count", tapping_system: "tapping system",
-            days_since_last_tap: "days since last tapping",
-            previous_collection_yield_litres: "previous yield", latex_drc_pct: "DRC",
+            visible_latex_condition: "latex condition", latex_drc_pct: "DRC",
         };
+
+        // The only labels the DRC model was trained on (the schema rejects anything else).
+        const LATEX_CONDITIONS = ["Normal", "Watery", "Early coagulation"];
 
         // Exactly which fields each endpoint accepts. The schemas use
         // extra="forbid", so anything else gets a 422. The page only has weather
@@ -350,18 +361,16 @@
             drc: [
                 "temperature_c", "relative_humidity_pct", "rainfall_last_6h_mm",
                 "forecast_rain_next_6h_mm", "rainfall_last_3days_mm", "wind_speed_kmh",
-                "soil_moisture_pct", "soil_ph", "estate_id", "tree_count", "tapping_system",
-                "days_since_last_tap", "previous_collection_yield_litres",
+                "soil_moisture_pct", "soil_ph", "visible_latex_condition", "estate_id",
             ],
             tapping: [
                 "temperature_c", "relative_humidity_pct", "rainfall_last_6h_mm",
                 "forecast_rain_next_6h_mm", "rainfall_last_3days_mm", "wind_speed_kmh",
-                "soil_moisture_pct", "soil_ph", "tree_count", "tapping_system",
-                "days_since_last_tap",
+                "soil_moisture_pct", "soil_ph",
             ],
             price: [
                 "latex_drc_pct", "temperature_c", "relative_humidity_pct", "rainfall_last_6h_mm",
-                "soil_moisture_pct", "soil_ph", "tree_count", "tapping_system",
+                "soil_moisture_pct", "soil_ph",
             ],
         };
 
@@ -483,9 +492,9 @@
             };
         }
 
-        // Builds the request body for one prediction endpoint. Only weather (and,
-        // for price, the DRC estimate) is sent; everything else is left out, which
-        // the backend treats as "not observed".
+        // Builds the request body for one prediction endpoint. Only weather, the
+        // latex condition the farmer picked (DRC) and the DRC estimate (price) are
+        // sent; everything else is left out, which the backend treats as "not observed".
         // Returns the body plus the list of fields that were sent as missing.
         function buildPredictionPayload(kind, context) {
             const fields = ENDPOINT_FIELDS[kind];
@@ -504,6 +513,8 @@
                 } else if (field === "latex_drc_pct") {
                     const v = context.latexDrc;
                     value = typeof v === "number" && Number.isFinite(v) ? v : null;
+                } else if (field === "visible_latex_condition") {
+                    value = LATEX_CONDITIONS.includes(context.latexCondition) ? context.latexCondition : null;
                 }
 
                 if (value === null) {
@@ -622,7 +633,7 @@
         // browser, so this does nothing there.
         if (typeof module !== "undefined" && module.exports) {
             module.exports = {
-                ENDPOINT_FIELDS, WEATHER_URL, GEOLOCATION_OPTIONS,
+                ENDPOINT_FIELDS, LATEX_CONDITIONS, WEATHER_URL, GEOLOCATION_OPTIONS,
                 FORECAST_LIMIT_DAYS, checkAdvisoryTime, isForecastBased,
                 toSriLankaTimestamp, currentSriLankaLocalValue, makeLocation, weatherCacheKey,
                 geolocationErrorMessage, requestCurrentPosition, buildWeatherRequest, fetchWeatherSnapshot,
@@ -968,13 +979,16 @@
                 $(boxId).appendChild(el("div", "blocked", "No result.\n" + (err.message || err)));
             }
 
-            function renderDrc(result) {
+            function renderDrc(result, latexCondition) {
                 if (!result.ok) return showFailure("drcResult", result.error);
                 const b = result.body;
                 $("drcResult").innerHTML = "";
                 $("drcResult").append(
                     estimateTag("MODEL ESTIMATE"),
                     el("div", "big-value", `${b.predicted_latex_drc_pct.toFixed(2)} %`),
+                    el("div", "line", latexCondition
+                        ? `Latex condition: ${latexCondition}`
+                        : "Latex condition not checked, so normal latex was assumed."),
                 );
             }
 
@@ -1061,6 +1075,7 @@
                     const context = {
                         observationTimestamp: weather.response.observation_timestamp,
                         weather: weather.response,
+                        latexCondition: $("latexConditionInput").value || null,
                     };
 
                     setStatus("mainStatus", "loading", "Running the models...");
@@ -1070,7 +1085,7 @@
                         callModel("/drc-estimation", drcPayload.payload),
                         callModel("/tapping-advisory", tapPayload.payload),
                     ]);
-                    renderDrc(drc);
+                    renderDrc(drc, context.latexCondition);
                     renderTapping(tap);
 
                     const estimatedDrc = drc.ok ? drc.body.predicted_latex_drc_pct : null;
@@ -1128,6 +1143,10 @@
             $("longitudeInput").addEventListener("change", onCoordinatesTyped);
             $("gpsBtn").addEventListener("click", onUseMyLocation);
             $("observationTimeInput").addEventListener("change", onSelectionChanged);
+            // A different condition means a different DRC and price; the weather stays valid.
+            $("latexConditionInput").addEventListener("change", () => {
+                if (!busy) resetResults("Not generated yet.");
+            });
             $("nowBtn").addEventListener("click", () => {
                 $("observationTimeInput").value = currentSriLankaLocalValue();
                 $("observationTimeInput").classList.remove("invalid");

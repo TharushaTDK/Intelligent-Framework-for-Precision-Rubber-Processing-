@@ -15,7 +15,7 @@ import joblib
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import (  # noqa: E402
-    FIGURES, REPORTS, REG_TASKS, CLS_TASK, role_dir, ensure_dirs, write_json,
+    FIGURES, REPORTS, REG_TASKS, CLS_TASK, DATASET_PROVENANCE, role_dir, ensure_dirs, write_json,
 )
 from train_candidate import _reg_data, _cls_data, split_indices  # noqa: E402
 
@@ -61,7 +61,7 @@ def main():
                "shap_used": False,
                "shap_note": "SHAP is not installed and was deliberately not used. Permutation and impurity "
                             "importance are computed with scikit-learn only. Correlation is not causation.",
-               "dataset_provenance": "synthetic; not real-world evidence",
+               "dataset_provenance": DATASET_PROVENANCE,
                "regression": {}, "classification": {}}
 
     # regression
@@ -114,7 +114,9 @@ def main():
         "Permutation importance was computed on the held-out test partition for the selected models.\n"
         "Impurity importance is reported for tree-based selected models.\n"
         "SHAP was NOT used (not installed); correlation and importance do not prove causation.\n"
-        "All data are synthetic; importances describe the simulation, not real agronomy.\n",
+        "DRC values were normalized by the dataset author, price is a formula of DRC and month, and\n"
+        "tapping labels come from a rainfall rule, so importances describe those constructions, not\n"
+        "verified agronomy.\n",
         encoding="utf-8")
     print("Stage 32 explainability complete. SHAP used: False")
 

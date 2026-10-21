@@ -2,7 +2,7 @@
   "task": "tapping_advisory",
   "target": "tapping_suitability_proxy",
   "kind": "classification",
-  "model_family": "tuned_gradient_boosting",
+  "model_family": "gradient_boosting",
   "model_class": "GradientBoostingClassifier",
   "classes": [
     "High",
@@ -15,8 +15,8 @@
   "test_stage": "31_final_test_evaluation",
   "source_final_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\classification\\tapping_advisory\\final\\selected_model.joblib",
   "pipeline_path": "artifacts\\pipelines\\component1_tapping_advisory_pipeline.pkl",
-  "pipeline_sha256": "f24b149bc2638cad29bdccc111b66a376972cf7d975873f542379a0b7b54c230",
+  "pipeline_sha256": "dbb4d9acb1e624c2a7d89218f8cddd26f37effa9778ae352ee45503cb8da4b60",
   "deployment_note": "Copy of the CV-selected, train-fitted classifier bundle. Not refit on the full dataset.",
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice."
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "target_warning": "Rule-derived proxy labels from rainfall thresholds, judged on rain that actually fell; the model sees only the forecast issued beforehand (no added noise). NOT expert-verified tapping advice."
 }

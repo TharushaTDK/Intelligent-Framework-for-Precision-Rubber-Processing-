@@ -25,7 +25,7 @@ import joblib
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import (  # noqa: E402
-    SPLITS, REPORTS, REG_TASKS, CLS_TASK, CLS_TARGET, CLS_FEATURES, CLS_CLASSES,
+    SPLITS, REPORTS, PROCESSED, REG_TASKS, CLS_TASK, CLS_TARGET, CLS_FEATURES, CLS_CLASSES,
     DATASET_PROVENANCE, TARGET_WARNING,
     ensure_dirs, load_raw, clean_basic, write_json, role_dir, sha256_frame, sha256_file,
 )
@@ -132,6 +132,11 @@ def split_indices(task):
 def _reg_data(task):
     target, features, tol = REG_TASKS[task]
     df = clean_basic(load_raw())
+    if task == "price_estimation":
+        # The price model gets the DRC as the app would estimate it (stage 04b),
+        # not the true DRC its target was computed from.
+        est = pd.read_csv(PROCESSED / "estimated_drc_for_price.csv").set_index("row_index")
+        df["latex_drc_pct"] = est["estimated_latex_drc_pct"].reindex(df.index)
     valid = pd.to_numeric(df[target], errors="coerce").notna()
     X = df.loc[valid, features].copy()
     y = pd.to_numeric(df.loc[valid, target], errors="coerce")

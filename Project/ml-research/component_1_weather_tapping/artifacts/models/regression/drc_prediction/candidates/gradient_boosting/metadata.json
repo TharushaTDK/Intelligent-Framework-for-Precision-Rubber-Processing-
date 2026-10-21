@@ -12,7 +12,7 @@
   "parameters": {
     "alpha": 0.9,
     "ccp_alpha": 0.0,
-    "criterion": "friedman_mse",
+    "criterion": "deprecated",
     "init": null,
     "learning_rate": 0.1,
     "loss": "squared_error",
@@ -36,26 +36,26 @@
     "folds": 5,
     "primary_metric": "RMSE",
     "MAE": {
-      "mean": 0.7044829384255171,
-      "std": 0.0655592228864915
+      "mean": 0.8999313410556052,
+      "std": 0.026234630576016858
     },
     "RMSE": {
-      "mean": 0.8891830534109074,
-      "std": 0.08924939984617851
+      "mean": 1.1095261087780346,
+      "std": 0.030439808934763054
     },
     "R2": {
-      "mean": 0.7778654756639392,
-      "std": 0.04687444428049215
+      "mean": 0.686876033341164,
+      "std": 0.03402376570201712
     },
     "within_tolerance_pct": {
-      "mean": 74.10526315789473,
-      "std": 4.136185832502844
+      "mean": 59.417210183042286,
+      "std": 1.8638341112879397
     }
   },
   "tolerance": 1.0,
   "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
-  "train_rows": 475,
-  "n_features": 15,
+  "train_rows": 488,
+  "n_features": 12,
   "feature_names": [
     "temperature_c",
     "relative_humidity_pct",
@@ -65,16 +65,13 @@
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
+    "visible_latex_condition",
     "estate_id",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
-    "previous_collection_yield_litres",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "x_train_sha256": "0f2be0c48ba3fe5d29dba2a50e56d69ec3871ed262facd59024fedcb0d7cab2d",
-  "y_train_sha256": "81d3f1a9366b61dcacdb2d4447fcc93deead96674864b6197ee3892162f47e96",
-  "model_sha256": "5fb05f47ae377ea5bd1e3066e50b1ca7ac339ae1a96d997cff3b8a8618ce6235"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "x_train_sha256": "088cf7db4f224867acb74aeaedb90354cf3bf3cb50505bf7e8b189fb6e63f677",
+  "y_train_sha256": "cd76fbff53c800678bffecd7f7854051489458c1a4344f5c02fe0ad8f8b9f221",
+  "model_sha256": "aa9e2aa88fd58a3e02d2608cea1adb06245cb4ad7c3d2b71950e92b84efb5187"
 }

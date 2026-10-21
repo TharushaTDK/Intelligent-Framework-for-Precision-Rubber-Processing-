@@ -1,6 +1,7 @@
 import type {
   AdvisoryRecordCreate,
   DrcPredictionResponse,
+  LatexCondition,
   PriceEstimationResponse,
   TappingClassProbabilities,
   TappingLabel,
@@ -23,6 +24,16 @@ export function weatherInputs(weather: WeatherSnapshotResponse): WeatherInputs {
   };
 }
 
+// What the farmer sees in the collection cup. It matters most for the DRC:
+// watery latex has less rubber in it, so it is also worth less.
+// null = not checked; the backend then assumes normal latex.
+export const LATEX_CONDITION_OPTIONS: { key: LatexCondition | null; label: string; caption: string }[] = [
+  { key: null, label: 'Not checked', caption: 'Normal latex will be assumed' },
+  { key: 'Normal', label: 'Normal', caption: 'White and milky, flows evenly' },
+  { key: 'Watery', label: 'Watery', caption: 'Thin and runny, often after rain' },
+  { key: 'Early coagulation', label: 'Early coagulation', caption: 'Lumps or clots already forming' },
+];
+
 // What the result screen shows. Built only from backend responses.
 export interface AdvisoryResult {
   latitude: number;
@@ -30,6 +41,7 @@ export interface AdvisoryResult {
   locationSource: FieldLocation['source'];
   observationTimestamp: string;
   forecastBased: boolean;
+  latexCondition: LatexCondition | null;
   drcPct: number;
   tapping: { label: TappingLabel; classOrder: TappingLabel[]; probabilities: TappingClassProbabilities } | null;
   tappingError: string | null;
@@ -40,6 +52,7 @@ export interface AdvisoryResult {
 export function buildAdvisoryResult(
   location: FieldLocation,
   weather: WeatherSnapshotResponse,
+  latexCondition: LatexCondition | null,
   drc: DrcPredictionResponse,
   tapping: TappingSuitabilityResponse | null,
   tappingError: string | null,
@@ -52,6 +65,7 @@ export function buildAdvisoryResult(
     locationSource: location.source,
     observationTimestamp: weather.observation_timestamp,
     forecastBased: weather.data_quality.observation_in_future,
+    latexCondition,
     drcPct: drc.predicted_latex_drc_pct,
     tapping: tapping
       ? { label: tapping.predicted_label, classOrder: tapping.class_order, probabilities: tapping.probabilities }

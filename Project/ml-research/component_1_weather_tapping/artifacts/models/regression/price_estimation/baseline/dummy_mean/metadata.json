@@ -18,26 +18,26 @@
     "folds": 5,
     "primary_metric": "RMSE",
     "MAE": {
-      "mean": 11.045594618055556,
-      "std": 0.5586597540700972
+      "mean": 23.42853671775781,
+      "std": 1.288156529421632
     },
     "RMSE": {
-      "mean": 13.676405059969747,
-      "std": 0.5379364509095629
+      "mean": 27.58546033292751,
+      "std": 1.4892298542161804
     },
     "R2": {
-      "mean": -0.006624515755609739,
-      "std": 0.005506454295424442
+      "mean": -0.0105418757473974,
+      "std": 0.011473137518459778
     },
     "within_tolerance_pct": {
-      "mean": 46.87499999999999,
-      "std": 4.320091948609942
+      "mean": 11.049863244266778,
+      "std": 3.980439187702105
     }
   },
-  "tolerance": 9.0,
+  "tolerance": 5.0,
   "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
-  "train_rows": 480,
-  "n_features": 10,
+  "train_rows": 488,
+  "n_features": 8,
   "feature_names": [
     "latex_drc_pct",
     "temperature_c",
@@ -45,13 +45,11 @@
     "rainfall_last_6h_mm",
     "soil_moisture_pct",
     "soil_ph",
-    "tree_count",
-    "tapping_system",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "x_train_sha256": "0f779604e9697fe4cdd086a2dd19248afc97730aab6370e8f0a62b293f0e5b82",
-  "y_train_sha256": "19b380b45a29becfe7dd62a0aa2d305c3c7e2e4f0a17e4d6ea4170d57fca91cc",
-  "model_sha256": "0161e9ab1218cec0be392822ffb670fc870595fad8c4fa96825f80da73ed8fa7"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "x_train_sha256": "4ee27e88ca67e231fc2fc0c92a5aaa3ec7d22f00ec3b671415fc7560f4c16a83",
+  "y_train_sha256": "08ac7573a2f7e2dd2ccb1f9d43e1fcde467efc2bf94b563636568eea79a5c6d6",
+  "model_sha256": "ef2261b07267ca68a25fafa25d36d5a89db0f37121bd17c2f9ad594d7b14f336"
 }

@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from backend.app.ml.component_1_weather_tapping import (
@@ -60,11 +61,8 @@ DRC_FEATURES = [
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
+    "visible_latex_condition",
     "estate_id",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
-    "previous_collection_yield_litres",
     "month",
     "day_of_year",
 ]
@@ -76,8 +74,6 @@ PRICE_FEATURES = [
     "rainfall_last_6h_mm",
     "soil_moisture_pct",
     "soil_ph",
-    "tree_count",
-    "tapping_system",
     "month",
     "day_of_year",
 ]
@@ -91,9 +87,6 @@ TAPPING_FEATURES = [
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
     "month",
     "day_of_year",
 ]
@@ -103,7 +96,7 @@ STUB_MANIFEST = {
     "models": [
         {
             "name": "drc_prediction",
-            "model_class": "GradientBoostingRegressor",
+            "model_class": "XGBRegressor",
             "runtime_sha256": "1" * 64,
             "original_artifact": {"sha256": "2" * 64},
             "features_in_pipeline_order": DRC_FEATURES,
@@ -113,7 +106,7 @@ STUB_MANIFEST = {
         },
         {
             "name": "price_estimation",
-            "model_class": "RandomForestRegressor",
+            "model_class": "GradientBoostingRegressor",
             "runtime_sha256": "3" * 64,
             "original_artifact": {"sha256": "4" * 64},
             "features_in_pipeline_order": PRICE_FEATURES,
@@ -215,8 +208,8 @@ def build_fake_models(
             label_encoder=FakeLabelEncoder(),
             classes=("High", "Low", "Moderate"),
             warning=(
-                "Rule-derived proxy labels with ~30% "
-                "simulated label noise (seed 340); NOT "
+                "Rule-derived proxy labels from rainfall "
+                "thresholds (no added noise); NOT "
                 "expert-verified tapping advice."
             ),
         ),
@@ -275,11 +268,8 @@ def test_valid_drc_request_produces_response(
             wind_speed_kmh=7.3,
             soil_moisture_pct=41.0,
             soil_ph=5.8,
-            estate_id="EST-001",
-            tree_count=150.0,
-            tapping_system="S/2",
-            days_since_last_tap=2.0,
-            previous_collection_yield_litres=38.0,
+            visible_latex_condition="Normal",
+            estate_id="Estate 01",
         )
     )
 
@@ -315,9 +305,6 @@ def test_valid_tapping_request_produces_response(
             wind_speed_kmh=7.3,
             soil_moisture_pct=41.0,
             soil_ph=5.8,
-            tree_count=150.0,
-            tapping_system="S/2",
-            days_since_last_tap=2.0,
         )
     )
 
@@ -355,8 +342,6 @@ def test_valid_price_request_produces_response(
             rainfall_last_6h_mm=4.2,
             soil_moisture_pct=41.0,
             soil_ph=5.8,
-            tree_count=150.0,
-            tapping_system="S/2",
         )
     )
 
@@ -396,14 +381,13 @@ def test_request_with_only_timestamp_produces_response(
         "wind_speed_kmh",
         "soil_moisture_pct",
         "soil_ph",
-        "tree_count",
-        "days_since_last_tap",
-        "previous_collection_yield_litres",
     ]:
         assert math.isnan(frame.loc[0, column])
 
-    assert frame.loc[0, "estate_id"] is None
-    assert frame.loc[0, "tapping_system"] is None
+    # Missing categories go in as NaN so the pipeline's
+    # most-frequent imputer fills them.
+    assert pd.isna(frame.loc[0, "estate_id"])
+    assert pd.isna(frame.loc[0, "visible_latex_condition"])
 
 
 # ============================================================
@@ -441,7 +425,7 @@ def test_price_feature_frame_uses_exact_manifest_order(
 ):
     """
     The feature frame sent to the price pipeline must
-    contain EXACTLY the 10 manifest-ordered columns, with no
+    contain EXACTLY the 8 manifest-ordered columns, with no
     estate_id and no estate_name.
     """
 
@@ -465,8 +449,8 @@ def test_tapping_feature_frame_uses_exact_manifest_order(
 ):
     """
     The feature frame sent to the tapping pipeline must
-    contain EXACTLY the 13 manifest-ordered columns, with no
-    estate_id, estate_name or collection-yield feature.
+    contain EXACTLY the 10 manifest-ordered columns, with no
+    estate_id, estate_name or latex-condition feature.
     """
 
     models, _, _, tapping_pipeline = fake_models
@@ -482,10 +466,7 @@ def test_tapping_feature_frame_uses_exact_manifest_order(
     assert list(frame.columns) == TAPPING_FEATURES
     assert "estate_id" not in frame.columns
     assert "estate_name" not in frame.columns
-    assert (
-        "previous_collection_yield_litres"
-        not in frame.columns
-    )
+    assert "visible_latex_condition" not in frame.columns
 
 
 # ============================================================
@@ -594,13 +575,13 @@ def test_in_range_values_pass_through_unchanged(
     assert frame.loc[0, "relative_humidity_pct"] == 82.0
 
 
-def test_tapping_system_is_normalized_like_training(
+def test_categories_reach_the_pipeline_unchanged(
     fake_models,
 ):
     """
-    tapping_system must be trimmed and upper-cased exactly
-    as training's clean_basic() did; estate_id must NOT be
-    normalized (training never transformed it).
+    The latex condition and estate_id must reach the
+    pipeline as given; estate_id is not normalized because
+    training never transformed it.
     """
 
     models, drc_pipeline, _, _ = fake_models
@@ -608,22 +589,24 @@ def test_tapping_system_is_normalized_like_training(
     predict_drc(
         DrcPredictionRequest(
             observation_timestamp=AWARE_TIMESTAMP,
-            estate_id=" est-001 ",
-            tapping_system=" s/2 ",
+            estate_id=" estate 01 ",
+            visible_latex_condition="Early coagulation",
         )
     )
 
     frame = drc_pipeline.frames[0]
 
-    assert frame.loc[0, "tapping_system"] == "S/2"
-    assert frame.loc[0, "estate_id"] == " est-001 "
+    assert frame.loc[0, "visible_latex_condition"] == (
+        "Early coagulation"
+    )
+    assert frame.loc[0, "estate_id"] == " estate 01 "
 
 
 def test_unknown_categories_are_passed_through(
     fake_models,
 ):
     """
-    Unknown categories (unseen at fit time) must be passed
+    Unknown estates (unseen at fit time) must be passed
     through unchanged; the fitted one-hot encoder's
     unknown-ignore behaviour handles them inside the
     pipeline.
@@ -634,15 +617,13 @@ def test_unknown_categories_are_passed_through(
     predict_drc(
         DrcPredictionRequest(
             observation_timestamp=AWARE_TIMESTAMP,
-            estate_id="EST-NEW-999",
-            tapping_system="D5",
+            estate_id="Estate 99",
         )
     )
 
     frame = drc_pipeline.frames[0]
 
-    assert frame.loc[0, "estate_id"] == "EST-NEW-999"
-    assert frame.loc[0, "tapping_system"] == "D5"
+    assert frame.loc[0, "estate_id"] == "Estate 99"
 
 
 # ============================================================
@@ -1248,11 +1229,8 @@ def test_real_drc_service_end_to_end():
             wind_speed_kmh=7.3,
             soil_moisture_pct=41.0,
             soil_ph=5.8,
-            estate_id="EST-001",
-            tree_count=150.0,
-            tapping_system="S/2",
-            days_since_last_tap=2.0,
-            previous_collection_yield_litres=38.0,
+            visible_latex_condition="Normal",
+            estate_id="Estate 01",
         )
     )
 
@@ -1260,12 +1238,35 @@ def test_real_drc_service_end_to_end():
     assert response.runtime_artifact_sha256 == (
         EXPECTED_DRC_PIPELINE_SHA256
     )
+    # The runtime copy is byte-identical to the research export.
     assert response.original_artifact_sha256 == (
-        "19475009a289d9c099a352cac94409a84cfa9a265cfac3f8cf44e5dd5bcb0290"
+        EXPECTED_DRC_PIPELINE_SHA256
     )
-    assert response.dataset_provenance == (
-        "synthetic; not real-world evidence"
+    assert response.dataset_provenance.startswith(
+        "condition-matched farmer records"
     )
+
+
+def test_real_drc_is_lower_for_watery_latex():
+    """
+    Watery latex carries more water, so the real model must
+    give it a lower DRC than normal latex under the same
+    weather.
+    """
+
+    def drc_for(condition):
+        return predict_drc(
+            DrcPredictionRequest(
+                observation_timestamp=AWARE_TIMESTAMP,
+                temperature_c=27.5,
+                relative_humidity_pct=82.0,
+                rainfall_last_6h_mm=0.5,
+                visible_latex_condition=condition,
+                estate_id="Estate 01",
+            )
+        ).predicted_latex_drc_pct
+
+    assert drc_for("Watery") < drc_for("Normal")
 
 
 def test_real_price_service_end_to_end():
@@ -1283,8 +1284,6 @@ def test_real_price_service_end_to_end():
             rainfall_last_6h_mm=4.2,
             soil_moisture_pct=41.0,
             soil_ph=5.8,
-            tree_count=150.0,
-            tapping_system="S/2",
         )
     )
 
@@ -1312,9 +1311,6 @@ def test_real_tapping_service_end_to_end():
             wind_speed_kmh=7.3,
             soil_moisture_pct=41.0,
             soil_ph=5.8,
-            tree_count=150.0,
-            tapping_system="S/2",
-            days_since_last_tap=2.0,
         )
     )
 

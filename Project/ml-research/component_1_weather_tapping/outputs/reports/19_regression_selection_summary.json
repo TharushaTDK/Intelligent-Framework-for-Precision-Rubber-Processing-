@@ -7,24 +7,24 @@
     "tie_breaker_1": "cv_MAE_mean ascending",
     "tie_breaker_2": "cv_R2_mean descending"
   },
-  "dataset_provenance": "synthetic; not real-world evidence",
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
   "test_loaded": false,
   "test_evaluated": false,
   "tasks": {
     "drc_prediction": {
       "selected_model": "tuned_gradient_boosting",
       "selected_role": "tuned",
-      "cv_RMSE_mean": 0.8480759229299946,
-      "cv_MAE_mean": 0.6733332620463139,
-      "cv_R2_mean": 0.7983481581936641,
+      "cv_RMSE_mean": 1.0213970005562658,
+      "cv_MAE_mean": 0.8343504551683676,
+      "cv_R2_mean": 0.7345308309451952,
       "candidates_considered": 10
     },
     "price_estimation": {
-      "selected_model": "tuned_random_forest",
-      "selected_role": "tuned",
-      "cv_RMSE_mean": 7.485478222429592,
-      "cv_MAE_mean": 5.956389207733297,
-      "cv_R2_mean": 0.6961121219085528,
+      "selected_model": "extra_trees",
+      "selected_role": "candidates",
+      "cv_RMSE_mean": 7.957703689821509,
+      "cv_MAE_mean": 6.541207983129446,
+      "cv_R2_mean": 0.9139089800380538,
       "candidates_considered": 10
     }
   }

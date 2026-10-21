@@ -1,2 +1,2 @@
 task,model,stage30_cv_macro_f1_mean,stage31_test_macro_f1,stage30_cv_accuracy_mean,stage31_test_accuracy
-tapping_advisory,tuned_gradient_boosting,0.6610312235260597,0.767721744733239,0.6666666666666667,0.775
+tapping_advisory,gradient_boosting,0.9676116713534675,0.9245141552694823,0.9692615190406059,0.9344262295081968

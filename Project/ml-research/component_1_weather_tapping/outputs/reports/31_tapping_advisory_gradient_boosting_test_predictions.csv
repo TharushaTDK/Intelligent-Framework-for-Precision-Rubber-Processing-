@@ -1,121 +1,123 @@
 row_index,estate_id,actual,predicted
-5,EST-058,High,High
-588,EST-050,Low,Low
-481,EST-099,Low,Moderate
-290,EST-070,Low,Low
-491,EST-076,Moderate,Low
-83,EST-022,Moderate,High
-487,EST-007,High,High
-348,EST-065,Low,Low
-299,EST-088,Low,Low
-440,EST-100,Moderate,Moderate
-386,EST-107,High,High
-526,EST-037,Moderate,Moderate
-8,EST-042,High,High
-465,EST-035,Low,Low
-392,EST-117,High,High
-356,EST-002,Moderate,High
-204,EST-087,High,Low
-505,EST-035,High,High
-462,EST-092,High,High
-258,EST-001,Low,Low
-337,EST-043,Moderate,High
-36,EST-048,Low,High
-466,EST-091,Moderate,Low
-377,EST-016,High,High
-579,EST-077,Low,Low
-594,EST-048,High,High
-113,EST-017,High,High
-382,EST-065,Low,Moderate
-331,EST-106,Moderate,Moderate
-450,EST-011,Low,Low
-285,EST-094,High,High
-561,EST-110,Low,Low
-513,EST-005,Moderate,High
-378,EST-093,High,High
-426,EST-076,Low,High
-266,EST-057,Moderate,Moderate
-473,EST-074,Low,Low
-590,EST-101,Moderate,Moderate
-524,EST-036,Moderate,Low
-336,EST-058,High,High
-335,EST-094,Moderate,Moderate
-174,EST-099,High,High
-311,EST-117,High,High
-9,EST-098,High,High
-397,EST-010,High,High
-395,EST-061,Moderate,Moderate
-42,EST-107,Moderate,Moderate
-584,EST-010,Moderate,Low
-329,EST-004,Moderate,Moderate
-418,EST-006,High,High
-305,EST-009,High,High
-283,EST-094,Low,High
-131,EST-084,Low,Low
-138,EST-017,Low,Moderate
-304,EST-039,High,High
-109,EST-060,High,High
-300,EST-015,High,High
-447,EST-038,Low,Low
-78,EST-068,High,High
-557,EST-064,Moderate,Low
-183,EST-062,Low,Low
-253,EST-079,Moderate,Moderate
-512,EST-030,High,High
-276,EST-019,Low,Low
-453,EST-017,High,High
-540,EST-012,High,Moderate
-410,EST-067,Moderate,Moderate
-76,EST-018,Low,Moderate
-296,EST-072,High,High
-543,EST-008,High,Low
-436,EST-111,Low,Low
-326,EST-076,High,High
-583,EST-037,Moderate,Moderate
-482,EST-015,Low,High
-15,EST-036,High,High
-527,EST-113,Low,Low
-568,EST-076,High,Low
-388,EST-014,Low,Low
-327,EST-012,Moderate,Low
-173,EST-108,High,High
-11,EST-102,Moderate,Moderate
-497,EST-032,Moderate,Moderate
-349,EST-048,Moderate,High
-438,EST-007,High,High
-115,EST-120,Moderate,Moderate
-422,EST-070,High,High
-95,EST-050,Moderate,Moderate
-20,EST-094,High,High
-496,EST-030,Moderate,Moderate
-99,EST-083,Moderate,Moderate
-230,EST-073,Moderate,High
-196,EST-072,High,High
-332,EST-088,High,High
-228,EST-064,High,Moderate
-245,EST-034,Moderate,Moderate
-96,EST-038,High,High
-292,EST-003,Low,Low
-243,EST-041,Moderate,Moderate
-287,EST-013,Moderate,High
-147,EST-049,High,High
-232,EST-068,Low,Low
-295,EST-066,Moderate,Moderate
-468,EST-089,High,High
-525,EST-096,High,High
-254,EST-097,High,High
-380,EST-056,Low,High
-37,EST-113,Low,High
-141,EST-014,Low,High
-166,EST-033,High,High
-79,EST-025,High,High
-118,EST-094,High,High
-170,EST-026,Moderate,Moderate
-402,EST-020,Moderate,High
-200,EST-030,Moderate,High
-596,EST-098,Low,Low
-13,EST-113,High,High
-235,EST-056,Low,Moderate
-107,EST-113,Low,Moderate
-531,EST-028,Moderate,Moderate
-355,EST-113,Moderate,High
+406,Estate 02,High,High
+160,Estate 01,Moderate,Moderate
+410,Estate 01,High,High
+306,Estate 02,Low,Low
+442,Estate 03,Low,Low
+588,Estate 04,Low,Low
+590,Estate 01,Moderate,Moderate
+466,Estate 02,High,High
+281,Estate 02,High,High
+275,Estate 01,Moderate,Moderate
+452,Estate 03,Moderate,Moderate
+340,Estate 01,Low,Low
+544,Estate 05,Low,High
+339,Estate 05,Low,Low
+150,Estate 01,Low,Low
+338,Estate 04,Low,Moderate
+357,Estate 03,High,High
+9,Estate 05,High,High
+407,Estate 03,High,High
+348,Estate 04,Moderate,Moderate
+157,Estate 03,High,High
+305,Estate 01,Low,Low
+130,Estate 01,Low,Low
+531,Estate 02,Moderate,Moderate
+203,Estate 04,Moderate,Moderate
+513,Estate 04,High,High
+472,Estate 03,Moderate,Moderate
+331,Estate 02,Low,Low
+212,Estate 03,High,High
+360,Estate 01,High,High
+233,Estate 04,High,High
+378,Estate 04,Low,Low
+404,Estate 05,Low,Low
+511,Estate 02,High,High
+51,Estate 02,Low,Low
+549,Estate 05,High,High
+582,Estate 03,Low,Low
+451,Estate 02,Moderate,Moderate
+27,Estate 03,Low,Low
+295,Estate 01,Moderate,Moderate
+346,Estate 02,Moderate,Moderate
+478,Estate 04,High,High
+370,Estate 01,Moderate,Moderate
+222,Estate 03,High,High
+94,Estate 05,Moderate,Moderate
+213,Estate 04,High,High
+259,Estate 05,High,High
+279,Estate 05,Moderate,Moderate
+501,Estate 02,Moderate,Moderate
+416,Estate 02,Moderate,Moderate
+434,Estate 05,Moderate,Moderate
+96,Estate 02,High,High
+607,Estate 03,High,High
+197,Estate 03,Low,Low
+287,Estate 03,Moderate,Moderate
+49,Estate 05,Moderate,Moderate
+167,Estate 03,Low,Low
+174,Estate 05,High,High
+3,Estate 04,High,High
+517,Estate 03,High,High
+553,Estate 04,Low,Moderate
+484,Estate 05,High,High
+456,Estate 02,Moderate,Moderate
+521,Estate 02,Low,Low
+62,Estate 03,Moderate,Moderate
+480,Estate 01,High,High
+412,Estate 03,High,High
+487,Estate 03,High,High
+349,Estate 05,Moderate,Moderate
+248,Estate 04,Low,Moderate
+580,Estate 01,Low,Low
+415,Estate 01,High,High
+5,Estate 01,High,High
+105,Estate 01,Low,Low
+492,Estate 03,High,High
+425,Estate 01,Moderate,Moderate
+106,Estate 02,Low,Low
+173,Estate 04,High,High
+104,Estate 05,Low,High
+190,Estate 01,High,High
+38,Estate 04,Low,Moderate
+392,Estate 03,Moderate,Moderate
+510,Estate 01,High,High
+102,Estate 03,Moderate,Moderate
+371,Estate 02,Moderate,Moderate
+277,Estate 03,Moderate,Moderate
+355,Estate 01,High,High
+471,Estate 02,Moderate,Moderate
+7,Estate 03,High,High
+250,Estate 01,Moderate,Moderate
+284,Estate 05,High,High
+113,Estate 04,Moderate,Moderate
+473,Estate 04,Moderate,Moderate
+350,Estate 01,Moderate,Moderate
+272,Estate 03,High,High
+209,Estate 05,High,High
+283,Estate 04,High,High
+353,Estate 04,Moderate,Moderate
+274,Estate 05,High,High
+375,Estate 01,Low,Low
+589,Estate 05,Moderate,Moderate
+92,Estate 03,Moderate,Moderate
+356,Estate 02,High,High
+152,Estate 03,Low,Low
+592,Estate 03,Moderate,Moderate
+2,Estate 03,High,High
+97,Estate 03,High,High
+220,Estate 01,High,High
+246,Estate 02,Low,Moderate
+325,Estate 01,High,High
+28,Estate 04,Low,Low
+175,Estate 01,High,High
+464,Estate 05,High,High
+1,Estate 02,High,High
+447,Estate 03,Moderate,Moderate
+300,Estate 01,Moderate,Moderate
+347,Estate 03,Moderate,Moderate
+563,Estate 04,Low,Low
+498,Estate 04,High,High
+572,Estate 03,Low,Low
+540,Estate 01,Low,High
+397,Estate 03,Moderate,Moderate

@@ -8,7 +8,7 @@ from backend.app.ml.component_1_weather_tapping.feature_preparation import (
     build_feature_frame,
     derive_calendar_features,
     normalize_estate_id,
-    normalize_tapping_system,
+    normalize_visible_latex_condition,
     prepare_numeric_feature,
 )
 
@@ -94,13 +94,15 @@ MONTH_FEATURE = "month"
 DAY_OF_YEAR_FEATURE = "day_of_year"
 
 ESTATE_ID_FEATURE = "estate_id"
-TAPPING_SYSTEM_FEATURE = "tapping_system"
+LATEX_CONDITION_FEATURE = "visible_latex_condition"
 
 CALENDAR_FEATURES = (MONTH_FEATURE, DAY_OF_YEAR_FEATURE)
 
+# Only the DRC model has categorical inputs since the October
+# 2026 retrain; the tapping and price models are all numeric.
 CATEGORICAL_FEATURES = (
     ESTATE_ID_FEATURE,
-    TAPPING_SYSTEM_FEATURE,
+    LATEX_CONDITION_FEATURE,
 )
 
 
@@ -302,11 +304,10 @@ def predict_drc(
     """
     Stateless latex dry-rubber-content (DRC) prediction.
 
-    Constructs the exact 15-feature row defined by the
-    verified runtime manifest (estate_name is never used),
-    applies the documented research missing-value policy,
-    and runs the finalized GradientBoostingRegressor
-    pipeline with its embedded preprocessing.
+    Constructs the exact feature row defined by the verified
+    runtime manifest (estate_name is never used), applies the
+    documented research missing-value policy, and runs the
+    finalized pipeline with its embedded preprocessing.
     """
 
     models = _load_verified_models()
@@ -339,9 +340,9 @@ def predict_drc(
             ESTATE_ID_FEATURE: normalize_estate_id(
                 request.estate_id
             ),
-            TAPPING_SYSTEM_FEATURE: (
-                normalize_tapping_system(
-                    request.tapping_system
+            LATEX_CONDITION_FEATURE: (
+                normalize_visible_latex_condition(
+                    request.visible_latex_condition
                 )
             ),
         },
@@ -374,9 +375,8 @@ def predict_tapping_suitability(
 
     The response preserves the fitted model's exact class
     labels and probability-column order, and is explicitly
-    marked as a rule-derived research proxy trained on
-    synthetic noisy labels - not expert-verified tapping
-    advice.
+    marked as a rule-derived research proxy (rainfall
+    thresholds) - not expert-verified tapping advice.
     """
 
     models = _load_verified_models()
@@ -405,13 +405,7 @@ def predict_tapping_suitability(
     feature_frame = build_feature_frame(
         ordered_features=ordered_features,
         numeric_values=numeric_values,
-        categorical_values={
-            TAPPING_SYSTEM_FEATURE: (
-                normalize_tapping_system(
-                    request.tapping_system
-                )
-            ),
-        },
+        categorical_values={},
     )
 
     bundle = models.tapping
@@ -524,7 +518,8 @@ def predict_price_estimation(
     request: PriceEstimationRequest,
 ) -> PriceEstimationResponse:
     """
-    Stateless rubber price estimation.
+    Stateless field latex price estimation (LKR per kg of
+    field latex).
 
     latex_drc_pct is supplied explicitly by the caller (a
     measured value or the output of the DRC prediction
@@ -558,13 +553,7 @@ def predict_price_estimation(
     feature_frame = build_feature_frame(
         ordered_features=ordered_features,
         numeric_values=numeric_values,
-        categorical_values={
-            TAPPING_SYSTEM_FEATURE: (
-                normalize_tapping_system(
-                    request.tapping_system
-                )
-            ),
-        },
+        categorical_values={},
     )
 
     predicted_price = _run_regression_pipeline(

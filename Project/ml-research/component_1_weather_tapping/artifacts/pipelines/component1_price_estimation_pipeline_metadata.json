@@ -2,15 +2,15 @@
   "task": "price_estimation",
   "target": "price_lkr_per_kg",
   "kind": "regression",
-  "model_family": "tuned_random_forest",
-  "model_class": "RandomForestRegressor",
+  "model_family": "extra_trees",
+  "model_class": "ExtraTreesRegressor",
   "fit_scope": "TRAIN_ONLY",
   "test_evaluated": true,
   "selection_stage": "19_final_regression_selection",
   "test_stage": "31_final_test_evaluation",
   "source_final_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\regression\\price_estimation\\final\\selected_model.joblib",
   "pipeline_path": "artifacts\\pipelines\\component1_price_estimation_pipeline.pkl",
-  "pipeline_sha256": "341df031b5fed3743311be05441e483afba909d02ad51a92dc000c05af4de0ff",
+  "pipeline_sha256": "7fbd7c7391c515bf63b706c4d17a77d120a5ae832f4d72d5bb8f8b64b24e7453",
   "deployment_note": "Copy of the CV-selected, train-fitted pipeline. Not refit on the full dataset; the test partition was used only for one-time evaluation.",
-  "dataset_provenance": "synthetic; not real-world evidence"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)"
 }
