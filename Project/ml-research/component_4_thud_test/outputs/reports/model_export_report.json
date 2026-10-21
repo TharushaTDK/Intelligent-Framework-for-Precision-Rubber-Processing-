@@ -1,0 +1,44 @@
+{
+  "model_version": "quality-logistic-pilot-v1",
+  "status": "PRELIMINARY_DEMO",
+  "source_pipeline_sha256": "1cf045a4d6939136c8ea842e15dff724815d46b8994c8b40bfe4c05a0768b56a",
+  "feature_names": [
+    "segment_rms",
+    "segment_peak",
+    "crest_factor",
+    "zero_crossing_rate",
+    "background_rms",
+    "outside_segment_rms",
+    "segment_to_background_db",
+    "near_full_scale_fraction",
+    "event_candidate_count",
+    "dominant_frequency_hz",
+    "spectral_centroid_hz",
+    "spectral_bandwidth_hz",
+    "spectral_rolloff85_hz",
+    "spectral_flatness",
+    "spectral_entropy",
+    "late_to_early_energy_db"
+  ],
+  "fit_rows": 53,
+  "fit_scope": "ALL_RULE_PASSED_PILOT_ROWS_FINAL_REFIT",
+  "refitted_during_export": false,
+  "evaluation_note": "Use saved sheet-grouped OOF metrics; component reload checks are not accuracy validation.",
+  "sklearn_version": "1.9.1",
+  "artifacts": {
+    "pipeline": {
+      "path": "artifacts\\pipelines\\quality_pipeline.joblib",
+      "sha256": "1cf045a4d6939136c8ea842e15dff724815d46b8994c8b40bfe4c05a0768b56a"
+    },
+    "preprocessor": {
+      "path": "artifacts\\preprocessing\\quality_scaler.joblib",
+      "sha256": "21333bc95e76b13be580f8637bca0cd5b4021e70f6d636385282dc092fa5d823"
+    },
+    "classifier": {
+      "path": "artifacts\\models\\classification\\quality_classifier.joblib",
+      "sha256": "687bfa832f28307274e49717e27a809b614799aecbcd97b4a431ca4193650e62"
+    }
+  },
+  "pipeline_copy_matches_source": true,
+  "component_reload_equivalence": true
+}

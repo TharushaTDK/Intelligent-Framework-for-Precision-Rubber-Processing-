@@ -1,0 +1,13 @@
+﻿"recording_id","sheet_id","condition_id","tap_id","filename","original_filename","collection_note","quality_label","review_status","moisture_percent","moisture_basis","source_type","parent_recording_id"
+"S001_C01_T01","S001","C01","T01","S001_C01_T01.wav","S01 T01(1).wav","Standard sheet strike; no additional interference reported","VALID","RESEARCHER_ANNOTATED","","","COLLECTED",""
+"S001_C01_T02","S001","C01","T02","S001_C01_T02.wav","S01 T02(1).wav","Standard sheet strike; no additional interference reported","VALID","RESEARCHER_ANNOTATED","","","COLLECTED",""
+"S001_C01_T03","S001","C01","T03","S001_C01_T03.wav","S01 T03 and this is a noise one with background talking people(1).wav","Deliberate background talking during capture","INVALID","RESEARCHER_ANNOTATED","","","COLLECTED",""
+"S002_C01_T01","S002","C01","T01","S002_C01_T01.wav","S02 T01(1).wav","Standard sheet strike; no additional interference reported","VALID","RESEARCHER_ANNOTATED","","","COLLECTED",""
+"S002_C01_T02","S002","C01","T02","S002_C01_T02.wav","S02 T02(1).wav","Standard sheet strike; no additional interference reported","VALID","RESEARCHER_ANNOTATED","","","COLLECTED",""
+"S002_C01_T03","S002","C01","T03","S002_C01_T03.wav","S02 T03 and noise one with a harded tapping(1).wav","Deliberate stronger impact; standard release protocol changed","INVALID","RESEARCHER_ANNOTATED","","","COLLECTED",""
+"S003_C01_T01","S003","C01","T01","S003_C01_T01.wav","S03 T01(1).wav","Standard sheet strike; no additional interference reported","VALID","RESEARCHER_ANNOTATED","","","COLLECTED",""
+"S003_C01_T02","S003","C01","T02","S003_C01_T02.wav","S03 T02(1).wav","Standard sheet strike; no additional interference reported","VALID","RESEARCHER_ANNOTATED","","","COLLECTED",""
+"S003_C01_T03","S003","C01","T03","S003_C01_T03.wav","S03 T03 this also could be nose and could be not check this striker hit a bit at metal(1).wav","Unintended striker contact with metal during capture","INVALID","RESEARCHER_ANNOTATED","","","COLLECTED",""
+"S004_C01_T01","S004","C01","T01","S004_C01_T01.wav","S04 T01(1).wav","Standard sheet strike; no additional interference reported","VALID","RESEARCHER_ANNOTATED","","","COLLECTED",""
+"S004_C01_T02","S004","C01","T02","S004_C01_T02.wav","S04 T02(1).wav","Standard sheet strike; no additional interference reported","VALID","RESEARCHER_ANNOTATED","","","COLLECTED",""
+"S004_C01_T03","S004","C01","T03","S004_C01_T03.wav","S04 T03 noise one with a clapping sound(1).wav","Deliberate clap before sheet strike","INVALID","RESEARCHER_ANNOTATED","","","COLLECTED",

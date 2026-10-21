@@ -1,0 +1,2 @@
+# Use the same pinned environment as the shared backend.
+-r ../../backend/requirements.txt

@@ -1,0 +1,69 @@
+{
+  "evaluation": "leave_one_sheet_out; score held-out originals only",
+  "dataset_manifest_sha256": "5b89cc351a95b18fc2f34f686e9196f9b9a5d55b66284ee4ebc6d40591d683b8",
+  "collected_recordings": 12,
+  "derived_recordings": 48,
+  "total_input_recordings": 60,
+  "model_ready_rows": 53,
+  "independent_sheets": 4,
+  "features_are_scaled": false,
+  "folds": [
+    {
+      "fold": 1,
+      "training_sheets": [
+        "S002",
+        "S003",
+        "S004"
+      ],
+      "held_out_sheets": [
+        "S001"
+      ],
+      "training_rows": 38,
+      "test_original_rows": 3,
+      "excluded_rows": 19
+    },
+    {
+      "fold": 2,
+      "training_sheets": [
+        "S001",
+        "S003",
+        "S004"
+      ],
+      "held_out_sheets": [
+        "S002"
+      ],
+      "training_rows": 38,
+      "test_original_rows": 3,
+      "excluded_rows": 19
+    },
+    {
+      "fold": 3,
+      "training_sheets": [
+        "S001",
+        "S002",
+        "S004"
+      ],
+      "held_out_sheets": [
+        "S003"
+      ],
+      "training_rows": 38,
+      "test_original_rows": 3,
+      "excluded_rows": 19
+    },
+    {
+      "fold": 4,
+      "training_sheets": [
+        "S001",
+        "S002",
+        "S003"
+      ],
+      "held_out_sheets": [
+        "S004"
+      ],
+      "training_rows": 45,
+      "test_original_rows": 3,
+      "excluded_rows": 12
+    }
+  ],
+  "validation_note": "No extra validation set is used; hyperparameters are fixed. Scaler fits only inside each training fold."
+}
