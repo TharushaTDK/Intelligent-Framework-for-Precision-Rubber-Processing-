@@ -69,6 +69,11 @@ export interface SmokehouseBatchListResponse {
   batches: SmokehouseBatchSummary[];
 }
 
+export interface SmokehouseBatchStatusUpdate {
+  status: 'completed' | 'cancelled';
+  ended_at?: string;
+}
+
 // ============================================================
 // READING SCHEMAS
 // ============================================================
