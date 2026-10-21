@@ -11,7 +11,7 @@
   "hyperparameter_tuning_performed": false,
   "parameters": {
     "ccp_alpha": 0.0,
-    "criterion": "friedman_mse",
+    "criterion": "deprecated",
     "init": null,
     "learning_rate": 0.1,
     "loss": "log_loss",
@@ -35,20 +35,20 @@
     "folds": 5,
     "primary_metric": "f1_macro",
     "accuracy": {
-      "mean": 0.6541666666666667,
-      "std": 0.02411632688081298
+      "mean": 0.9692615190406059,
+      "std": 0.025965005010772615
     },
     "precision_macro": {
-      "mean": 0.6583036860102145,
-      "std": 0.021689015862629123
+      "mean": 0.9689366800017206,
+      "std": 0.02478723288355845
     },
     "recall_macro": {
-      "mean": 0.643495542689091,
-      "std": 0.02544715635177038
+      "mean": 0.9670477207977208,
+      "std": 0.02906630624074645
     },
     "f1_macro": {
-      "mean": 0.6464353773099825,
-      "std": 0.025007881877401827
+      "mean": 0.9676116713534675,
+      "std": 0.027218747450837574
     }
   },
   "classes": [
@@ -56,8 +56,8 @@
     "Low",
     "Moderate"
   ],
-  "train_rows": 480,
-  "n_features": 13,
+  "train_rows": 488,
+  "n_features": 10,
   "feature_names": [
     "temperature_c",
     "relative_humidity_pct",
@@ -67,15 +67,12 @@
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice.",
-  "x_train_sha256": "c3be05d91da46eefaeebc08a898f7201b8bbbeef1c17651096572fe6271ffe6e",
-  "y_train_sha256": "e7c06e05ff3af52103f34375904e92f6c67d4722dfa9c6d20ed15d6c717b1d02",
-  "model_sha256": "601ada1e6f35ca387b2f88243adcbc171c996f1c8f956ec12611fdd545742432"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "target_warning": "Rule-derived proxy labels from rainfall thresholds, judged on rain that actually fell; the model sees only the forecast issued beforehand (no added noise). NOT expert-verified tapping advice.",
+  "x_train_sha256": "a39d59f3aa7099125b19f2440188bf4144f356f0ca939214e37ffcdc15c2c175",
+  "y_train_sha256": "e9bfb6354cc2c43e8717919672131e59dc38f5f79d6b407593120593c2a45c89",
+  "model_sha256": "dbb4d9acb1e624c2a7d89218f8cddd26f37effa9778ae352ee45503cb8da4b60"
 }

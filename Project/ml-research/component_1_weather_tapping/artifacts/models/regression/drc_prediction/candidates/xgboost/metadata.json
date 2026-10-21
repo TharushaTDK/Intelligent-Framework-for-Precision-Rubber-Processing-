@@ -55,26 +55,26 @@
     "folds": 5,
     "primary_metric": "RMSE",
     "MAE": {
-      "mean": 0.6796216117540419,
-      "std": 0.047768820893733306
+      "mean": 0.8791699708649265,
+      "std": 0.0314597751094872
     },
     "RMSE": {
-      "mean": 0.8611230881935086,
-      "std": 0.06747863905724286
+      "mean": 1.0841551039679127,
+      "std": 0.039705924899159147
     },
     "R2": {
-      "mean": 0.7924051080119158,
-      "std": 0.034012968533127075
+      "mean": 0.701537908087037,
+      "std": 0.029254923180174322
     },
     "within_tolerance_pct": {
-      "mean": 74.73684210526315,
-      "std": 3.881913455702268
+      "mean": 61.88302124973701,
+      "std": 3.4589768616663594
     }
   },
   "tolerance": 1.0,
   "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
-  "train_rows": 475,
-  "n_features": 15,
+  "train_rows": 488,
+  "n_features": 12,
   "feature_names": [
     "temperature_c",
     "relative_humidity_pct",
@@ -84,16 +84,13 @@
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
+    "visible_latex_condition",
     "estate_id",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
-    "previous_collection_yield_litres",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "x_train_sha256": "0d75b5ebd649426c53f6744424835441285f6fca7e040424c65aecf65146b67b",
-  "y_train_sha256": "81d3f1a9366b61dcacdb2d4447fcc93deead96674864b6197ee3892162f47e96",
-  "model_sha256": "5833d18725c9bcb739dc8a877a1fa66f1613c7965523d465742130132eae0fc9"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "x_train_sha256": "cae963fcfb1d109be609c23aa140bbd7541337cca61a4a8db220a00490fcb618",
+  "y_train_sha256": "cd76fbff53c800678bffecd7f7854051489458c1a4344f5c02fe0ad8f8b9f221",
+  "model_sha256": "877416b5ed3c97582f161731001526da6d081538c9e7505bc4a9d1b1692fdcc9"
 }

@@ -1,27 +1,19 @@
 {
-  "manifest_version": "1.0",
+  "manifest_version": "2.0",
   "component": "component_1_weather_tapping",
-  "purpose": "Backend runtime manifest for the scikit-learn 1.9.1-compatible re-serialized Component 1 pipelines (Phase 1 ML runtime).",
+  "purpose": "Backend runtime manifest for the Component 1 pipelines retrained in October 2026 on the condition-matched farmer dataset.",
   "runtime_environment": {
     "python": "3.13",
     "scikit_learn": "1.9.1",
+    "xgboost": "3.4.1",
     "joblib": "1.6.0",
     "numpy": "2.5.3",
     "pandas": "3.0.6"
   },
   "transformation": {
-    "description": "One-time compatibility re-serialization: load original 1.7.2-fit joblib artifact under scikit-learn 1.9.1 (with loader-side sys.modules['_loss'] -> sklearn._loss._loss alias equal to the 1.7.2 runtime state, plus exact-value SimpleImputer._fill_dtype = _fit_dtype state completion), then re-dump with joblib 1.6.0. No refit, no parameter change, no feature change. Candidates load natively under 1.9.1 without the alias.",
-    "performed_at_utc": "2026-10-18T04:21:26.079008+00:00",
-    "originals_untouched": true,
-    "evidence": {
-      "workspace_root": "C:\\Users\\dinet\\AppData\\Local\\Temp\\opencode\\component1_compat",
-      "transformation_record": "transformation_record.json",
-      "parity_report": "parity_report.md",
-      "edge_parity_report": "edge_parity_report.md",
-      "parity_summary": "parity_summary.json",
-      "note": "The evidence workspace is a temporary directory; the essential evidence is embedded in this manifest and in the hard-coded trusted hashes in model_loader.py."
-    },
-    "parity_result": "PASS - bit-identical predictions on 50 deterministic held-out test rows and 12 edge rows per model (max abs diff 0.0); tapping labels exact and probability column order [High, Low, Moderate] preserved; identical ValueError rejection of non-finite (inf) inputs."
+    "description": "None. The pipelines were trained under the same library versions as this backend, so each runtime artifact is a byte-identical copy of the research export (runtime_sha256 equals original_artifact.sha256).",
+    "performed_at_utc": "2026-10-21T00:11:00+05:30",
+    "originals_untouched": true
   },
   "models": [
     {
@@ -31,11 +23,11 @@
       "model_class": "GradientBoostingRegressor",
       "model_family": "tuned_gradient_boosting",
       "runtime_artifact_relative_path": "artifacts/drc_pipeline.pkl",
-      "runtime_sha256": "4f08f7bde48f158bb71c034ec9f887e19ec26a6982af8891d623e938d80eeba1",
+      "runtime_sha256": "07a7124a51405ccc6433ee343a1c6c6fcd97894a41c248b542938802af2be251",
       "original_artifact": {
         "research_relative_path": "ml-research/component_1_weather_tapping/artifacts/pipelines/component1_drc_prediction_pipeline.pkl",
-        "sha256": "19475009a289d9c099a352cac94409a84cfa9a265cfac3f8cf44e5dd5bcb0290",
-        "fitted_with_scikit_learn": "1.7.2"
+        "sha256": "07a7124a51405ccc6433ee343a1c6c6fcd97894a41c248b542938802af2be251",
+        "fitted_with_scikit_learn": "1.9.1"
       },
       "features_in_pipeline_order": [
         "temperature_c",
@@ -46,30 +38,29 @@
         "wind_speed_kmh",
         "soil_moisture_pct",
         "soil_ph",
+        "visible_latex_condition",
         "estate_id",
-        "tree_count",
-        "tapping_system",
-        "days_since_last_tap",
-        "previous_collection_yield_litres",
         "month",
         "day_of_year"
       ],
       "fit_scope": "TRAIN_ONLY",
-      "deployment_note": "Copy of the CV-selected, train-fitted pipeline. Not refit on the full dataset; the test partition was used only for one-time evaluation. month and day_of_year are derived by the backend from the observation-local timestamp (training used naive local timestamps).",
-      "dataset_provenance": "synthetic; not real-world evidence"
+      "test_metrics": "R2 0.770, MAE 0.84 pp; within +/-1 pp 61.5%, +/-2 pp 95.9% (122 held-out rows)",
+      "deployment_note": "Copy of the CV-selected, train-fitted pipeline. Not refit on the full dataset. visible_latex_condition drives almost all of the prediction; when it is missing the pipeline fills the most common training value (Normal). month and day_of_year are derived by the backend from the observation-local timestamp.",
+      "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC values normalized by the dataset author, not original field measurements",
+      "target_warning": "DRC values in the training data were normalized to Kudaligama chart entries and aligned with the visible latex condition by the dataset author."
     },
     {
       "name": "price_estimation",
       "target": "price_lkr_per_kg",
       "kind": "regression",
-      "model_class": "RandomForestRegressor",
-      "model_family": "tuned_random_forest",
+      "model_class": "ExtraTreesRegressor",
+      "model_family": "extra_trees",
       "runtime_artifact_relative_path": "artifacts/price_pipeline.pkl",
-      "runtime_sha256": "3046401e9d06427823f344f2361bd0cbed19a21ad569764760c2e25dd42707dd",
+      "runtime_sha256": "7fbd7c7391c515bf63b706c4d17a77d120a5ae832f4d72d5bb8f8b64b24e7453",
       "original_artifact": {
         "research_relative_path": "ml-research/component_1_weather_tapping/artifacts/pipelines/component1_price_estimation_pipeline.pkl",
-        "sha256": "341df031b5fed3743311be05441e483afba909d02ad51a92dc000c05af4de0ff",
-        "fitted_with_scikit_learn": "1.7.2"
+        "sha256": "7fbd7c7391c515bf63b706c4d17a77d120a5ae832f4d72d5bb8f8b64b24e7453",
+        "fitted_with_scikit_learn": "1.9.1"
       },
       "features_in_pipeline_order": [
         "latex_drc_pct",
@@ -78,27 +69,27 @@
         "rainfall_last_6h_mm",
         "soil_moisture_pct",
         "soil_ph",
-        "tree_count",
-        "tapping_system",
         "month",
         "day_of_year"
       ],
       "fit_scope": "TRAIN_ONLY",
-      "deployment_note": "Copy of the CV-selected, train-fitted pipeline. Not refit on the full dataset; the test partition was used only for one-time evaluation. latex_drc_pct may be supplied by the drc_prediction model output or by a measured value; the research price model never consumes estate_id.",
-      "dataset_provenance": "synthetic; not real-world evidence"
+      "test_metrics": "R2 0.901, MAE 6.70 LKR/kg (about 2.3%); within +/-5 LKR 45.1%, +/-10 LKR 79.5%, +/-15 LKR 94.3% (122 held-out rows, scored from estimated DRC)",
+      "deployment_note": "Copy of the CV-selected, train-fitted pipeline. Not refit on the full dataset. The target is the price per kg of field latex, defined as farm-gate latex price (Rs per kg dry rubber) x DRC / 100, so watery (low-DRC) latex is worth less. The latex_drc_pct input was trained on the estimated DRC (as the app supplies it from drc_prediction), so the score includes DRC estimation error.",
+      "dataset_provenance": "price derived from farm-gate latex levels (Rubber Development Department; Jun-Sep 2026 levels estimated from Central Bank of Sri Lanka FOB prices) x DRC",
+      "target_warning": "Training prices were derived by formula from farm-gate levels and DRC; June-September 2026 farm-gate levels are estimates, not published prices."
     },
     {
       "name": "tapping_advisory",
       "target": "tapping_suitability_proxy",
       "kind": "classification",
       "model_class": "GradientBoostingClassifier",
-      "model_family": "tuned_gradient_boosting",
+      "model_family": "gradient_boosting",
       "runtime_artifact_relative_path": "artifacts/tapping_pipeline.pkl",
-      "runtime_sha256": "ae87ebff1314d10961da74f9e121d15402c8fb642d658c53a75df26cd7a5f612",
+      "runtime_sha256": "dbb4d9acb1e624c2a7d89218f8cddd26f37effa9778ae352ee45503cb8da4b60",
       "original_artifact": {
         "research_relative_path": "ml-research/component_1_weather_tapping/artifacts/pipelines/component1_tapping_advisory_pipeline.pkl",
-        "sha256": "f24b149bc2638cad29bdccc111b66a376972cf7d975873f542379a0b7b54c230",
-        "fitted_with_scikit_learn": "1.7.2"
+        "sha256": "dbb4d9acb1e624c2a7d89218f8cddd26f37effa9778ae352ee45503cb8da4b60",
+        "fitted_with_scikit_learn": "1.9.1"
       },
       "features_in_pipeline_order": [
         "temperature_c",
@@ -109,9 +100,6 @@
         "wind_speed_kmh",
         "soil_moisture_pct",
         "soil_ph",
-        "tree_count",
-        "tapping_system",
-        "days_since_last_tap",
         "month",
         "day_of_year"
       ],
@@ -127,27 +115,31 @@
         "warning"
       ],
       "fit_scope": "TRAIN_ONLY",
+      "test_metrics": "accuracy 0.934, macro-F1 0.925; recall High 1.00, Moderate 1.00, Low 0.76 (122 held-out rows)",
       "deployment_note": "Copy of the CV-selected, train-fitted classifier bundle ({'pipeline', 'label_encoder', 'classes', 'warning'}). Not refit on the full dataset. predict_proba column order is exactly the classes order above (High=0, Low=1, Moderate=2).",
-      "dataset_provenance": "synthetic; not real-world evidence",
-      "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice."
+      "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; next-6 h rain input is the Open-Meteo forecast issued a day earlier",
+      "target_warning": "Rule-derived proxy labels from rainfall thresholds, judged on rain that actually fell; the model sees only the forecast issued beforehand (no added noise). NOT expert-verified tapping advice."
     }
   ],
   "research_provenance": {
-    "source_dataset": "ml-research/component_1_weather_tapping/data/raw/RubberSense_RawStyle_Synthetic_Dataset.xlsx (synthetic, frozen)",
+    "source_dataset": "ml-research/component_1_weather_tapping/data/raw/Combined_Rubber_Latex_Dataset_Condition_Matched.xlsx (610 farmer records used; prepared by src/00_prepare_realistic_dataset.py)",
+    "price_reference": "ml-research/component_1_weather_tapping/data/reference/latex_farmgate_price_reference.csv",
     "authoritative_feature_source": "ml-research/component_1_weather_tapping/artifacts/preprocessing/component1_preprocessor_metadata.json",
     "authoritative_pipeline_metadata": [
       "ml-research/component_1_weather_tapping/artifacts/pipelines/component1_drc_prediction_pipeline_metadata.json",
       "ml-research/component_1_weather_tapping/artifacts/pipelines/component1_price_estimation_pipeline_metadata.json",
       "ml-research/component_1_weather_tapping/artifacts/pipelines/component1_tapping_advisory_pipeline_metadata.json"
     ],
-    "embedded_preprocessing": "Median imputation (numeric; StandardScaler for tapping model) and most-frequent imputation + one-hot encoding (categorical, handle_unknown='ignore') are embedded inside each sklearn Pipeline and were fitted on the training partition only."
+    "embedded_preprocessing": "Median imputation (numeric; StandardScaler for the tapping model) and most-frequent imputation + one-hot encoding (categorical, handle_unknown='ignore') are embedded inside each sklearn Pipeline and were fitted on the training partition only."
   },
   "known_limitations": [
-    "Dataset is fully synthetic; outputs are not real-world evidence and must not be presented as agronomic fact.",
+    "Trained on 610 farmer records from 5 estates over June-September 2026; results may not hold for other estates or seasons.",
+    "DRC values were normalized and aligned with the visible latex condition by the dataset author, so the DRC model mainly reflects that condition; weather alone barely changes it.",
+    "Price is a formula of farm-gate level and DRC, and tapping labels come from a rainfall rule. Their scores are realistic because the models were trained on what the app has (estimated DRC, an issued forecast), not because they learned verified market or agronomic behaviour.",
+    "forecast_rain_next_6h_mm in training is the Open-Meteo forecast issued about a day earlier; at runtime the weather provider supplies a current forecast, which is usually a little more accurate.",
     "Models were fitted on the training partition only (never refit on the full dataset).",
-    "Tapping suitability labels are rule-derived proxies with ~30% simulated label noise (seed 340) and are NOT expert-verified tapping advice.",
-    "month and day_of_year are derived from observation-local timestamps matching training's naive local-time semantics; any timezone conversion must be explicit and documented (never silent UTC).",
-    "Out-of-range and missing sensor values are treated as missing and median-imputed inside the pipeline; the pipelines reject non-finite (inf) inputs with ValueError - callers must validate inputs before inference.",
-    "Estate identifiers seen only as unseen categories at fit time are handled by one-hot ignore_unknown (all-zero encoding); estate_name is never a model feature."
+    "month and day_of_year are derived from observation-local timestamps; any timezone conversion is explicit (never silent UTC).",
+    "Out-of-range and missing values are treated as missing and imputed inside the pipeline (median for numbers, most common value for categories); the pipelines reject non-finite (inf) inputs, so callers validate first.",
+    "Estates not seen in training (anything other than Estate 01-05) are ignored by the one-hot encoder; estate_name is never a model feature."
   ]
 }

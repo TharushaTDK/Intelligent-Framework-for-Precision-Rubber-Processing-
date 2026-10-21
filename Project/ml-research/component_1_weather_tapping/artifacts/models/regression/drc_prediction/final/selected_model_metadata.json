@@ -12,22 +12,22 @@
     "tie_breaker_2": "cv_R2_mean descending"
   },
   "development_cv": {
-    "RMSE_mean": 0.8480759229299946,
-    "MAE_mean": 0.6733332620463139,
-    "R2_mean": 0.7983481581936641,
-    "within_tolerance_pct_mean": 75.15789473684211
+    "RMSE_mean": 1.0213970005562658,
+    "MAE_mean": 0.8343504551683676,
+    "R2_mean": 0.7345308309451952,
+    "within_tolerance_pct_mean": 62.911845150431304
   },
   "runner_up": {
-    "model": "xgboost",
-    "role": "candidates",
-    "cv_RMSE_mean": 0.8611230881935086,
-    "cv_MAE_mean": 0.6796216117540419
+    "model": "tuned_xgboost",
+    "role": "tuned",
+    "cv_RMSE_mean": 1.0263625685912772,
+    "cv_MAE_mean": 0.8385635172119397
   },
   "artifact": {
     "source_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\regression\\drc_prediction\\tuned\\gradient_boosting\\model.joblib",
     "final_path": "C:\\Users\\dinet\\OneDrive\\Desktop\\Research\\APP\\Intelligent-Framework-for-Precision-Rubber-Processing-\\Project\\ml-research\\component_1_weather_tapping\\artifacts\\models\\regression\\drc_prediction\\final\\selected_model.joblib",
-    "source_sha256": "19475009a289d9c099a352cac94409a84cfa9a265cfac3f8cf44e5dd5bcb0290",
-    "final_sha256": "19475009a289d9c099a352cac94409a84cfa9a265cfac3f8cf44e5dd5bcb0290",
+    "source_sha256": "07a7124a51405ccc6433ee343a1c6c6fcd97894a41c248b542938802af2be251",
+    "final_sha256": "07a7124a51405ccc6433ee343a1c6c6fcd97894a41c248b542938802af2be251",
     "copy_identical": true
   },
   "test_loaded": false,
@@ -35,7 +35,7 @@
   "test_evaluation_stage": 31,
   "explainability_stage": 32,
   "export_stage": 33,
-  "dataset_provenance": "synthetic; not real-world evidence",
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
   "warnings": [
     "Row-wise split: most test estates also appear in training. Use stage-30 estate-grouped CV for the unseen-estate estimate.",
     "Within-tolerance % is not accuracy."

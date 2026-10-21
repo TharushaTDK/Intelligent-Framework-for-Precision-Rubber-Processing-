@@ -1,22 +1,32 @@
-RAW DATA QUALITY REPORT\nShape: (600, 22)\nTotal missing cells: 31\n\nMissing values by column:\nrecord_id                           0
-timestamp_local                     0
-village_code                        0
-temperature_c                       5
-relative_humidity_pct               4
-rainfall_last_6h_mm                 0
-forecast_rain_next_6h_mm            0
-rainfall_last_3days_mm              0
-wind_speed_kmh                      0
-soil_moisture_pct                   7
-soil_ph                             5
-latex_drc_pct                       6
-tree_count                          0
-tapping_system                      0
-days_since_last_tap                 0
-planned_tapping_time                0
-previous_collection_yield_litres    0
-actual_collection_time              0
-actual_collection_yield_litres      4
-price_lkr_per_kg                    0
-price_source_status                 0
-estate_id                           0\n\nExact duplicate rows (excluding record_id): 0\nDuplicate record IDs: 0\nNegative rainfall values: 2\nSoil pH outside 0-14: 5\n\nReview source provenance before using any row as research evidence.
+RAW DATA QUALITY REPORT\nShape: (610, 32)\nTotal missing cells: 1845\n\nMissing values by column:\nrecord_id                                 0
+date                                      0
+timestamp_local                           0
+tapping_time                              0
+estate_id                                 0
+latexometer_measurement                   0
+latex_temperature_c                       0
+drc_pct_kudaligama_chart                  0
+kudaligama_chart_factor                   0
+visible_latex_condition                   0
+soil_moisture_pct                         0
+soil_ph                                   0
+tree_count                              610
+tapping_system                          610
+days_since_last_tap                     610
+latex_drc_pct                             0
+data_quality_note                         0
+temperature_c                             0
+relative_humidity_pct                     0
+wind_speed_kmh                            0
+weather_rain_mm_at_hour                   0
+rainfall_last_6h_mm                       0
+rainfall_last_3days_mm                   15
+rainfall_next_6h_observed_mm              0
+modelled_soil_moisture_pct                0
+openmeteo_soil_temperature_0_7_c          0
+record_group                              0
+usable_for_weather_models                 0
+farmgate_latex_lkr_per_kg_dry_rubber      0
+price_basis_status                        0
+price_lkr_per_kg                          0
+forecast_rain_next_6h_mm                  0\n\nExact duplicate rows (excluding record_id): 0\nDuplicate record IDs: 0\nNegative rainfall values: 0\nSoil pH outside 0-14: 0\n\nReview source provenance before using any row as research evidence.

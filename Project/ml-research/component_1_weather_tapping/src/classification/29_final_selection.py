@@ -13,7 +13,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from common import CLS_TASK, REPORTS, task_root, role_dir, sha256_file  # noqa: E402
+from common import CLS_TASK, REPORTS, DATASET_PROVENANCE, TARGET_WARNING, task_root, role_dir, sha256_file  # noqa: E402
 
 ROLES = ("baseline", "candidates", "tuned")
 
@@ -74,8 +74,8 @@ def main():
                      "final_sha256": sha256_file(final_path), "copy_identical": identical},
         "test_loaded": False, "test_evaluated": False,
         "test_evaluation_stage": 31, "explainability_stage": 32, "export_stage": 33,
-        "dataset_provenance": "synthetic; not real-world evidence",
-        "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified agronomic advice.",
+        "dataset_provenance": DATASET_PROVENANCE,
+        "target_warning": TARGET_WARNING,
         "warnings": ["Row-wise split: most test estates also appear in training."],
     }
     (final_dir / "selected_model_metadata.json").write_text(json.dumps(meta, indent=2, default=str), encoding="utf-8")
@@ -86,7 +86,7 @@ def main():
                "tapping_advisory": {"selected_model": best["model"], "selected_role": best["role"],
                                     "cv_macro_f1_mean": float(best["cv_macro_f1_mean"]),
                                     "cv_accuracy_mean": float(best["cv_accuracy_mean"])},
-               "dataset_provenance": "synthetic; not real-world evidence",
+               "dataset_provenance": DATASET_PROVENANCE,
                "test_loaded": False, "test_evaluated": False}
     (REPORTS / "29_classification_selection_summary.json").write_text(
         json.dumps(summary, indent=2, default=str), encoding="utf-8")

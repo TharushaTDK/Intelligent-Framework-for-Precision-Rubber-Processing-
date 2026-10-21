@@ -1,2 +1,2 @@
 task,model,stage30_cv_RMSE_mean,stage31_test_RMSE,stage30_cv_MAE_mean,stage31_test_MAE
-price_estimation,tuned_random_forest,7.485478222429592,7.662891397886357,5.956389207733297,6.229200403448244
+price_estimation,extra_trees,7.957703689821509,8.138574683979845,6.541207983129446,6.7011792224824465

@@ -30,28 +30,28 @@
   },
   "best_params": {
     "model__learning_rate": 0.06,
-    "model__max_depth": 3,
+    "model__max_depth": 2,
     "model__n_estimators": 100
   },
-  "best_search_score_cv_rmse": 0.8754425540722206,
+  "best_search_score_cv_rmse": 1.0266009246781274,
   "cv": {
     "folds": 5,
     "primary_metric": "RMSE",
     "MAE": {
-      "mean": 0.6971097852289866,
-      "std": 0.05842819274424821
+      "mean": 0.8385635172119397,
+      "std": 0.03347270072544269
     },
     "RMSE": {
-      "mean": 0.8831806866989554,
-      "std": 0.07913267437007235
+      "mean": 1.0263625685912772,
+      "std": 0.0444788288386038
     },
     "R2": {
-      "mean": 0.7809101937997349,
-      "std": 0.043349935693253204
+      "mean": 0.7322675373695929,
+      "std": 0.029672837816181005
     },
     "within_tolerance_pct": {
-      "mean": 73.47368421052632,
-      "std": 3.8475088173678067
+      "mean": 63.320008415737426,
+      "std": 3.2598587329625954
     }
   },
   "parameters": {
@@ -77,7 +77,7 @@
     "max_cat_threshold": null,
     "max_cat_to_onehot": null,
     "max_delta_step": null,
-    "max_depth": 3,
+    "max_depth": 2,
     "max_leaves": null,
     "min_child_weight": null,
     "missing": NaN,
@@ -97,7 +97,7 @@
     "verbosity": 0
   },
   "tolerance": 1.0,
-  "train_rows": 475,
+  "train_rows": 488,
   "feature_names": [
     "temperature_c",
     "relative_humidity_pct",
@@ -107,16 +107,13 @@
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
+    "visible_latex_condition",
     "estate_id",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
-    "previous_collection_yield_litres",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "x_train_sha256": "36c53eb7ee96f05fd9049dc263f9bd4ecc3cb5f5ef948730428b413131359292",
-  "y_train_sha256": "81d3f1a9366b61dcacdb2d4447fcc93deead96674864b6197ee3892162f47e96",
-  "model_sha256": "5faa79570bbb9f22412cd1e66f7d3e2cbd4a4816ec7afa4f8ad91a536f0e3a3d"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "x_train_sha256": "3a1954323ec0c73fa2ef0c9062ce91722da5175bb8ad3974ee9747bf57e7f58c",
+  "y_train_sha256": "cd76fbff53c800678bffecd7f7854051489458c1a4344f5c02fe0ad8f8b9f221",
+  "model_sha256": "ef50fc83909dbad094addd9d9a76bac6fa7566c1f4f507e0b638e52408bd3523"
 }

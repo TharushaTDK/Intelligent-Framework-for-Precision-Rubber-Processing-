@@ -1,1 +1,1 @@
-Target validation completed. Tapping target is a synthetic proxy, not expert-validated advice.
+Target validation completed. Tapping target is a rainfall-rule proxy, not expert-validated advice. Price is derived from farm-gate latex price x DRC.

@@ -58,6 +58,11 @@ export default function AdvisoryResultScreen() {
         <View style={styles.card}>
           <Text style={styles.cardLabel}>Dry rubber content (DRC)</Text>
           <Text style={styles.bigValue}>{result.drcPct.toFixed(2)} %</Text>
+          <Text style={styles.caption}>
+            {result.latexCondition
+              ? `Latex condition: ${result.latexCondition}`
+              : 'Latex condition not checked, so normal latex was assumed'}
+          </Text>
           <Text style={styles.estimateTag}>Model estimate, not a measured DRC</Text>
         </View>
 
@@ -110,8 +115,8 @@ export default function AdvisoryResultScreen() {
         </View>
 
         <Text style={styles.note}>
-          Based on weather only. Soil, tree count and estate details were not provided, so the models
-          used their usual values for these.
+          Based on the weather and the latex condition you chose. Soil and estate details were not
+          provided, so the models used their usual values for these.
         </Text>
 
         <PrimaryButton label="Check Another Field" onPress={() => router.back()} />

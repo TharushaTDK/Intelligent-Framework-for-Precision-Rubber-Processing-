@@ -13,7 +13,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from common import REG_TASKS, REPORTS, task_root, role_dir, sha256_file  # noqa: E402
+from common import REG_TASKS, REPORTS, DATASET_PROVENANCE, task_root, role_dir, sha256_file  # noqa: E402
 
 ROLES = ("baseline", "candidates", "tuned")
 
@@ -42,7 +42,7 @@ def main():
                "selection_rule": {"primary": "cv_RMSE_mean ascending",
                                   "tie_breaker_1": "cv_MAE_mean ascending",
                                   "tie_breaker_2": "cv_R2_mean descending"},
-               "dataset_provenance": "synthetic; not real-world evidence",
+               "dataset_provenance": DATASET_PROVENANCE,
                "test_loaded": False, "test_evaluated": False, "tasks": {}}
 
     for task in REG_TASKS:
@@ -78,7 +78,7 @@ def main():
                          "final_sha256": sha256_file(final_path), "copy_identical": identical},
             "test_loaded": False, "test_evaluated": False,
             "test_evaluation_stage": 31, "explainability_stage": 32, "export_stage": 33,
-            "dataset_provenance": "synthetic; not real-world evidence",
+            "dataset_provenance": DATASET_PROVENANCE,
             "warnings": [
                 "Row-wise split: most test estates also appear in training. Use stage-30 estate-grouped CV for the unseen-estate estimate.",
                 "Within-tolerance % is not accuracy.",

@@ -12,11 +12,8 @@
         "wind_speed_kmh",
         "soil_moisture_pct",
         "soil_ph",
+        "visible_latex_condition",
         "estate_id",
-        "tree_count",
-        "tapping_system",
-        "days_since_last_tap",
-        "previous_collection_yield_litres",
         "month",
         "day_of_year"
       ]
@@ -29,8 +26,6 @@
         "rainfall_last_6h_mm",
         "soil_moisture_pct",
         "soil_ph",
-        "tree_count",
-        "tapping_system",
         "month",
         "day_of_year"
       ]
@@ -45,9 +40,6 @@
         "wind_speed_kmh",
         "soil_moisture_pct",
         "soil_ph",
-        "tree_count",
-        "tapping_system",
-        "days_since_last_tap",
         "month",
         "day_of_year"
       ],

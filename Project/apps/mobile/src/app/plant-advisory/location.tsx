@@ -11,6 +11,7 @@ import { colors, radii, spacing, typography } from '../../constants/theme';
 import {
   buildAdvisoryRecord,
   buildAdvisoryResult,
+  LATEX_CONDITION_OPTIONS,
   weatherInputs,
 } from '../../features/plantAdvisory/advisoryResult';
 import { FieldMap } from '../../features/plantAdvisory/FieldMap';
@@ -32,7 +33,7 @@ import {
   saveAdvisoryRecord,
   toReadableMessage,
 } from '../../services/plantAdvisoryApi';
-import type { WeatherSnapshotResponse } from '../../types/plantAdvisory';
+import type { LatexCondition, WeatherSnapshotResponse } from '../../types/plantAdvisory';
 
 // GPS can hang indoors or on a cold start, so give up after a while
 const GPS_TIMEOUT_MS = 20000;
@@ -64,6 +65,9 @@ export default function FieldLocationScreen() {
   const [weather, setWeather] = useState<WeatherSnapshotResponse | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState<string | null>(null);
+
+  // only changes the DRC (and so the price), so the weather stays valid
+  const [latexCondition, setLatexCondition] = useState<LatexCondition | null>(null);
 
   const [advisoryLoading, setAdvisoryLoading] = useState(false);
   const [advisoryError, setAdvisoryError] = useState<string | null>(null);
@@ -186,8 +190,9 @@ export default function FieldLocationScreen() {
   }
 
   // DRC and tapping run together; price needs the DRC estimate, so it
-  // goes after. Only weather is sent - a location can't tell us the
-  // estate, soil or trees, and the backend fills those itself.
+  // goes after. Weather goes to all three, and the latex condition to the
+  // DRC model only. A location can't tell us the estate or soil, so the
+  // backend fills those itself.
   async function generateAdvisory() {
     if (!location || !weather) {
       return;
@@ -201,7 +206,12 @@ export default function FieldLocationScreen() {
 
     try {
       const [drcResult, tappingResult] = await Promise.allSettled([
-        estimateDrc({ observation_timestamp: timestamp, ...inputs }),
+        estimateDrc({
+          observation_timestamp: timestamp,
+          ...inputs,
+          // left out when not checked, so the backend treats it as missing
+          ...(latexCondition ? { visible_latex_condition: latexCondition } : {}),
+        }),
         getTappingAdvisory({ observation_timestamp: timestamp, ...inputs }),
       ]);
 
@@ -236,7 +246,9 @@ export default function FieldLocationScreen() {
         console.warn('Advisory was not saved for Component 2:', toReadableMessage(error));
       }
 
-      const result = buildAdvisoryResult(location, weather, drc, tapping, tappingError, price, priceError);
+      const result = buildAdvisoryResult(
+        location, weather, latexCondition, drc, tapping, tappingError, price, priceError,
+      );
       router.push({ pathname: '/plant-advisory/result', params: { data: JSON.stringify(result) } });
     } finally {
       setAdvisoryLoading(false);
@@ -392,6 +404,38 @@ export default function FieldLocationScreen() {
                 Forecast: this is a future time, so every value is a forecast.
               </Text>
             ) : null}
+          </View>
+        ) : null}
+
+        {weather ? (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>How does the latex look?</Text>
+            <Text style={styles.hint}>
+              Check the latex in a collection cup. Watery latex has less rubber in it, so it is worth less.
+            </Text>
+            {LATEX_CONDITION_OPTIONS.map((item) => {
+              const selected = item.key === latexCondition;
+              return (
+                <Pressable
+                  key={item.label}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected }}
+                  onPress={() => {
+                    setLatexCondition(item.key);
+                    setAdvisoryError(null);
+                  }}
+                  style={[styles.option, selected && styles.optionSelected]}
+                >
+                  <View style={[styles.radio, selected && styles.radioSelected]}>
+                    {selected ? <View style={styles.radioDot} /> : null}
+                  </View>
+                  <View style={styles.optionText}>
+                    <Text style={styles.optionLabel}>{item.label}</Text>
+                    <Text style={styles.optionCaption}>{item.caption}</Text>
+                  </View>
+                </Pressable>
+              );
+            })}
           </View>
         ) : null}
 

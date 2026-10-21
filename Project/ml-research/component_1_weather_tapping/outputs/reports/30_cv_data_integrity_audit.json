@@ -2,35 +2,35 @@
   "tasks": [
     {
       "task": "drc_prediction",
-      "train_rows": 475,
-      "test_rows": 119,
+      "train_rows": 488,
+      "test_rows": 122,
       "index_overlap": 0,
-      "train_estates": 120,
-      "test_estates": 73,
-      "test_estates_also_in_train": 73,
+      "train_estates": 5,
+      "test_estates": 5,
+      "test_estates_also_in_train": 5,
       "test_estates_unseen": 0,
       "row_wise_split": true
     },
     {
       "task": "price_estimation",
-      "train_rows": 480,
-      "test_rows": 120,
+      "train_rows": 488,
+      "test_rows": 122,
       "index_overlap": 0,
-      "train_estates": 119,
-      "test_estates": 74,
-      "test_estates_also_in_train": 73,
-      "test_estates_unseen": 1,
+      "train_estates": 5,
+      "test_estates": 5,
+      "test_estates_also_in_train": 5,
+      "test_estates_unseen": 0,
       "row_wise_split": true
     },
     {
       "task": "tapping_advisory",
-      "train_rows": 480,
-      "test_rows": 120,
+      "train_rows": 488,
+      "test_rows": 122,
       "index_overlap": 0,
-      "train_estates": 118,
-      "test_estates": 81,
-      "test_estates_also_in_train": 79,
-      "test_estates_unseen": 2,
+      "train_estates": 5,
+      "test_estates": 5,
+      "test_estates_also_in_train": 5,
+      "test_estates_unseen": 0,
       "row_wise_split": true
     }
   ]

@@ -64,8 +64,9 @@ def main():
         "Collection-time prediction: REMOVED. No collection-time target, model, report or "
         "artefact is produced anywhere in this project.",
         "",
-        "Note: raw workbook data/raw/RubberSense_RawStyle_Synthetic_Dataset.xlsx is never "
-        "rewritten by any stage; only copies under data/processed/ and reports/models are generated.",
+        "Note: raw workbook data/raw/Combined_Rubber_Latex_Dataset_Condition_Matched.xlsx is never "
+        "rewritten by any stage; stage 00 writes a prepared copy to data/validated/, and only copies, "
+        "reports and models are generated after that.",
     ]
     (REPORTS / "30_cv_data_integrity_audit.txt").write_text("\n".join(lines), encoding="utf-8")
     (REPORTS / "30_cv_data_integrity_audit.json").write_text(

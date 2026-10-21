@@ -34,11 +34,8 @@ VALID_ROW = {
     "wind_speed_kmh": 7.3,
     "soil_moisture_pct": 41.0,
     "soil_ph": 5.8,
-    "estate_id": "EST-001",
-    "tree_count": 150.0,
-    "tapping_system": "S/2",
-    "days_since_last_tap": 2.0,
-    "previous_collection_yield_litres": 38.0,
+    "visible_latex_condition": "Normal",
+    "estate_id": "Estate 01",
     "latex_drc_pct": 34.5,
     "month": 10.0,
     "day_of_year": 291.0,
@@ -299,13 +296,12 @@ def test_manifest_records_exact_feature_contracts():
     )["features_in_pipeline_order"]
 
     assert drc_features[-4:] == [
-        "days_since_last_tap",
-        "previous_collection_yield_litres",
+        "visible_latex_condition",
+        "estate_id",
         "month",
         "day_of_year",
     ]
-    assert "estate_id" in drc_features
-    assert len(drc_features) == 15
+    assert len(drc_features) == 12
 
     price_features = manifest_model(
         manifest,
@@ -314,7 +310,7 @@ def test_manifest_records_exact_feature_contracts():
 
     assert price_features[0] == "latex_drc_pct"
     assert "estate_id" not in price_features
-    assert len(price_features) == 10
+    assert len(price_features) == 8
 
     tapping_features = manifest_model(
         manifest,
@@ -322,10 +318,8 @@ def test_manifest_records_exact_feature_contracts():
     )["features_in_pipeline_order"]
 
     assert "estate_id" not in tapping_features
-    assert "previous_collection_yield_litres" not in (
-        tapping_features
-    )
-    assert len(tapping_features) == 13
+    assert "visible_latex_condition" not in tapping_features
+    assert len(tapping_features) == 10
 
     assert manifest_model(
         manifest,
@@ -470,15 +464,16 @@ def test_non_finite_inputs_are_rejected(
 
 
 # ============================================================
-# TEST 9 — ORIGINAL RESEARCH ARTIFACTS STAY UNTOUCHED
+# TEST 9 — RUNTIME ARTIFACTS MATCH THE RESEARCH EXPORTS
 # ============================================================
 
 
 def test_original_research_artifacts_are_unchanged():
     """
-    The frozen research pipelines must still hash to their
-    original 1.7.2 fit-time hashes, proving the Phase 1
-    migration never touched them.
+    The research exports must still hash to the values the
+    manifest records, and since the retrain used the backend's
+    own library versions, each runtime copy is byte-identical
+    to its research export.
     """
 
     research_pipelines = (
@@ -489,26 +484,28 @@ def test_original_research_artifacts_are_unchanged():
         / "pipelines"
     )
 
-    assert (
-        _calculate_sha256(
-            research_pipelines
-            / "component1_drc_prediction_pipeline.pkl"
-        )
-        == "19475009a289d9c099a352cac94409a84cfa9a265cfac3f8cf44e5dd5bcb0290"
-    )
+    manifest = get_manifest()
 
-    assert (
-        _calculate_sha256(
-            research_pipelines
-            / "component1_price_estimation_pipeline.pkl"
-        )
-        == "341df031b5fed3743311be05441e483afba909d02ad51a92dc000c05af4de0ff"
-    )
+    expected = {
+        "drc_prediction": (
+            "component1_drc_prediction_pipeline.pkl",
+            EXPECTED_DRC_PIPELINE_SHA256,
+        ),
+        "price_estimation": (
+            "component1_price_estimation_pipeline.pkl",
+            EXPECTED_PRICE_PIPELINE_SHA256,
+        ),
+        "tapping_advisory": (
+            "component1_tapping_advisory_pipeline.pkl",
+            EXPECTED_TAPPING_PIPELINE_SHA256,
+        ),
+    }
 
-    assert (
-        _calculate_sha256(
-            research_pipelines
-            / "component1_tapping_advisory_pipeline.pkl"
+    for name, (file_name, trusted_hash) in expected.items():
+        research_hash = _calculate_sha256(
+            research_pipelines / file_name
         )
-        == "f24b149bc2638cad29bdccc111b66a376972cf7d975873f542379a0b7b54c230"
-    )
+        entry = manifest_model(manifest, name)
+
+        assert research_hash == entry["original_artifact"]["sha256"]
+        assert research_hash == trusted_hash

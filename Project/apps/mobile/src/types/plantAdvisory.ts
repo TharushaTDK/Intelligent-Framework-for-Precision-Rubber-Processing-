@@ -47,7 +47,8 @@ export interface WeatherSnapshotResponse {
 
 // ---------------- prediction requests ----------------
 // every input except the timestamp is optional: anything left out is
-// treated as "not observed" and filled by the model's training median
+// treated as "not observed" and filled inside the model (training median
+// for numbers, the most common value for categories, e.g. "Normal" latex)
 
 export interface WeatherInputs {
   temperature_c?: number;
@@ -58,24 +59,21 @@ export interface WeatherInputs {
   wind_speed_kmh?: number;
 }
 
+// the only three labels the DRC model was trained on
+export type LatexCondition = 'Normal' | 'Watery' | 'Early coagulation';
+
 export interface DrcPredictionRequest extends WeatherInputs {
   observation_timestamp: string;
   soil_moisture_pct?: number;
   soil_ph?: number;
+  visible_latex_condition?: LatexCondition;
   estate_id?: string;
-  tree_count?: number;
-  tapping_system?: string;
-  days_since_last_tap?: number;
-  previous_collection_yield_litres?: number;
 }
 
 export interface TappingSuitabilityRequest extends WeatherInputs {
   observation_timestamp: string;
   soil_moisture_pct?: number;
   soil_ph?: number;
-  tree_count?: number;
-  tapping_system?: string;
-  days_since_last_tap?: number;
 }
 
 export interface PriceEstimationRequest {
@@ -86,8 +84,6 @@ export interface PriceEstimationRequest {
   rainfall_last_6h_mm?: number;
   soil_moisture_pct?: number;
   soil_ph?: number;
-  tree_count?: number;
-  tapping_system?: string;
 }
 
 // ---------------- prediction responses ----------------

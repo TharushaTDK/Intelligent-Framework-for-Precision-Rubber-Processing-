@@ -4,10 +4,10 @@ The held-out test partition is evaluated here exactly once.
 Selection was performed by cross-validation on the training partition (stages 18/19, 28/29).
 
 Regression (selected model -> test):
-  [drc_prediction] tuned_gradient_boosting: MAE=0.6857 RMSE=0.8627 R2=0.8014 within+/-1.0=77.3%
-  [price_estimation] tuned_random_forest: MAE=6.2292 RMSE=7.6629 R2=0.7259 within+/-9.0=74.2%
+  [drc_prediction] tuned_gradient_boosting: MAE=0.8373 RMSE=1.0191 R2=0.7702 within+/-1.0=61.5%
+  [price_estimation] extra_trees: MAE=6.7012 RMSE=8.1386 R2=0.9010 within+/-5.0=45.1%
 
 Classification (selected model -> test):
-  [tapping_advisory] tuned_gradient_boosting: accuracy=0.7750 macro-P=0.7949 macro-R=0.7585 macro-F1=0.7677
+  [tapping_advisory] gradient_boosting: accuracy=0.9344 macro-P=0.9437 macro-R=0.9192 macro-F1=0.9245
 
-Reminder: synthetic data. Not real-world evidence. Within-tolerance % is not accuracy.
+Reminder: condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated). Within-tolerance % is not accuracy.

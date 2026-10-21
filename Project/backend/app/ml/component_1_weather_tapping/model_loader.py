@@ -41,14 +41,15 @@ ARTIFACT_MANIFEST_PATH = (
 #
 # These remain hard-coded intentionally.
 #
-# They are the trusted integrity anchors for the
-# scikit-learn 1.9.1-compatible re-serialized runtime
-# artifacts produced by the verified Phase 1 migration.
-#
-# Each hash was verified against the Phase 0 transformation
-# evidence (transformation_record.json) before the artifact
-# was copied into this repository, and the manifest must
-# agree with these hashes before its contents are accepted.
+# They are the trusted integrity anchors for the runtime
+# artifacts. Since the October 2026 retrain on the
+# condition-matched farmer dataset, each artifact is a
+# byte-identical copy of the research export in
+# ml-research/component_1_weather_tapping/artifacts/pipelines/,
+# trained under the same scikit-learn 1.9.1 / xgboost 3.4.1
+# stack as this backend, so no re-serialization is involved.
+# The manifest must agree with these hashes before its
+# contents are accepted.
 #
 # A verification failure must NEVER update these values.
 # The artifact or this loader must be reviewed by a human.
@@ -56,15 +57,15 @@ ARTIFACT_MANIFEST_PATH = (
 
 
 EXPECTED_DRC_PIPELINE_SHA256 = (
-    "4f08f7bde48f158bb71c034ec9f887e19ec26a6982af8891d623e938d80eeba1"
+    "07a7124a51405ccc6433ee343a1c6c6fcd97894a41c248b542938802af2be251"
 )
 
 EXPECTED_PRICE_PIPELINE_SHA256 = (
-    "3046401e9d06427823f344f2361bd0cbed19a21ad569764760c2e25dd42707dd"
+    "7fbd7c7391c515bf63b706c4d17a77d120a5ae832f4d72d5bb8f8b64b24e7453"
 )
 
 EXPECTED_TAPPING_PIPELINE_SHA256 = (
-    "ae87ebff1314d10961da74f9e121d15402c8fb642d658c53a75df26cd7a5f612"
+    "dbb4d9acb1e624c2a7d89218f8cddd26f37effa9778ae352ee45503cb8da4b60"
 )
 
 
@@ -484,10 +485,10 @@ def load_models() -> Component1Models:
     # --------------------------------------------------------
     # 3. Deserialize finalized models
     #
-    # The runtime artifacts are the verified scikit-learn
-    # 1.9.1-compatible re-serializations and load natively
-    # under the pinned runtime stack without any pickle
-    # compatibility aliases.
+    # The runtime artifacts were trained under the pinned
+    # runtime stack (scikit-learn 1.9.1, xgboost 3.4.1), so
+    # they load natively without any pickle compatibility
+    # aliases.
     # --------------------------------------------------------
 
     try:

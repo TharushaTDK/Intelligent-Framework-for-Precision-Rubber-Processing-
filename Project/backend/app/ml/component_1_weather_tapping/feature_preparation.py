@@ -151,6 +151,21 @@ def normalize_tapping_system(
     return value.strip().upper()
 
 
+def normalize_visible_latex_condition(
+    value: str | None,
+) -> str | None:
+    """
+    The schema already restricts this to the three training
+    labels (Normal, Watery, Early coagulation); only stray
+    whitespace is removed here.
+    """
+
+    if value is None:
+        return None
+
+    return value.strip()
+
+
 def normalize_estate_id(
     value: str | None,
 ) -> str | None:
@@ -268,9 +283,12 @@ def build_feature_frame(
 
     for feature_name in ordered_features:
         if feature_name in categorical_values:
-            row[feature_name] = categorical_values[
-                feature_name
-            ]
+            # A missing category goes in as NaN, not None. The
+            # pipeline's most-frequent imputer only recognises
+            # NaN as missing; None would be treated as an unseen
+            # category and silently encoded as all zeros.
+            value = categorical_values[feature_name]
+            row[feature_name] = np.nan if value is None else value
 
         else:
             row[feature_name] = numeric_values[feature_name]

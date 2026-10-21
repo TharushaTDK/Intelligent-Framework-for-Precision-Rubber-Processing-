@@ -1,16 +1,11 @@
 transformed_feature,impurity_importance
-num__rainfall_last_6h_mm,0.441800243701764
-num__forecast_rain_next_6h_mm,0.20293399567408102
-num__relative_humidity_pct,0.12310057111481172
-num__soil_moisture_pct,0.060280378404669474
-num__rainfall_last_3days_mm,0.04855556990918121
-num__soil_ph,0.047173552503037994
-num__temperature_c,0.029750543319168266
-num__tree_count,0.02277236713304718
-num__wind_speed_kmh,0.012882900850999955
-num__day_of_year,0.009096191880914496
-num__days_since_last_tap,0.0016173421948873065
-num__month,3.634331343717206e-05
-cat__tapping_system_S/2 D2,0.0
-cat__tapping_system_S/2 D3,0.0
-cat__tapping_system_S/2 D4,0.0
+num__rainfall_last_6h_mm,0.6978368913867177
+num__rainfall_last_3days_mm,0.11527097556307217
+num__forecast_rain_next_6h_mm,0.07543852404677381
+num__wind_speed_kmh,0.07287121905249533
+num__day_of_year,0.016239754244153224
+num__temperature_c,0.014159394706002377
+num__relative_humidity_pct,0.004339588257501803
+num__month,0.0033686829266020325
+num__soil_ph,0.000267543209543752
+num__soil_moisture_pct,0.00020742660713770643

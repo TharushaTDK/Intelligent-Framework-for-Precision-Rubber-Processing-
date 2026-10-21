@@ -55,20 +55,20 @@
     "folds": 5,
     "primary_metric": "f1_macro",
     "accuracy": {
-      "mean": 0.6458333333333333,
-      "std": 0.021850184336878166
+      "mean": 0.9487902377445824,
+      "std": 0.03250897901284702
     },
     "precision_macro": {
-      "mean": 0.6486741628856623,
-      "std": 0.023353853319023402
+      "mean": 0.9508945860916095,
+      "std": 0.03078600479395917
     },
     "recall_macro": {
-      "mean": 0.632296367642293,
-      "std": 0.022583411606709125
+      "mean": 0.9442913105413104,
+      "std": 0.034879882765619034
     },
     "f1_macro": {
-      "mean": 0.6353586882640859,
-      "std": 0.021838686694096353
+      "mean": 0.9465018273379379,
+      "std": 0.033757478035482326
     }
   },
   "classes": [
@@ -76,8 +76,8 @@
     "Low",
     "Moderate"
   ],
-  "train_rows": 480,
-  "n_features": 13,
+  "train_rows": 488,
+  "n_features": 10,
   "feature_names": [
     "temperature_c",
     "relative_humidity_pct",
@@ -87,15 +87,12 @@
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice.",
-  "x_train_sha256": "9ef262af05f01c70b2766bf587324f903a3d36fd2e723c609230d96bc5b173d2",
-  "y_train_sha256": "ae5ffaa84da713f6ef59800a2130a9911b5d9e93de47221957f9db16a7aead8e",
-  "model_sha256": "d48eee2f7683d29064e46530c35e3e1828f16dcb2ac649d655c6678bbb223369"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "target_warning": "Rule-derived proxy labels from rainfall thresholds, judged on rain that actually fell; the model sees only the forecast issued beforehand (no added noise). NOT expert-verified tapping advice.",
+  "x_train_sha256": "a39d59f3aa7099125b19f2440188bf4144f356f0ca939214e37ffcdc15c2c175",
+  "y_train_sha256": "05eb14f6f9c4b21afb87e1844305b1f712049a42b5bb05a5f586bfb78c361992",
+  "model_sha256": "0c285c90e442c56c8cbdb76d5f301ea803b920ce4ec3bd797a0a4fcd78cde6d5"
 }

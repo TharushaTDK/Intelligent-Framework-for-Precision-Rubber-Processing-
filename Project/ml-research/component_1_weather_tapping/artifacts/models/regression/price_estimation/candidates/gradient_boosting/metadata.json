@@ -12,7 +12,7 @@
   "parameters": {
     "alpha": 0.9,
     "ccp_alpha": 0.0,
-    "criterion": "friedman_mse",
+    "criterion": "deprecated",
     "init": null,
     "learning_rate": 0.1,
     "loss": "squared_error",
@@ -36,26 +36,26 @@
     "folds": 5,
     "primary_metric": "RMSE",
     "MAE": {
-      "mean": 6.162802466022617,
-      "std": 0.23164935384532678
+      "mean": 6.64683489569389,
+      "std": 0.2637745422263874
     },
     "RMSE": {
-      "mean": 7.798784091811259,
-      "std": 0.32036007868802063
+      "mean": 8.397668791386973,
+      "std": 0.28962561251905405
     },
     "R2": {
-      "mean": 0.6704644564782514,
-      "std": 0.03785315117810488
+      "mean": 0.9052211567852986,
+      "std": 0.013125978625351416
     },
     "within_tolerance_pct": {
-      "mean": 74.375,
-      "std": 2.916666666666662
+      "mean": 42.82768777614138,
+      "std": 3.971999613652569
     }
   },
-  "tolerance": 9.0,
+  "tolerance": 5.0,
   "within_tolerance_note": "Within-tolerance % is NOT accuracy and is not R-squared.",
-  "train_rows": 480,
-  "n_features": 10,
+  "train_rows": 488,
+  "n_features": 8,
   "feature_names": [
     "latex_drc_pct",
     "temperature_c",
@@ -63,13 +63,11 @@
     "rainfall_last_6h_mm",
     "soil_moisture_pct",
     "soil_ph",
-    "tree_count",
-    "tapping_system",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "x_train_sha256": "b2595e8b13fae026cd2bf8d8f6c8a3ce1d8e448f67b6aac218535f445fe33acc",
-  "y_train_sha256": "19b380b45a29becfe7dd62a0aa2d305c3c7e2e4f0a17e4d6ea4170d57fca91cc",
-  "model_sha256": "44e8faaf266e158bf2d98f3c2b68c4a2b5f85df0d4ecba21d2cbb4bfeb4d9ae4"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "x_train_sha256": "4ee27e88ca67e231fc2fc0c92a5aaa3ec7d22f00ec3b671415fc7560f4c16a83",
+  "y_train_sha256": "08ac7573a2f7e2dd2ccb1f9d43e1fcde467efc2bf94b563636568eea79a5c6d6",
+  "model_sha256": "63f6ba973d3f9cd45134d1848e19c1709ea97b24d58316530a3ff4fa5fde9b1e"
 }

@@ -34,20 +34,20 @@
     "folds": 5,
     "primary_metric": "f1_macro",
     "accuracy": {
-      "mean": 0.5958333333333333,
-      "std": 0.04583333333333333
+      "mean": 0.9487481590574374,
+      "std": 0.019562222805777227
     },
     "precision_macro": {
-      "mean": 0.6011501064907818,
-      "std": 0.05013915604116742
+      "mean": 0.9501112323050048,
+      "std": 0.02023441550192106
     },
     "recall_macro": {
-      "mean": 0.5792614016545822,
-      "std": 0.04446865172436903
+      "mean": 0.9469195156695157,
+      "std": 0.02165892230726286
     },
     "f1_macro": {
-      "mean": 0.5769655161763623,
-      "std": 0.05075699732318638
+      "mean": 0.9473621107211505,
+      "std": 0.021222099857863837
     }
   },
   "classes": [
@@ -55,8 +55,8 @@
     "Low",
     "Moderate"
   ],
-  "train_rows": 480,
-  "n_features": 13,
+  "train_rows": 488,
+  "n_features": 10,
   "feature_names": [
     "temperature_c",
     "relative_humidity_pct",
@@ -66,15 +66,12 @@
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice.",
-  "x_train_sha256": "5f709fc2c231674e093bdf7142e5ce74334f23ef70a4403e29d3b35ed2af137e",
-  "y_train_sha256": "b7736307ea83276c7e2cb5df176ac8ae950226cce40cf73558696cf524b248fb",
-  "model_sha256": "900135195b736fb596d8cc1363bca5372d24f9f5b4f9a1e6a01dc3eb776b7f83"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "target_warning": "Rule-derived proxy labels from rainfall thresholds, judged on rain that actually fell; the model sees only the forecast issued beforehand (no added noise). NOT expert-verified tapping advice.",
+  "x_train_sha256": "a39d59f3aa7099125b19f2440188bf4144f356f0ca939214e37ffcdc15c2c175",
+  "y_train_sha256": "8c363ac7aceff1864dba37fb4d7b34f326ff37375abb81d5742763df9505918b",
+  "model_sha256": "fbb3dbc448e3efb2b9791a1c97363e16c85f85013c1c370bc8215bd09d999298"
 }

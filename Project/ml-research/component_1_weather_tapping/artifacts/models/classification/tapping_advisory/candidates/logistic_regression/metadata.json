@@ -15,11 +15,10 @@
     "dual": false,
     "fit_intercept": true,
     "intercept_scaling": 1,
-    "l1_ratio": null,
+    "l1_ratio": 0.0,
     "max_iter": 2000,
-    "multi_class": "deprecated",
     "n_jobs": null,
-    "penalty": "l2",
+    "penalty": "deprecated",
     "random_state": null,
     "solver": "lbfgs",
     "tol": 0.0001,
@@ -30,20 +29,20 @@
     "folds": 5,
     "primary_metric": "f1_macro",
     "accuracy": {
-      "mean": 0.5104166666666667,
-      "std": 0.018633899812498248
+      "mean": 0.8381864085840522,
+      "std": 0.04178126530876405
     },
     "precision_macro": {
-      "mean": 0.4994271324843605,
-      "std": 0.024812121235537592
+      "mean": 0.8360302952523835,
+      "std": 0.04555230711659091
     },
     "recall_macro": {
-      "mean": 0.5012356461528787,
-      "std": 0.023552591407911907
+      "mean": 0.8282680436847105,
+      "std": 0.04524527989248655
     },
     "f1_macro": {
-      "mean": 0.49722722963353316,
-      "std": 0.02532731227652452
+      "mean": 0.8303764922765401,
+      "std": 0.0448865176996988
     }
   },
   "classes": [
@@ -51,8 +50,8 @@
     "Low",
     "Moderate"
   ],
-  "train_rows": 480,
-  "n_features": 13,
+  "train_rows": 488,
+  "n_features": 10,
   "feature_names": [
     "temperature_c",
     "relative_humidity_pct",
@@ -62,15 +61,12 @@
     "wind_speed_kmh",
     "soil_moisture_pct",
     "soil_ph",
-    "tree_count",
-    "tapping_system",
-    "days_since_last_tap",
     "month",
     "day_of_year"
   ],
-  "dataset_provenance": "synthetic; not real-world evidence",
-  "target_warning": "Rule-derived proxy labels with ~30% simulated label noise (seed 340); NOT expert-verified tapping advice.",
-  "x_train_sha256": "72571ed82ecb7831d421101bafe770fe742ed14048fc86021c4e454833cdd0b2",
-  "y_train_sha256": "48e3867ceb1f4ba6720ca99cc23ccea08e1c2bcae22105eb5b42b5dcb6662d92",
-  "model_sha256": "d2e907c4b6b7766b6fae628f614333261ddf6db908d45d57eca8dfdae1b069a6"
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
+  "target_warning": "Rule-derived proxy labels from rainfall thresholds, judged on rain that actually fell; the model sees only the forecast issued beforehand (no added noise). NOT expert-verified tapping advice.",
+  "x_train_sha256": "a39d59f3aa7099125b19f2440188bf4144f356f0ca939214e37ffcdc15c2c175",
+  "y_train_sha256": "0a691bd5fba1ffa9954718de068b04a3a5848d103c56cab7764aabc61d56dccb",
+  "model_sha256": "ddec6b60ae5f3fb8774cd91c67e3342968f3d0fdcce01c245f34d399ba3b2023"
 }

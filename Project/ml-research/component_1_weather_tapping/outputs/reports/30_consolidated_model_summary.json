@@ -1,62 +1,64 @@
 {
   "project": "RubberSense Component 1",
   "stage": "30_consolidated_model_summary",
-  "dataset_provenance": "Synthetic raw-style dataset with simulated target relationships; no metric in this project is real-world evidence.",
+  "dataset_provenance": "condition-matched farmer records (5 estates, Jun-Sep 2026) with Open-Meteo weather; DRC/Metrolac values normalized by the dataset author; latex price derived from farm-gate levels (Jun-Sep 2026 levels estimated)",
   "selection_basis": "Cross-validation on the training partition (k-fold regression RMSE; stratified macro-F1 classification). The held-out test set is used once, in stage 31.",
-  "regression_accuracy_definition": "Percentage of predictions whose absolute error falls within a declared illustrative tolerance (DRC +/-1.0 pp; price +/-LKR 9/kg). This is NOT accuracy and NOT R-squared.",
+  "regression_accuracy_definition": "Percentage of predictions whose absolute error falls within a declared tolerance (DRC +/-1.0 pp; price +/-LKR 5.0/kg of field latex). This is NOT accuracy and NOT R-squared.",
   "candidates": {
     "regression": "dummy_mean, linear_regression, random_forest, extra_trees, gradient_boosting, hist_gradient_boosting, xgboost (when installed), plus tuned shortlist",
     "classification": "dummy_most_frequent, logistic_regression, random_forest, extra_trees, gradient_boosting, xgboost (when installed), plus tuned shortlist"
   },
   "cv_regression_ranking_top": {
     "drc_prediction": {
-      "model": "xgboost",
-      "cv_RMSE_mean": 0.8611230881935086,
-      "cv_MAE_mean": 0.6796216117540419,
-      "cv_R2_mean": 0.7924051080119158
+      "model": "linear_regression",
+      "cv_RMSE_mean": 1.032036352500968,
+      "cv_MAE_mean": 0.843771316280588,
+      "cv_R2_mean": 0.7288013500520625
     },
     "price_estimation": {
-      "model": "linear_regression",
-      "cv_RMSE_mean": 7.534710854219045,
-      "cv_MAE_mean": 6.109395179089601,
-      "cv_R2_mean": 0.6911630899085605
+      "model": "extra_trees",
+      "cv_RMSE_mean": 7.957703689821509,
+      "cv_MAE_mean": 6.541207983129446,
+      "cv_R2_mean": 0.9139089800380538
     }
   },
   "cv_classification_ranking_top": {
     "tapping_advisory": {
       "model": "gradient_boosting",
-      "cv_macro_f1_mean": 0.6464353773099825,
-      "cv_accuracy_mean": 0.6541666666666667
+      "cv_macro_f1_mean": 0.9676116713534676,
+      "cv_accuracy_mean": 0.969261519040606
     }
   },
   "selected": {
     "drc_prediction": {
       "selected_model": "tuned_gradient_boosting",
       "selected_role": "tuned",
-      "cv_RMSE_mean": 0.8480759229299946,
-      "cv_MAE_mean": 0.6733332620463139,
-      "cv_R2_mean": 0.7983481581936641,
+      "cv_RMSE_mean": 1.0213970005562658,
+      "cv_MAE_mean": 0.8343504551683676,
+      "cv_R2_mean": 0.7345308309451952,
       "candidates_considered": 10
     },
     "price_estimation": {
-      "selected_model": "tuned_random_forest",
-      "selected_role": "tuned",
-      "cv_RMSE_mean": 7.485478222429592,
-      "cv_MAE_mean": 5.956389207733297,
-      "cv_R2_mean": 0.6961121219085528,
+      "selected_model": "extra_trees",
+      "selected_role": "candidates",
+      "cv_RMSE_mean": 7.957703689821509,
+      "cv_MAE_mean": 6.541207983129446,
+      "cv_R2_mean": 0.9139089800380538,
       "candidates_considered": 10
     },
     "tapping_advisory": {
-      "selected_model": "tuned_gradient_boosting",
-      "selected_role": "tuned",
-      "cv_macro_f1_mean": 0.6610312235260597,
-      "cv_accuracy_mean": 0.6666666666666667
+      "selected_model": "gradient_boosting",
+      "selected_role": "candidates",
+      "cv_macro_f1_mean": 0.9676116713534675,
+      "cv_accuracy_mean": 0.9692615190406059
     }
   },
   "limitations": [
-    "Synthetic DRC and price targets are not measured ground truth.",
+    "DRC values were normalized to Kudaligama chart entries by the dataset author; they are not original field measurements.",
+    "Price is derived as farm-gate latex price x DRC / 100, so a model with DRC as an input is close to relearning that formula; Jun-Sep 2026 farm-gate levels are estimates.",
     "Collection-time prediction is excluded; no collection-time training data exists.",
-    "Tapping suitability labels are rule-derived with ~30% simulated label noise (seed 340); they are not expert labels or validated agronomic advice.",
+    "Rule-derived proxy labels from rainfall thresholds, judged on rain that actually fell; the model sees only the forecast issued beforehand (no added noise). NOT expert-verified tapping advice.",
+    "Only 5 estates and 4 months (Jun-Sep 2026) of farmer records; results may not hold for other estates or seasons.",
     "The stored split is row-wise, so most test estates also appear in training; see the estate-grouped CV for the unseen-estate estimate.",
     "Within-tolerance percentage is not the same as classification accuracy or R-squared."
   ]

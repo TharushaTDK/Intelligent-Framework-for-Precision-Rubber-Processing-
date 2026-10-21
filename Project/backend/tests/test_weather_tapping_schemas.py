@@ -50,10 +50,7 @@ def test_valid_drc_request_accepts_optional_fields():
 
     assert request.temperature_c is None
     assert request.estate_id is None
-    assert request.tapping_system is None
-    assert (
-        request.previous_collection_yield_litres is None
-    )
+    assert request.visible_latex_condition is None
 
 
 def test_valid_drc_request_accepts_all_fields():
@@ -72,15 +69,12 @@ def test_valid_drc_request_accepts_all_fields():
         wind_speed_kmh=7.3,
         soil_moisture_pct=41.0,
         soil_ph=5.8,
-        estate_id="EST-001",
-        tree_count=150.0,
-        tapping_system="S/2",
-        days_since_last_tap=2.0,
-        previous_collection_yield_litres=38.0,
+        visible_latex_condition="Watery",
+        estate_id="Estate 01",
     )
 
-    assert request.estate_id == "EST-001"
-    assert request.tapping_system == "S/2"
+    assert request.estate_id == "Estate 01"
+    assert request.visible_latex_condition == "Watery"
 
 
 def test_valid_tapping_request_accepts_optional_fields():
@@ -94,7 +88,7 @@ def test_valid_tapping_request_accepts_optional_fields():
     )
 
     assert request.soil_ph is None
-    assert request.tree_count is None
+    assert request.forecast_rain_next_6h_mm is None
 
 
 def test_valid_price_request_accepts_optional_fields():
@@ -192,7 +186,7 @@ def test_all_request_types_reject_naive_timestamps(
         ("temperature_c", math.nan, DrcPredictionRequest),
         ("soil_ph", math.nan, DrcPredictionRequest),
         (
-            "previous_collection_yield_litres",
+            "rainfall_last_3days_mm",
             math.inf,
             DrcPredictionRequest,
         ),
@@ -202,7 +196,7 @@ def test_all_request_types_reject_naive_timestamps(
             TappingSuitabilityRequest,
         ),
         ("latex_drc_pct", math.inf, PriceEstimationRequest),
-        ("tree_count", math.nan, PriceEstimationRequest),
+        ("soil_moisture_pct", math.nan, PriceEstimationRequest),
     ],
 )
 def test_non_finite_numeric_values_are_rejected(
@@ -258,39 +252,67 @@ def test_unknown_extra_fields_are_rejected():
     with pytest.raises(ValidationError):
         TappingSuitabilityRequest(
             observation_timestamp=AWARE_TIMESTAMP,
-            estate_id="EST-001",  # not a tapping feature
+            estate_id="Estate 01",  # not a tapping feature
         )
 
     with pytest.raises(ValidationError):
         PriceEstimationRequest(
             observation_timestamp=AWARE_TIMESTAMP,
-            estate_id="EST-001",  # not a price feature
+            estate_id="Estate 01",  # not a price feature
         )
 
 
-# ============================================================
-# EMPTY IDENTIFIER REJECTION
-# ============================================================
-
-
 @pytest.mark.parametrize(
-    ("identifier",),
+    ("field_name", "value"),
     [
-        ("",),
-        ("   ",),
+        ("tree_count", 150.0),
+        ("tapping_system", "S/2"),
+        ("days_since_last_tap", 2.0),
+        ("previous_collection_yield_litres", 38.0),
     ],
 )
-def test_empty_tapping_system_is_rejected(identifier: str):
+def test_fields_dropped_in_the_retrain_are_rejected(
+    field_name: str,
+    value,
+):
     """
-    Empty or whitespace-only tapping_system must be
-    rejected as malformed input (distinct from None =
-    missing).
+    The retrained models no longer use these old synthetic
+    fields, so sending them must fail loudly instead of being
+    quietly ignored.
     """
 
     with pytest.raises(ValidationError):
         DrcPredictionRequest(
             observation_timestamp=AWARE_TIMESTAMP,
-            tapping_system=identifier,
+            **{field_name: value},
+        )
+
+
+# ============================================================
+# LATEX CONDITION VALIDATION
+# ============================================================
+
+
+@pytest.mark.parametrize(
+    ("condition",),
+    [
+        ("",),
+        ("   ",),
+        ("watery",),
+        ("Very watery",),
+    ],
+)
+def test_unknown_latex_condition_is_rejected(condition: str):
+    """
+    Only the three labels seen in training are accepted;
+    anything else would be ignored by the encoder and give a
+    misleading DRC.
+    """
+
+    with pytest.raises(ValidationError):
+        DrcPredictionRequest(
+            observation_timestamp=AWARE_TIMESTAMP,
+            visible_latex_condition=condition,
         )
 
 
@@ -321,12 +343,10 @@ def test_identifier_validation_does_not_rewrite_values():
 
     request = DrcPredictionRequest(
         observation_timestamp=AWARE_TIMESTAMP,
-        estate_id=" EST-001 ",
-        tapping_system=" s/2 ",
+        estate_id=" Estate 01 ",
     )
 
-    assert request.estate_id == " EST-001 "
-    assert request.tapping_system == " s/2 "
+    assert request.estate_id == " Estate 01 "
 
 
 # ============================================================
