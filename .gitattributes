@@ -1,0 +1,3 @@
+
+# Preserve Component 4 runtime source hashes
+Project/backend/app/ml/component_4_thud_test/*.py text eol=lf

@@ -10,6 +10,7 @@ from backend.app.database.session import Base, DATABASE_URL
 # Import ORM models so SQLAlchemy registers all tables
 # inside Base.metadata before Alembic autogeneration runs.
 from backend.app.database.models import (  # noqa: F401
+    AcousticMeasurement,
     SmokehouseBatch,
     SmokehouseLayer,
     SmokehousePrediction,

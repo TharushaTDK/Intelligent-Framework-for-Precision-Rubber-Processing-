@@ -1,0 +1,38 @@
+{
+  "runtime_layout_version": "preprocessing-inference-v2",
+  "checked_recordings": 60,
+  "preprocessing_and_inference_equivalent": true,
+  "model_refitted": false,
+  "model_artifact_sha256": "1cf045a4d6939136c8ea842e15dff724815d46b8994c8b40bfe4c05a0768b56a",
+  "code_hashes": {
+    "preprocessing.py": "82c15d99c8187ced250e677804e0a297ebc5893132a85d535cf36049ea5af69f",
+    "feature_contract.py": "0791926743e762dc4b9a3995de9a1e774a9fd06d11745276c1b8e2bcfb7c0ba4",
+    "model_loader.py": "3ef231c4be4ed9773ea691f14f28f6229850e980c964667b1c9490e8d16ad47d",
+    "inference.py": "e74e645608bb59f5f84e9aafd05fdbf2df1895f1ae63f9b2044c231ca57942f3"
+  },
+  "archived_files": [
+    "backend\\app\\ml\\component_4_thud_test\\audio_io.py",
+    "backend\\app\\ml\\component_4_thud_test\\segmentation.py",
+    "backend\\app\\ml\\component_4_thud_test\\technical_checks.py",
+    "backend\\app\\ml\\component_4_thud_test\\features.py",
+    "backend\\app\\ml\\component_4_thud_test\\preview_api.py",
+    "ml-research\\component_4_thud_test\\src\\prepare_dataset.py",
+    "ml-research\\component_4_thud_test\\src\\export_features.py",
+    "ml-research\\component_4_thud_test\\src\\review_audio.py",
+    "ml-research\\component_4_thud_test\\src\\import_legacy_measurements.py",
+    "ml-research\\component_4_thud_test\\src\\archive_legacy_layout.py",
+    "ml-research\\component_4_thud_test\\reports",
+    "ml-research\\component_4_thud_test\\data\\review\\waveforms.html",
+    "backend\\storage\\component_4_thud_test\\041f27c0-0d0e-4d12-aa23-c8476e7f48ea.json",
+    "backend\\storage\\component_4_thud_test\\13a3ff0c-3e05-44c4-a6ca-cb13ef5bf68b.json",
+    "backend\\storage\\component_4_thud_test\\2bbbf79e-f5aa-465c-9fcb-e6afcb968cfe.json",
+    "backend\\storage\\component_4_thud_test\\51a94237-9377-4dda-9ab1-fd46706cfa3d.json",
+    "backend\\storage\\component_4_thud_test\\6ec36d07-a84a-4788-8cfa-b75f94375a48.json",
+    "backend\\storage\\component_4_thud_test\\7268fe1d-f1e5-4d96-9240-f622d32e61bd.json",
+    "backend\\storage\\component_4_thud_test\\9ccc34a1-e211-45e4-a753-57a2323b01fa.json",
+    "backend\\storage\\component_4_thud_test\\a7a72cac-cb3d-4746-8931-7da2c18bd011.json",
+    "backend\\storage\\component_4_thud_test\\bc9c710d-bf2f-436f-a66a-35ce06aaac9b.json",
+    "backend\\storage\\component_4_thud_test\\fe7b1c00-813d-4307-8fd9-e4437d031828.json"
+  ],
+  "note": "Structural equivalence check only, not independent accuracy validation."
+}

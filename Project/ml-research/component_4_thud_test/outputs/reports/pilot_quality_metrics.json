@@ -1,0 +1,127 @@
+{
+  "status": "PRELIMINARY_DEMO",
+  "evaluation": "leave_one_sheet_out; score original recordings only",
+  "independent_sheets": 4,
+  "original_recordings": 12,
+  "augmented_recordings": 48,
+  "combined_feature_rows": 60,
+  "rules_only": {
+    "n_original_recordings": 12,
+    "accuracy": 0.75,
+    "invalid_f1": 0.4,
+    "label_order": [
+      "INVALID",
+      "VALID"
+    ],
+    "confusion_matrix": [
+      [
+        1,
+        3
+      ],
+      [
+        0,
+        8
+      ]
+    ],
+    "false_acceptance_rate": 0.75,
+    "false_rejection_rate": 0.0
+  },
+  "complete_workflow": {
+    "n_original_recordings": 12,
+    "accuracy": 0.5833333333333334,
+    "invalid_f1": 0.4444444444444444,
+    "label_order": [
+      "INVALID",
+      "VALID"
+    ],
+    "confusion_matrix": [
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        5
+      ]
+    ],
+    "false_acceptance_rate": 0.5,
+    "false_rejection_rate": 0.375
+  },
+  "classifier_on_rule_passed_originals": {
+    "n_original_recordings": 11,
+    "accuracy": 0.5454545454545454,
+    "invalid_f1": 0.2857142857142857,
+    "label_order": [
+      "INVALID",
+      "VALID"
+    ],
+    "confusion_matrix": [
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        5
+      ]
+    ],
+    "false_acceptance_rate": 0.6666666666666666,
+    "false_rejection_rate": 0.375
+  },
+  "folds": [
+    {
+      "fold": 1,
+      "training_sheets": [
+        "S002",
+        "S003",
+        "S004"
+      ],
+      "held_out_sheets": [
+        "S001"
+      ],
+      "training_rows": 38
+    },
+    {
+      "fold": 2,
+      "training_sheets": [
+        "S001",
+        "S003",
+        "S004"
+      ],
+      "held_out_sheets": [
+        "S002"
+      ],
+      "training_rows": 38
+    },
+    {
+      "fold": 3,
+      "training_sheets": [
+        "S001",
+        "S002",
+        "S004"
+      ],
+      "held_out_sheets": [
+        "S003"
+      ],
+      "training_rows": 38
+    },
+    {
+      "fold": 4,
+      "training_sheets": [
+        "S001",
+        "S002",
+        "S003"
+      ],
+      "held_out_sheets": [
+        "S004"
+      ],
+      "training_rows": 45
+    }
+  ],
+  "limitations": [
+    "Small pilot dataset, not final independent validation.",
+    "Augmentation labels are inherited; variants are not new sheets.",
+    "Some invalid examples have protocol deviations that may not be acoustically identifiable.",
+    "No moisture model or calibrated reliability guarantee is included."
+  ]
+}
