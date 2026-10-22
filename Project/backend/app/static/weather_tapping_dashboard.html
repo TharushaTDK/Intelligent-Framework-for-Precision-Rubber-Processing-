@@ -186,6 +186,10 @@
         .big-value { font-size: 30px; font-weight: 700; margin: 6px 0 4px; }
         .estimate-tag { font-size: 11px; color: var(--warning-text); font-weight: 700; letter-spacing: 0.03em; }
         .line { font-size: 13px; color: var(--muted); margin-top: 4px; }
+        .advice { font-size: 18px; font-weight: 700; margin-top: 2px; }
+        .advice.ok { color: var(--success-text); }
+        .advice.warn { color: var(--warning-text); }
+        .advice.bad { color: var(--critical-text); }
         .empty { color: var(--muted); font-size: 13px; font-style: italic; margin: 6px 0 0; }
 
         .blocked {
@@ -992,6 +996,14 @@
                 );
             }
 
+            // What the farmer should do for each suitability class. The class
+            // and its probabilities stay on screen next to the recommendation.
+            const TAPPING_ADVICE = {
+                High: { action: "Tap", note: "Good conditions for tapping." },
+                Moderate: { action: "Tap with caution", note: "Mixed conditions. Tap only if the bark is dry." },
+                Low: { action: "Delay tapping", note: "Wet or rainy conditions. Wait until the bark is dry." },
+            };
+
             function renderTapping(result) {
                 if (!result.ok) return showFailure("tappingResult", result.error);
                 const b = result.body;
@@ -1003,12 +1015,16 @@
                     .map(label => `${label} ${(b.probabilities[label.toLowerCase()] * 100).toFixed(1)}%`)
                     .join(" · ");
 
+                const advice = TAPPING_ADVICE[b.predicted_label];
                 $("tappingResult").innerHTML = "";
-                $("tappingResult").append(
-                    estimateTag("MODEL ESTIMATE (research proxy)"),
-                    value,
-                    el("div", "line", probs),
-                );
+                $("tappingResult").append(estimateTag("MODEL ESTIMATE (research proxy)"), value);
+                if (advice) {
+                    $("tappingResult").append(
+                        el("div", "advice " + kind, `Recommendation: ${advice.action}`),
+                        el("div", "line", advice.note),
+                    );
+                }
+                $("tappingResult").append(el("div", "line", probs));
             }
 
             // Price uses the DRC model's estimate. Without it the price request

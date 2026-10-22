@@ -9,11 +9,12 @@ import { parseAdvisoryResult } from '../../features/plantAdvisory/advisoryResult
 import { formatObservationHour } from '../../features/plantAdvisory/fieldLocation';
 import type { TappingLabel } from '../../types/plantAdvisory';
 
-// colour plus a written label, so the result never depends on colour alone
-const TAPPING_STYLE: Record<TappingLabel, { color: string; text: string }> = {
-  High: { color: colors.success, text: 'Good conditions for tapping' },
-  Moderate: { color: colors.warning, text: 'Tapping possible, conditions are mixed' },
-  Low: { color: colors.critical, text: 'Poor conditions for tapping' },
+// colour plus a written label, so the result never depends on colour alone;
+// the action is what the farmer should do for that class
+const TAPPING_STYLE: Record<TappingLabel, { color: string; action: string; text: string }> = {
+  High: { color: colors.success, action: 'Tap', text: 'Good conditions for tapping.' },
+  Moderate: { color: colors.warning, action: 'Tap with caution', text: 'Mixed conditions. Tap only if the bark is dry.' },
+  Low: { color: colors.critical, action: 'Delay tapping', text: 'Wet or rainy conditions. Wait until the bark is dry.' },
 };
 
 export default function AdvisoryResultScreen() {
@@ -61,7 +62,7 @@ export default function AdvisoryResultScreen() {
           <Text style={styles.caption}>
             {result.latexCondition
               ? `Latex condition: ${result.latexCondition}`
-              : 'Latex condition not checked, so normal latex was assumed'}
+              : 'Normal latex was assumed'}
           </Text>
           <Text style={styles.estimateTag}>Model estimate, not a measured DRC</Text>
         </View>
@@ -74,6 +75,10 @@ export default function AdvisoryResultScreen() {
               <View style={styles.labelRow}>
                 <View style={[styles.labelDot, { backgroundColor: tappingStyle.color }]} />
                 <Text style={styles.tappingLabel}>{result.tapping.label}</Text>
+              </View>
+              <View style={[styles.advice, { borderColor: tappingStyle.color }]}>
+                <Text style={styles.adviceCaption}>Recommendation</Text>
+                <Text style={[styles.adviceAction, { color: tappingStyle.color }]}>{tappingStyle.action}</Text>
               </View>
               <Text style={styles.tappingText}>{tappingStyle.text}</Text>
               <View style={styles.probabilities}>
@@ -115,7 +120,7 @@ export default function AdvisoryResultScreen() {
         </View>
 
         <Text style={styles.note}>
-          Based on the weather and the latex condition you chose. Soil and estate details were not
+          Based on the weather at your field. Latex condition, soil and estate details were not
           provided, so the models used their usual values for these.
         </Text>
 
@@ -225,6 +230,25 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     color: colors.textPrimary,
+  },
+  advice: {
+    borderWidth: 1,
+    borderRadius: radii.md,
+    backgroundColor: colors.background,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+  },
+  adviceCaption: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+  },
+  adviceAction: {
+    marginTop: 2,
+    fontSize: 20,
+    fontWeight: '700',
   },
   tappingText: {
     fontSize: 14,

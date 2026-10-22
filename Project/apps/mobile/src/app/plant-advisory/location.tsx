@@ -1,28 +1,28 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { FormField } from '../../components/FormField';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { SecondaryButton } from '../../components/SecondaryButton';
 import { colors, radii, spacing, typography } from '../../constants/theme';
-import {
-  buildAdvisoryRecord,
-  buildAdvisoryResult,
-  LATEX_CONDITION_OPTIONS,
-  weatherInputs,
-} from '../../features/plantAdvisory/advisoryResult';
+import { buildAdvisoryRecord, buildAdvisoryResult, weatherInputs } from '../../features/plantAdvisory/advisoryResult';
 import { FieldMap } from '../../features/plantAdvisory/FieldMap';
 import {
-  ADVISORY_TIME_OPTIONS,
+  advisoryTimeBounds,
   advisoryTimestamp,
+  checkAdvisoryTime,
+  FORECAST_LIMIT_DAYS,
   formatObservationHour,
+  formatPickedDate,
+  formatPickedTime,
   fromGps,
   fromMap,
   parseCoordinates,
-  type AdvisoryTimeKey,
+  sriLankaNow,
   type FieldLocation,
 } from '../../features/plantAdvisory/fieldLocation';
 import {
@@ -33,7 +33,7 @@ import {
   saveAdvisoryRecord,
   toReadableMessage,
 } from '../../services/plantAdvisoryApi';
-import type { LatexCondition, WeatherSnapshotResponse } from '../../types/plantAdvisory';
+import type { WeatherSnapshotResponse } from '../../types/plantAdvisory';
 
 // GPS can hang indoors or on a cold start, so give up after a while
 const GPS_TIMEOUT_MS = 20000;
@@ -54,7 +54,10 @@ export default function FieldLocationScreen() {
   const [gpsLoading, setGpsLoading] = useState(false);
   const [gpsMessage, setGpsMessage] = useState<string | null>(null);
   const [location, setLocation] = useState<FieldLocation | null>(null);
-  const [timeKey, setTimeKey] = useState<AdvisoryTimeKey>('now');
+  // wall-clock Sri Lanka time chosen with the date and time pickers
+  const [pickedTime, setPickedTime] = useState<Date>(() => sriLankaNow());
+  const [pickerMode, setPickerMode] = useState<'date' | 'time' | null>(null);
+  const [timeError, setTimeError] = useState<string | null>(null);
   // the coordinate boxes are a fallback; the map is the main way to choose
   const [manualEntry, setManualEntry] = useState(false);
 
@@ -65,9 +68,6 @@ export default function FieldLocationScreen() {
   const [weather, setWeather] = useState<WeatherSnapshotResponse | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState<string | null>(null);
-
-  // only changes the DRC (and so the price), so the weather stays valid
-  const [latexCondition, setLatexCondition] = useState<LatexCondition | null>(null);
 
   const [advisoryLoading, setAdvisoryLoading] = useState(false);
   const [advisoryError, setAdvisoryError] = useState<string | null>(null);
@@ -110,9 +110,26 @@ export default function FieldLocationScreen() {
     clearWeather();
   }
 
-  function onTimeChange(key: AdvisoryTimeKey) {
-    setTimeKey(key);
+  function onTimeChange(next: Date) {
+    setPickedTime(next);
+    setTimeError(checkAdvisoryTime(next));
     clearWeather();
+  }
+
+  // The date picker only changes the day and the time picker only the
+  // hour and minute, so each keeps the other half of the chosen time.
+  function onPicked(value: Date) {
+    const mode = pickerMode;
+    // Android shows a dialog that is already closed by now; iOS shows
+    // the picker inline, so hide it once a value is chosen
+    setPickerMode(null);
+    const next = new Date(pickedTime);
+    if (mode === 'date') {
+      next.setFullYear(value.getFullYear(), value.getMonth(), value.getDate());
+    } else {
+      next.setHours(value.getHours(), value.getMinutes(), 0, 0);
+    }
+    onTimeChange(next);
   }
 
   // Only runs when the farmer taps the button - Android shows its own
@@ -171,6 +188,14 @@ export default function FieldLocationScreen() {
       return;
     }
 
+    // checked again here: a time that was fine when picked can drift
+    // past the history limit if the screen stays open
+    const rangeError = checkAdvisoryTime(pickedTime);
+    setTimeError(rangeError);
+    if (rangeError) {
+      return;
+    }
+
     setWeatherLoading(true);
     setWeatherError(null);
     setWeather(null);
@@ -179,7 +204,7 @@ export default function FieldLocationScreen() {
       const snapshot = await getWeatherSnapshot({
         latitude: target.latitude,
         longitude: target.longitude,
-        observation_timestamp: advisoryTimestamp(timeKey),
+        observation_timestamp: advisoryTimestamp(pickedTime),
       });
       setWeather(snapshot);
     } catch (error) {
@@ -190,8 +215,8 @@ export default function FieldLocationScreen() {
   }
 
   // DRC and tapping run together; price needs the DRC estimate, so it
-  // goes after. Weather goes to all three, and the latex condition to the
-  // DRC model only. A location can't tell us the estate or soil, so the
+  // goes after. Weather goes to all three. The latex condition isn't
+  // asked for, and a location can't tell us the estate or soil, so the
   // backend fills those itself.
   async function generateAdvisory() {
     if (!location || !weather) {
@@ -206,12 +231,7 @@ export default function FieldLocationScreen() {
 
     try {
       const [drcResult, tappingResult] = await Promise.allSettled([
-        estimateDrc({
-          observation_timestamp: timestamp,
-          ...inputs,
-          // left out when not checked, so the backend treats it as missing
-          ...(latexCondition ? { visible_latex_condition: latexCondition } : {}),
-        }),
+        estimateDrc({ observation_timestamp: timestamp, ...inputs }),
         getTappingAdvisory({ observation_timestamp: timestamp, ...inputs }),
       ]);
 
@@ -247,7 +267,7 @@ export default function FieldLocationScreen() {
       }
 
       const result = buildAdvisoryResult(
-        location, weather, latexCondition, drc, tapping, tappingError, price, priceError,
+        location, weather, null, drc, tapping, tappingError, price, priceError,
       );
       router.push({ pathname: '/plant-advisory/result', params: { data: JSON.stringify(result) } });
     } finally {
@@ -326,26 +346,53 @@ export default function FieldLocationScreen() {
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>When</Text>
-          {ADVISORY_TIME_OPTIONS.map((item) => {
-            const selected = item.key === timeKey;
-            return (
-              <Pressable
-                key={item.key}
-                accessibilityRole="radio"
-                accessibilityState={{ selected }}
-                onPress={() => onTimeChange(item.key)}
-                style={[styles.option, selected && styles.optionSelected]}
-              >
-                <View style={[styles.radio, selected && styles.radioSelected]}>
-                  {selected ? <View style={styles.radioDot} /> : null}
-                </View>
-                <View style={styles.optionText}>
-                  <Text style={styles.optionLabel}>{item.label}</Text>
-                  <Text style={styles.optionCaption}>{item.caption}</Text>
-                </View>
-              </Pressable>
-            );
-          })}
+          <Text style={styles.hint}>
+            Advisory date and time, in Sri Lanka time. Future times, up to {FORECAST_LIMIT_DAYS} days
+            ahead, use the forecast.
+          </Text>
+
+          <View style={styles.pickerRow}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Date, ${formatPickedDate(pickedTime)}. Tap to change.`}
+              onPress={() => setPickerMode('date')}
+              style={[styles.option, styles.pickerButton, pickerMode === 'date' && styles.optionSelected]}
+            >
+              <View style={styles.optionText}>
+                <Text style={styles.optionCaption}>Date</Text>
+                <Text style={styles.optionLabel}>{formatPickedDate(pickedTime)}</Text>
+              </View>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Time, ${formatPickedTime(pickedTime)}. Tap to change.`}
+              onPress={() => setPickerMode('time')}
+              style={[styles.option, styles.pickerButton, pickerMode === 'time' && styles.optionSelected]}
+            >
+              <View style={styles.optionText}>
+                <Text style={styles.optionCaption}>Time</Text>
+                <Text style={styles.optionLabel}>{formatPickedTime(pickedTime)}</Text>
+              </View>
+            </Pressable>
+          </View>
+
+          {pickerMode ? (
+            <DateTimePicker
+              value={pickedTime}
+              mode={pickerMode}
+              display={Platform.OS === 'ios' ? (pickerMode === 'date' ? 'inline' : 'spinner') : 'default'}
+              minimumDate={pickerMode === 'date' ? advisoryTimeBounds().min : undefined}
+              maximumDate={pickerMode === 'date' ? advisoryTimeBounds().max : undefined}
+              onValueChange={(_, value) => onPicked(value)}
+              onDismiss={() => setPickerMode(null)}
+            />
+          ) : null}
+
+          {timeError ? <Text style={styles.timeError}>{timeError}</Text> : null}
+
+          <Pressable accessibilityRole="button" onPress={() => onTimeChange(sriLankaNow())}>
+            <Text style={styles.linkText}>Use current time</Text>
+          </Pressable>
         </View>
 
         <PrimaryButton
@@ -404,38 +451,6 @@ export default function FieldLocationScreen() {
                 Forecast: this is a future time, so every value is a forecast.
               </Text>
             ) : null}
-          </View>
-        ) : null}
-
-        {weather ? (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>How does the latex look?</Text>
-            <Text style={styles.hint}>
-              Check the latex in a collection cup. Watery latex has less rubber in it, so it is worth less.
-            </Text>
-            {LATEX_CONDITION_OPTIONS.map((item) => {
-              const selected = item.key === latexCondition;
-              return (
-                <Pressable
-                  key={item.label}
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected }}
-                  onPress={() => {
-                    setLatexCondition(item.key);
-                    setAdvisoryError(null);
-                  }}
-                  style={[styles.option, selected && styles.optionSelected]}
-                >
-                  <View style={[styles.radio, selected && styles.radioSelected]}>
-                    {selected ? <View style={styles.radioDot} /> : null}
-                  </View>
-                  <View style={styles.optionText}>
-                    <Text style={styles.optionLabel}>{item.label}</Text>
-                    <Text style={styles.optionCaption}>{item.caption}</Text>
-                  </View>
-                </Pressable>
-              );
-            })}
           </View>
         ) : null}
 
@@ -530,24 +545,6 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     backgroundColor: colors.background,
   },
-  radio: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 2,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioSelected: {
-    borderColor: colors.primary,
-  },
-  radioDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: colors.primary,
-  },
   optionText: {
     flex: 1,
   },
@@ -560,6 +557,18 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontSize: 12,
     color: colors.textSecondary,
+  },
+  pickerRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  pickerButton: {
+    flex: 1,
+  },
+  timeError: {
+    fontSize: 13,
+    color: colors.critical,
+    lineHeight: 19,
   },
   hint: {
     fontSize: 13,

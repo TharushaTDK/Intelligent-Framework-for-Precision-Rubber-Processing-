@@ -58,27 +58,72 @@ export function sriLankaTimestamp(moment: Date = new Date()): string {
 }
 
 // ---------------- advisory time ----------------
-// Tapping usually starts early in the morning, so the future options
-// are 6 AM. Both stay well inside the backend's 7-day forecast limit.
+// The date and time pickers work in the phone's own time zone, but the
+// advisory is always for Sri Lanka time. So the picked date and time are
+// kept as a plain wall-clock value: the numbers on the screen are read as
+// Sri Lanka time, whatever zone the phone (or emulator) is set to.
 
-export type AdvisoryTimeKey = 'now' | 'tomorrow_6am' | 'day_after_6am';
+// same limits as the backend and the dashboard
+export const FORECAST_LIMIT_DAYS = 7;
+export const HISTORY_LIMIT_DAYS = 89;
 
-export const ADVISORY_TIME_OPTIONS: { key: AdvisoryTimeKey; label: string; caption: string }[] = [
-  { key: 'now', label: 'Now', caption: 'Current weather' },
-  { key: 'tomorrow_6am', label: 'Tomorrow, 6 AM', caption: 'Forecast for the morning tapping' },
-  { key: 'day_after_6am', label: 'Day after tomorrow, 6 AM', caption: 'Forecast, less certain' },
-];
+const DAY_MS = 24 * 3600 * 1000;
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-// Timestamp (Sri Lanka time) for the chosen option.
-export function advisoryTimestamp(key: AdvisoryTimeKey, now: Date = new Date()): string {
-  if (key === 'now') {
-    return sriLankaTimestamp(now);
-  }
-  const daysAhead = key === 'tomorrow_6am' ? 1 : 2;
-  // today's date as it is in Sri Lanka, then move forward whole days
+// The current Sri Lanka wall-clock time, as a Date for the pickers.
+export function sriLankaNow(now: Date = new Date()): Date {
   const shifted = new Date(now.getTime() + SRI_LANKA_OFFSET_MINUTES * 60000);
-  shifted.setUTCDate(shifted.getUTCDate() + daysAhead);
-  return `${shifted.toISOString().slice(0, 10)}T06:00:00+05:30`;
+  return new Date(
+    shifted.getUTCFullYear(),
+    shifted.getUTCMonth(),
+    shifted.getUTCDate(),
+    shifted.getUTCHours(),
+    shifted.getUTCMinutes(),
+  );
+}
+
+// "2026-10-21T13:00:00+05:30" from a picked wall-clock value
+export function advisoryTimestamp(picked: Date): string {
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return (
+    `${picked.getFullYear()}-${pad(picked.getMonth() + 1)}-${pad(picked.getDate())}` +
+    `T${pad(picked.getHours())}:${pad(picked.getMinutes())}:00+05:30`
+  );
+}
+
+// Earliest and latest wall-clock values the pickers should offer.
+export function advisoryTimeBounds(now: Date = new Date()): { min: Date; max: Date } {
+  const current = sriLankaNow(now);
+  return {
+    min: new Date(current.getTime() - HISTORY_LIMIT_DAYS * DAY_MS),
+    max: new Date(current.getTime() + FORECAST_LIMIT_DAYS * DAY_MS),
+  };
+}
+
+// Error message when the picked time is outside what the weather
+// service covers, or null when it's fine.
+export function checkAdvisoryTime(picked: Date, now: Date = new Date()): string | null {
+  const when = new Date(advisoryTimestamp(picked)).getTime();
+  if (when > now.getTime() + FORECAST_LIMIT_DAYS * DAY_MS) {
+    return `Weather is only available up to ${FORECAST_LIMIT_DAYS} days ahead. Pick an earlier time.`;
+  }
+  if (when < now.getTime() - HISTORY_LIMIT_DAYS * DAY_MS) {
+    return `Weather history only goes back about ${HISTORY_LIMIT_DAYS} days. Pick a later time.`;
+  }
+  return null;
+}
+
+// "Wed, 21 Oct 2026" and "1:00 PM" for the picker buttons
+export function formatPickedDate(picked: Date): string {
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  return `${days[picked.getDay()]}, ${picked.getDate()} ${MONTHS[picked.getMonth()]} ${picked.getFullYear()}`;
+}
+
+export function formatPickedTime(picked: Date): string {
+  const hours = picked.getHours();
+  const minutes = String(picked.getMinutes()).padStart(2, '0');
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+  return `${hour12}:${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
 }
 
 // "10:00 AM, 20 Oct" from a backend timestamp, read in Sri Lanka time
@@ -92,6 +137,5 @@ export function formatObservationHour(timestamp: string): string {
   const minutes = String(shifted.getUTCMinutes()).padStart(2, '0');
   const suffix = hours >= 12 ? 'PM' : 'AM';
   const hour12 = hours % 12 === 0 ? 12 : hours % 12;
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return `${hour12}:${minutes} ${suffix}, ${shifted.getUTCDate()} ${months[shifted.getUTCMonth()]}`;
+  return `${hour12}:${minutes} ${suffix}, ${shifted.getUTCDate()} ${MONTHS[shifted.getUTCMonth()]}`;
 }
