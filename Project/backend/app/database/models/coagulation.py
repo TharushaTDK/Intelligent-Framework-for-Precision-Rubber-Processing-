@@ -54,3 +54,20 @@ class CoagulationRecommendation(Base):
     expected_completion_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     actual_coagulation_time_hours: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+    # 1% acid solution taken from the stock when the timer was started
+    acid_used_ml: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+
+class CoagulationAcidStock(Base):
+    """The farmer's prepared 1% formic acid solution, one row, lowered as batches start."""
+
+    __tablename__ = "coagulation_acid_stock"
+
+    __table_args__ = (
+        CheckConstraint("stock_ml >= 0", name="ck_coagulation_acid_stock_positive"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    stock_ml: Mapped[float] = mapped_column(Float, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)

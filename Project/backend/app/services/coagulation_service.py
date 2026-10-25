@@ -8,19 +8,23 @@ import numpy as np
 import pandas as pd
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from backend.app.core.config import PROJECT_ROOT
 from backend.app.database.models import CoagulationRecommendation
+from backend.app.database.models.coagulation import CoagulationAcidStock
 from backend.app.ml.component_2_coagulation.model_loader import ModelLoadError, get_models
 from backend.app.schemas.coagulation import (
+    AcidStockResponse,
     CoagulationAlert,
     CoagulationGuidance,
     CoagulationRecommendationCreate,
     CoagulationRecommendationResponse,
+    CoagulationStage,
     CoagulationStatusUpdate,
+    CoagulationStep,
     WaterAcidResult,
 )
 from backend.app.services import coagulation_drc_provider
@@ -66,6 +70,19 @@ ALERT_INTERVAL_MINUTES = _AlertSettings().coagulation_alert_interval_minutes
 
 # small allowance for phone and server clocks being slightly apart
 CLOCK_TOLERANCE = timedelta(minutes=5)
+
+# the stock is one row, the farmer's own jar of prepared 1% acid solution
+ACID_STOCK_ID = 1
+# recent started batches used for the "enough for N batches" estimate
+ACID_AVERAGE_BATCHES = 10
+
+# expected stage from how much of the predicted time has passed, a guide not a measurement
+STAGES = (
+    (0.25, "liquid", "Liquid", "The acid is mixing in, the latex is still liquid. Keep the pan covered and still."),
+    (0.60, "thickening", "Thickening", "The latex is starting to thicken. Do not stir or move the pan."),
+    (1.00, "setting", "Setting", "The coagulum is forming and getting firmer. Leave it undisturbed."),
+    (None, "firm", "Ready to check", "The expected time is reached. Check that the coagulum is firm before sheeting."),
+)
 
 # allowed status changes for the coagulation timer
 ALLOWED_TRANSITIONS = {
@@ -414,6 +431,7 @@ def update_recommendation_status(
                 hours, version = predict_time_for_batch(record)
                 record.coagulation_time_hours = hours
                 record.coagulation_time_model_version = version
+            _take_acid(db, record)
             record.started_at = changed_at
             record.expected_completion_at = changed_at + timedelta(hours=record.coagulation_time_hours)
 
@@ -460,6 +478,166 @@ def add_coagulation_time(db: Session, recommendation_id: int) -> CoagulationReco
 
     db.refresh(record)
     return record
+
+
+def coagulation_stage(progress: float) -> CoagulationStage:
+    """Stage for a share of the predicted time, 0.0 at the start and 1.0 at the expected time."""
+    for number, (upper, key, label, description) in enumerate(STAGES, start=1):
+        if upper is None or progress < upper:
+            return CoagulationStage(key=key, number=number, label=label, description=description)
+    raise AssertionError("the last stage has no upper limit")
+
+
+def build_steps(record: CoagulationRecommendation) -> list[CoagulationStep]:
+    """Batch steps from preparing the latex to checking the coagulum, with this batch's amounts."""
+    if record.requested_water_acid:
+        water = f"{record.water_amount_l:.1f} L of clean water"
+        acid = f"{record.prepared_1pct_formic_acid_solution_ml:.0f} mL of prepared 1% formic acid solution"
+    else:
+        water = "the recommended amount of clean water"
+        acid = "the recommended amount of prepared 1% formic acid solution"
+    duration = (
+        hours_and_minutes(record.coagulation_time_hours)
+        if record.coagulation_time_hours is not None
+        else "the predicted time"
+    )
+    items = [
+        ("Strain the latex", f"Strain the {record.latex_volume_l:g} L of latex into a clean pan to remove dirt and lumps."),
+        ("Add the water", f"Add {water} and stir gently."),
+        ("Measure the acid", f"Measure {acid}. Do not use concentrated acid directly."),
+        ("Add the acid", "Pour the acid slowly while stirring gently, so few bubbles form."),
+        ("Remove the froth", "Skim the froth off the surface."),
+        ("Start the timer", f"Cover the pan, leave it still and start the timer for {duration}."),
+        ("Check the coagulum", "When the timer ends, check that the coagulum is firm before sheeting."),
+    ]
+    return [CoagulationStep(number=i, title=t, detail=d) for i, (t, d) in enumerate(items, start=1)]
+
+
+def _acid_needed(record: CoagulationRecommendation) -> float:
+    # the farmer measures whole mL, so the stock is checked and lowered by the shown amount
+    return float(max(round(record.prepared_1pct_formic_acid_solution_ml), 0))
+
+
+def _get_stock(db: Session, *, lock: bool = False) -> CoagulationAcidStock | None:
+    try:
+        return db.get(CoagulationAcidStock, ACID_STOCK_ID, with_for_update=lock)
+    except SQLAlchemyError as exc:
+        raise CoagulationServiceError("Acid stock could not be loaded.") from exc
+
+
+def _average_batch_acid(db: Session) -> float | None:
+    """Average acid of the latest started batches, or of the latest recommendations before any start."""
+    used = (
+        select(CoagulationRecommendation.acid_used_ml.label("acid"))
+        .where(CoagulationRecommendation.acid_used_ml.is_not(None))
+        .order_by(CoagulationRecommendation.started_at.desc())
+        .limit(ACID_AVERAGE_BATCHES)
+        .subquery()
+    )
+    recommended = (
+        select(CoagulationRecommendation.prepared_1pct_formic_acid_solution_ml.label("acid"))
+        .order_by(CoagulationRecommendation.created_at.desc())
+        .limit(ACID_AVERAGE_BATCHES)
+        .subquery()
+    )
+    try:
+        average = db.scalar(select(func.avg(used.c.acid)))
+        if average is None:
+            average = db.scalar(select(func.avg(recommended.c.acid)))
+    except SQLAlchemyError as exc:
+        raise CoagulationServiceError("Acid usage could not be loaded.") from exc
+    return float(average) if average is not None and average > 0 else None
+
+
+def acid_stock_status(db: Session) -> AcidStockResponse:
+    stock = _get_stock(db)
+    average = _average_batch_acid(db)
+
+    if stock is None:
+        return AcidStockResponse(
+            average_batch_acid_mL=average,
+            low_stock=False,
+            message="Enter how much prepared 1% acid solution you have.",
+        )
+
+    left = math.floor(stock.stock_ml / average) if average else None
+    if stock.stock_ml <= 0:
+        message = "Acid stock is empty. Prepare more 1% acid solution, then add it here."
+    elif left == 0:
+        message = "Not enough acid for another batch. Prepare more 1% acid solution, then add it here."
+    elif left == 1:
+        message = "Only enough for 1 more batch. Prepare more 1% acid solution, then add it here."
+    elif left is not None:
+        message = f"Enough for about {left} more batches."
+    else:
+        message = f"{stock.stock_ml:.0f} mL of 1% acid solution in stock."
+
+    return AcidStockResponse(
+        stock_mL=stock.stock_ml,
+        updated_at=stock.updated_at,
+        average_batch_acid_mL=average,
+        batches_left=left,
+        low_stock=stock.stock_ml <= 0 or (left is not None and left <= 1),
+        message=message,
+    )
+
+
+def set_acid_stock(db: Session, stock_mL: float) -> AcidStockResponse:
+    """Farmer corrects the total on hand, e.g. after a spill or a wrong count."""
+    try:
+        stock = _get_stock(db, lock=True)
+        if stock is None:
+            stock = CoagulationAcidStock(id=ACID_STOCK_ID, stock_ml=stock_mL, updated_at=datetime.now(timezone.utc))
+            db.add(stock)
+        else:
+            stock.stock_ml = stock_mL
+            stock.updated_at = datetime.now(timezone.utc)
+        db.commit()
+    except CoagulationServiceError:
+        db.rollback()
+        raise
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise CoagulationServiceError("Acid stock could not be saved.") from exc
+    return acid_stock_status(db)
+
+
+def add_acid_stock(db: Session, added_mL: float) -> AcidStockResponse:
+    """Farmer prepared more solution, it is added on top of what is left."""
+    try:
+        stock = _get_stock(db, lock=True)
+        if stock is None:
+            stock = CoagulationAcidStock(id=ACID_STOCK_ID, stock_ml=added_mL, updated_at=datetime.now(timezone.utc))
+            db.add(stock)
+        else:
+            stock.stock_ml += added_mL
+            stock.updated_at = datetime.now(timezone.utc)
+        db.commit()
+    except CoagulationServiceError:
+        db.rollback()
+        raise
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise CoagulationServiceError("Acid stock could not be saved.") from exc
+    return acid_stock_status(db)
+
+
+def _take_acid(db: Session, record: CoagulationRecommendation) -> None:
+    """Lower the stock by this batch's acid when its timer starts, no stock entered means no check."""
+    # the farmer never saw an acid amount for a time-only batch, so nothing is taken
+    if not record.requested_water_acid:
+        return
+    needed = _acid_needed(record)
+    stock = _get_stock(db, lock=True)
+    if stock is not None:
+        if stock.stock_ml < needed:
+            raise CoagulationConflictError(
+                f"Not enough 1% acid solution: this batch needs {needed:.0f} mL, "
+                f"the stock has {stock.stock_ml:.0f} mL. Update the acid stock first."
+            )
+        stock.stock_ml -= needed
+        stock.updated_at = datetime.now(timezone.utc)
+    record.acid_used_ml = needed
 
 
 def _format_duration(td: timedelta) -> str:
@@ -549,8 +727,18 @@ def to_response(
     is_due = None
     alerts: list[CoagulationAlert] = []
     next_alert_at = None
-    if record.status == "in_progress" and record.expected_completion_at is not None:
+    progress = None
+    stage = None
+    if record.status == "completed":
+        progress = 100.0
+        stage = coagulation_stage(1.0)
+    elif record.status == "in_progress" and record.expected_completion_at is not None:
         now = now or datetime.now(timezone.utc)
+        total = (record.expected_completion_at - record.started_at).total_seconds()
+        share = (now - record.started_at).total_seconds() / total if total > 0 else 1.0
+        share = max(share, 0.0)
+        progress = min(share, 1.0) * 100
+        stage = coagulation_stage(share)
         remaining = max((record.expected_completion_at - now).total_seconds() / 3600, 0.0)
         is_due = now >= record.expected_completion_at
         alerts = build_alert_schedule(record, now)
@@ -600,9 +788,13 @@ def to_response(
         expected_completion_at=record.expected_completion_at,
         completed_at=record.completed_at,
         actual_coagulation_time_hours=record.actual_coagulation_time_hours,
+        acid_used_mL=record.acid_used_ml,
+        steps=build_steps(record),
         time_remaining_hours=remaining,
         is_due=is_due,
         alert_interval_minutes=ALERT_INTERVAL_MINUTES if alerts else None,
         next_alert_at=next_alert_at,
         alerts=alerts,
+        progress_pct=progress,
+        stage=stage,
     )

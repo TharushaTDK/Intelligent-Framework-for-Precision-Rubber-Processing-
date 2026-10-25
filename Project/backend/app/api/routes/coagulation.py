@@ -8,6 +8,9 @@ from sqlalchemy.orm import Session
 
 from backend.app.database.session import get_db
 from backend.app.schemas.coagulation import (
+    AcidStockAdd,
+    AcidStockResponse,
+    AcidStockUpdate,
     CoagulationHistoryResponse,
     CoagulationPreviewRequest,
     CoagulationPreviewResponse,
@@ -20,6 +23,8 @@ from backend.app.schemas.coagulation import (
     WaterAcidResult,
 )
 from backend.app.services.coagulation_service import (
+    acid_stock_status,
+    add_acid_stock,
     CoagulationConflictError,
     CoagulationDrcUnavailableError,
     CoagulationNotFoundError,
@@ -33,6 +38,7 @@ from backend.app.services.coagulation_service import (
     list_recommendations,
     notes_for,
     run_coagulation_inference,
+    set_acid_stock,
     to_response,
     update_recommendation_status,
 )
@@ -221,3 +227,45 @@ def predict_preview(request: CoagulationPreviewRequest) -> CoagulationPreviewRes
         notes=notes_for(result.outside_training_range),
         guidance=guidance,
     )
+
+
+@router.get(
+    "/acid-stock",
+    response_model=AcidStockResponse,
+)
+def get_acid_stock(db: Session = Depends(get_db)) -> AcidStockResponse:
+    """Prepared 1% acid solution on hand and about how many batches it is enough for."""
+    try:
+        return acid_stock_status(db)
+    except CoagulationServiceError as exc:
+        raise _http_error(exc) from exc
+
+
+@router.put(
+    "/acid-stock",
+    response_model=AcidStockResponse,
+)
+def put_acid_stock(
+    request: AcidStockUpdate,
+    db: Session = Depends(get_db),
+) -> AcidStockResponse:
+    """Farmer corrects the total 1% acid solution on hand."""
+    try:
+        return set_acid_stock(db, request.stock_mL)
+    except CoagulationServiceError as exc:
+        raise _http_error(exc) from exc
+
+
+@router.post(
+    "/acid-stock/add",
+    response_model=AcidStockResponse,
+)
+def post_acid_stock_add(
+    request: AcidStockAdd,
+    db: Session = Depends(get_db),
+) -> AcidStockResponse:
+    """Farmer prepared more 1% acid solution, it is added to the stock."""
+    try:
+        return add_acid_stock(db, request.added_mL)
+    except CoagulationServiceError as exc:
+        raise _http_error(exc) from exc

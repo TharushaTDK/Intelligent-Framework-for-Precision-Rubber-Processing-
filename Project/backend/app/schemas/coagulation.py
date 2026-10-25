@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 CoagulationOutput = Literal["water_acid", "coagulation_time"]
 RecommendationStatus = Literal["recommended", "in_progress", "completed", "cancelled"]
+StageKey = Literal["liquid", "thickening", "setting", "firm"]
 
 
 def _require_timezone(value: datetime | None) -> datetime | None:
@@ -146,6 +147,40 @@ class CoagulationAlert(BaseModel):
     is_past: bool
 
 
+class CoagulationStage(BaseModel):
+    key: StageKey
+    number: int = Field(ge=1, le=4)
+    label: str
+    description: str
+
+
+class CoagulationStep(BaseModel):
+    number: int
+    title: str
+    detail: str
+
+
+class AcidStockUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    stock_mL: float = Field(ge=0, le=100000, allow_inf_nan=False, description="Prepared 1% acid solution on hand.")
+
+
+class AcidStockAdd(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    added_mL: float = Field(gt=0, le=100000, allow_inf_nan=False, description="Newly prepared 1% acid solution.")
+
+
+class AcidStockResponse(BaseModel):
+    stock_mL: float | None = Field(default=None, description="None until the farmer enters the stock.")
+    updated_at: datetime | None = None
+    average_batch_acid_mL: float | None = None
+    batches_left: int | None = None
+    low_stock: bool
+    message: str
+
+
 class CoagulationRecommendationResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -168,12 +203,16 @@ class CoagulationRecommendationResponse(BaseModel):
     expected_completion_at: datetime | None = None
     completed_at: datetime | None = None
     actual_coagulation_time_hours: float | None = None
+    acid_used_mL: float | None = None
+    steps: list[CoagulationStep] = []
     # live timer values, worked out when the record is read
     time_remaining_hours: float | None = None
     is_due: bool | None = None
     alert_interval_minutes: int | None = None
     next_alert_at: datetime | None = None
     alerts: list[CoagulationAlert] = []
+    progress_pct: float | None = None
+    stage: CoagulationStage | None = None
 
 
 class CoagulationHistoryResponse(BaseModel):
