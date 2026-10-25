@@ -1,10 +1,16 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import { colors, radii, spacing, typography } from '../../constants/theme';
-import { BatchSummaryCard, formatDate } from '../../features/latex/BatchSummaryCard';
+import { PrimaryButton } from '../../components/PrimaryButton';
+import { colors, spacing } from '../../constants/theme';
+import {
+  BatchSummaryCard,
+  coagulationTimeText,
+  formatAcid,
+  formatDate,
+} from '../../features/latex/BatchSummaryCard';
+import { Banner, Card, LatexScreen } from '../../features/latex/ui';
 import { getRecommendation, toReadableMessage } from '../../services/latexApi';
 import type { CoagulationRecommendationResponse } from '../../types/latex';
 
@@ -27,51 +33,93 @@ export default function BatchDetails() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  const timeline = batch
+    ? [
+        { label: 'Recommended', at: batch.created_at },
+        { label: 'Timer started', at: batch.started_at },
+        {
+          label: batch.status === 'cancelled' ? 'Cancelled' : 'Completed',
+          at: batch.completed_at ?? (batch.status === 'cancelled' ? 'cancelled' : null),
+        },
+      ]
+    : [];
+
   return (
-    <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
-      <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
-        <Text style={styles.backLabel}>{'‹ Back'}</Text>
-      </Pressable>
+    <LatexScreen
+      eyebrow={batch ? `Batch #${batch.id}` : 'Batch'}
+      title="Batch Details"
+      footer={
+        batch?.status === 'recommended' ? (
+          <PrimaryButton
+            label="Start Step-by-Step Guide  ›"
+            onPress={() => router.push({ pathname: '/latex/guide', params: { id: String(batch.id) } })}
+          />
+        ) : null
+      }
+    >
+      {loading ? (
+        <View style={styles.loadingRow}>
+          <ActivityIndicator color={colors.primary} />
+          <Text style={styles.loadingText}>Loading the batch...</Text>
+        </View>
+      ) : null}
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Batch Details</Text>
+      {error ? <Banner tone="danger" text={error} /> : null}
 
-        {loading ? (
-          <View style={styles.loadingRow}>
-            <ActivityIndicator color={colors.primary} />
-            <Text style={styles.loadingText}>Loading the batch...</Text>
-          </View>
-        ) : null}
+      {batch ? (
+        <>
+          <BatchSummaryCard batch={batch} />
 
-        {error ? (
-          <View style={styles.errorBox}>
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        ) : null}
+          <Card>
+            <Text style={styles.cardTitle}>Timeline</Text>
+            {timeline.map((item, index) => {
+              const reached = Boolean(item.at);
+              return (
+                <View key={item.label} style={styles.timelineRow}>
+                  <View style={styles.timelineSide}>
+                    <View style={[styles.dot, reached && styles.dotOn]} />
+                    {index < timeline.length - 1 ? <View style={[styles.line, reached && styles.lineOn]} /> : null}
+                  </View>
+                  <View style={styles.timelineText}>
+                    <Text style={[styles.timelineLabel, !reached && styles.muted]}>{item.label}</Text>
+                    <Text style={styles.timelineAt}>
+                      {item.at && item.at !== 'cancelled' ? formatDate(item.at) : reached ? '' : 'Not yet'}
+                    </Text>
+                  </View>
+                </View>
+              );
+            })}
+          </Card>
 
-        {batch ? (
-          <>
-            <BatchSummaryCard batch={batch} />
-
-            <View style={styles.infoCard}>
-              <InfoRow label="Saved on" value={formatDate(batch.created_at)} />
-              <InfoRow
-                label="Asked for"
-                value={batch.outputs.map((output) => OUTPUT_LABELS[output]).join(' and ')}
-              />
-              <InfoRow
-                label="DRC source"
-                value={batch.drc_source === 'manual' ? 'Entered manually' : 'From the chosen location'}
-              />
-              <InfoRow label="Water & acid model" value={batch.water_acid_model_version} />
-              {batch.coagulation_time_model_version ? (
-                <InfoRow label="Coagulation time model" value={batch.coagulation_time_model_version} />
+          {batch.actual_coagulation_time_hours !== null || batch.acid_used_mL !== null ? (
+            <Card>
+              <Text style={styles.cardTitle}>Result</Text>
+              {batch.acid_used_mL !== null ? (
+                <InfoRow label="Acid taken from stock" value={formatAcid(batch.acid_used_mL)} />
               ) : null}
-            </View>
-          </>
-        ) : null}
-      </ScrollView>
-    </SafeAreaView>
+              {batch.coagulation_time_hours !== null ? (
+                <InfoRow label="Predicted time" value={coagulationTimeText(batch.coagulation_time_hours)} />
+              ) : null}
+              {batch.actual_coagulation_time_hours !== null ? (
+                <InfoRow label="Actual time" value={coagulationTimeText(batch.actual_coagulation_time_hours)} />
+              ) : null}
+            </Card>
+          ) : null}
+
+          <Card>
+            <InfoRow label="Asked for" value={batch.outputs.map((output) => OUTPUT_LABELS[output]).join(' and ')} />
+            <InfoRow
+              label="DRC source"
+              value={batch.drc_source === 'manual' ? 'Entered manually' : 'From the chosen location'}
+            />
+            <InfoRow label="Water & acid model" value={batch.water_acid_model_version} />
+            {batch.coagulation_time_model_version ? (
+              <InfoRow label="Coagulation time model" value={batch.coagulation_time_model_version} />
+            ) : null}
+          </Card>
+        </>
+      ) : null}
+    </LatexScreen>
   );
 }
 
@@ -85,38 +133,55 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  backButton: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  backLabel: {
-    fontSize: typography.body.fontSize,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-    gap: spacing.md,
-  },
-  title: {
-    fontSize: typography.title.fontSize,
-    fontWeight: typography.title.fontWeight,
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '800',
     color: colors.textPrimary,
   },
-  infoCard: {
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    borderWidth: 1,
+  timelineRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  timelineSide: {
+    alignItems: 'center',
+    width: 16,
+  },
+  dot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 2,
     borderColor: colors.border,
-    padding: spacing.md,
-    gap: spacing.sm,
+    backgroundColor: colors.surface,
+  },
+  dotOn: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  line: {
+    flex: 1,
+    width: 2,
+    minHeight: 22,
+    backgroundColor: colors.border,
+  },
+  lineOn: {
+    backgroundColor: colors.primary,
+  },
+  timelineText: {
+    flex: 1,
+    paddingBottom: spacing.sm,
+  },
+  timelineLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  muted: {
+    color: colors.textSecondary,
+  },
+  timelineAt: {
+    fontSize: 12,
+    color: colors.textSecondary,
   },
   infoRow: {
     flexDirection: 'row',
@@ -130,21 +195,9 @@ const styles = StyleSheet.create({
   infoValue: {
     flexShrink: 1,
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.textPrimary,
     textAlign: 'right',
-  },
-  errorBox: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.critical,
-    borderRadius: radii.md,
-    padding: spacing.md,
-  },
-  errorText: {
-    color: colors.critical,
-    fontSize: 13,
-    fontWeight: '600',
   },
   loadingRow: {
     flexDirection: 'row',
