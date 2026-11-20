@@ -706,6 +706,201 @@
             font-size: 14px;
         }
 
+        .part-stock {
+            --accent: var(--acid);
+            --accent-bg: var(--acid-bg);
+        }
+
+        .part-whatif {
+            --accent: var(--water);
+            --accent-bg: var(--water-bg);
+        }
+
+        .checklist {
+            list-style: none;
+            margin: 6px 0 0;
+            padding: 0;
+            display: grid;
+            gap: 8px;
+        }
+
+        .checklist label {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 10px 12px;
+            border: 1.5px solid var(--line);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .checklist label.ticked {
+            border-color: var(--green-500);
+            background: var(--green-100);
+        }
+
+        .checklist input {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            accent-color: var(--green-500);
+        }
+
+        .checklist strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .checklist span {
+            font-size: 13.5px;
+            color: var(--muted);
+        }
+
+        .prep-bar,
+        .stock-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #ece8dc;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .prep-bar div,
+        .stock-bar div {
+            height: 100%;
+            background: var(--green-500);
+            transition: width 0.3s;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: none;
+        }
+
+        .stages {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: 16px;
+        }
+
+        .stages div {
+            text-align: center;
+            padding: 8px 4px;
+            border-radius: 6px;
+            background: #f1eee4;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .stages div.past {
+            background: var(--green-100);
+            color: var(--green-700);
+        }
+
+        .stages div.now {
+            background: var(--green-500);
+            color: white;
+        }
+
+        .stage-text {
+            margin: 8px 0 0;
+            font-size: 14px;
+        }
+
+        .notice {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--green-100);
+            color: var(--green-700);
+        }
+
+        .notice.low {
+            background: #fdecea;
+            color: var(--error);
+        }
+
+        .stock-row {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            flex-wrap: wrap;
+        }
+
+        .jar {
+            position: relative;
+            width: 90px;
+            height: 120px;
+            border: 3px solid #d9cfc1;
+            border-top-width: 10px;
+            border-radius: 8px 8px 14px 14px;
+            background: #fbf8f3;
+            overflow: hidden;
+            flex: none;
+        }
+
+        .jar div {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--acid);
+            opacity: 0.8;
+            transition: height 0.4s;
+        }
+
+        .jar.low div {
+            background: var(--error);
+        }
+
+        .stock-facts {
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            gap: 6px 26px;
+        }
+
+        .stock-facts small {
+            display: block;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .stock-facts strong {
+            font-size: 22px;
+        }
+
+        .slider-field {
+            margin-top: 14px;
+        }
+
+        .slider-field label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+        }
+
+        .slider-field b {
+            color: var(--accent);
+            font-size: 20px;
+        }
+
+        .slider-field input {
+            width: 100%;
+            accent-color: var(--accent);
+        }
+
+        .compare {
+            margin: 10px 0 0;
+            padding-left: 18px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
         @media (max-width: 600px) {
             .part {
                 padding: 20px;
@@ -809,9 +1004,79 @@
         <div id="batchList"></div>
     </section>
 
-    <section class="part part-batches">
+    <section class="part part-stock">
         <div class="part-head">
             <div class="step">4</div>
+            <div>
+                <h2>Acid Stock</h2>
+                <p>Prepared 1% formic acid solution on hand. Starting a batch takes its acid from here.</p>
+            </div>
+        </div>
+
+        <div class="stock-row">
+            <div id="stockJar" class="jar"><div style="height:0"></div></div>
+            <div class="stock-facts">
+                <div><small>In stock</small><strong id="stockNow">—</strong></div>
+                <div><small>Batches left</small><strong id="stockLeft">—</strong></div>
+                <div><small>Average per batch</small><strong id="stockAvg">—</strong></div>
+            </div>
+        </div>
+        <p id="stockMessage" class="notice"></p>
+
+        <form id="addForm">
+            <div class="row">
+                <div class="field">
+                    <label for="addInput">Add new solution: how much did you just prepare?</label>
+                    <div class="input-wrap">
+                        <input id="addInput" type="number" min="1" max="100000" step="1" placeholder="e.g. 1000" required>
+                        <span class="unit">mL</span>
+                    </div>
+                </div>
+            </div>
+            <p id="addPreview" class="hint"></p>
+            <button type="submit">Add to stock</button>
+        </form>
+
+        <details>
+            <summary>Correct the total (after a spill or a wrong count)</summary>
+            <form id="stockForm">
+                <div class="row">
+                    <div class="field">
+                        <label for="stockInput">Total 1% acid solution in the jar now</label>
+                        <div class="input-wrap">
+                            <input id="stockInput" type="number" min="0" max="100000" step="1" placeholder="e.g. 2150" required>
+                            <span class="unit">mL</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="plain-btn">Set total</button>
+            </form>
+        </details>
+    </section>
+
+    <section class="part part-whatif">
+        <div class="part-head">
+            <div class="step">5</div>
+            <div>
+                <h2>What-if</h2>
+                <p>Move the latex volume to see how the water, acid and time change for this location. Nothing is saved.</p>
+            </div>
+        </div>
+
+        <div class="slider-field">
+            <label for="wiVolume">Latex volume <b id="wiVolumeText">1.5 L</b></label>
+            <input id="wiVolume" type="range" min="1" max="2" step="0.1" value="1.5">
+        </div>
+        <div class="slider-field">
+            <label>Dry rubber content (from the chosen location) <b id="wiDrcText">—</b></label>
+            <input id="wiDrc" type="hidden" value="">
+        </div>
+        <div id="wiAnswer" class="answer"></div>
+    </section>
+
+    <section class="part part-batches">
+        <div class="part-head">
+            <div class="step">6</div>
             <div>
                 <h2>Batch History</h2>
                 <p>Finished batches with the amounts used and the actual coagulation time.</p>
@@ -827,6 +1092,8 @@
     // starts over Sri Lanka, like the Component 1 page
     const MAP_START = { latitude: 7.8731, longitude: 80.7718, zoom: 7 };
     const PIN_ZOOM = 13;
+    // Sri Lanka with a small margin, the map cannot leave it
+    const SRI_LANKA = { south: 5.7, west: 79.4, north: 10.0, east: 82.1 };
     const SVG_NS = "http://www.w3.org/2000/svg";
     const RING = 2 * Math.PI * 76;
 
@@ -970,7 +1237,9 @@
             $("map").append(make("div", "The map could not be loaded, check the internet connection. You can still use your current location.", "map-fallback"));
             return;
         }
-        map = L.map("map").setView([MAP_START.latitude, MAP_START.longitude], MAP_START.zoom);
+        const bounds = L.latLngBounds([SRI_LANKA.south, SRI_LANKA.west], [SRI_LANKA.north, SRI_LANKA.east]);
+        map = L.map("map", { maxBounds: bounds, maxBoundsViscosity: 1, minZoom: MAP_START.zoom })
+            .setView([MAP_START.latitude, MAP_START.longitude], MAP_START.zoom);
         L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -1004,7 +1273,16 @@
     }
 
     // map point -> weather now -> Component 1 DRC
+    function inSriLanka(latitude, longitude) {
+        return latitude >= SRI_LANKA.south && latitude <= SRI_LANKA.north
+            && longitude >= SRI_LANKA.west && longitude <= SRI_LANKA.east;
+    }
+
     async function choosePoint(latitude, longitude, pan) {
+        if (!inSriLanka(latitude, longitude)) {
+            $("pinInfo").textContent = "This location is outside Sri Lanka. Choose a place in Sri Lanka.";
+            return;
+        }
         const lat = Number(latitude.toFixed(6));
         const lon = Number(longitude.toFixed(6));
         placeMarker(lat, lon, pan);
@@ -1019,6 +1297,7 @@
             if (request !== pinRequest) return;
             pin = data;
             $("drcInfo").textContent = `DRC: ${data.drc.toFixed(1)} %`;
+            whatIfFromPin();
         } catch (err) {
             if (request !== pinRequest) return;
             $("drcInfo").textContent = err.message;
@@ -1071,6 +1350,7 @@
             );
             box.append(tiles);
             addGuidance(box, data.guidance);
+            whatIfFrom(data.drc, data.latex_volume_L);
 
             $("tVolume").value = volume;
             $("timeAnswer").replaceChildren();
@@ -1122,6 +1402,7 @@
             box.append(again);
 
             putBatch(data);
+            whatIfFrom(data.drc, data.latex_volume_L);
         } catch (err) {
             showError(box, err.message);
         }
@@ -1190,6 +1471,33 @@
         return make("span", names[status] || status, "chip chip-" + status);
     }
 
+    // same limits as the backend STAGES, so the live stage matches the saved one
+    const STAGES = [
+        { label: "Liquid", upTo: 0.25, description: "The acid is mixing in, the latex is still liquid. Keep the pan covered and still." },
+        { label: "Thickening", upTo: 0.6, description: "The latex is starting to thicken. Do not stir or move the pan." },
+        { label: "Setting", upTo: 1, description: "The coagulum is forming and getting firmer. Leave it undisturbed." },
+        { label: "Ready to check", upTo: Infinity, description: "The expected time is reached. Check that the coagulum is firm before sheeting." },
+    ];
+
+    function stageFor(share) {
+        const index = STAGES.findIndex(st => share < st.upTo);
+        return { ...STAGES[index], index };
+    }
+
+    // tells the farmer before starting if the acid stock is short
+    function stockNote(b) {
+        const needed = Math.round(b.water_acid?.prepared_1pct_formic_acid_solution_mL ?? 0);
+        if (!stock || stock.stock_mL === null || !needed) return make("span");
+        const short = stock.stock_mL < needed;
+        return make(
+            "p",
+            short
+                ? `Not enough acid solution: this batch needs ${needed} mL, the stock has ${stock.stock_mL.toFixed(0)} mL.`
+                : `Acid stock is enough: ${stock.stock_mL.toFixed(0)} mL, ${(stock.stock_mL - needed).toFixed(0)} mL left after this batch.`,
+            "notice" + (short ? " low" : ""),
+        );
+    }
+
     function batchCard(b) {
         const card = make("article", null, "batch");
         const head = make("div", null, "batch-head");
@@ -1199,8 +1507,38 @@
         card.append(head, batchFacts(b));
 
         if (b.status === "recommended") {
-            card.append(make("p", "Start the timer when coagulation begins. You will get alerts until the batch is ready.", "muted"));
-            const start = make("button", "Start timer", "go");
+            card.append(make("p", "Tick each step as you prepare the pan. The timer can start when all are done.", "muted"));
+            // the last two steps are starting the timer and checking at the end
+            const prep = (b.steps || []).slice(0, -2);
+            const list = make("ul", null, "checklist");
+            const bar = make("div", null, "prep-bar");
+            const fill = make("div");
+            fill.style.width = "0%";
+            bar.append(fill);
+            const start = make("button", `Finish the steps (0/${prep.length})`, "go");
+            start.disabled = prep.length > 0;
+            const update = () => {
+                const done = list.querySelectorAll("input:checked").length;
+                fill.style.width = prep.length ? `${(done / prep.length) * 100}%` : "100%";
+                start.disabled = done < prep.length;
+                start.textContent = done < prep.length ? `Finish the steps (${done}/${prep.length})` : "Start timer";
+            };
+            prep.forEach(step => {
+                const li = make("li");
+                const label = make("label");
+                const box = make("input");
+                box.type = "checkbox";
+                box.onchange = () => {
+                    label.classList.toggle("ticked", box.checked);
+                    update();
+                };
+                const text = make("div");
+                text.append(make("strong", `${step.number}. ${step.title}`), make("span", step.detail));
+                label.append(box, text);
+                li.append(label);
+                list.append(li);
+            });
+            card.append(list, bar, stockNote(b));
             start.onclick = () => {
                 askNotificationPermission();
                 setStatus(b, "in_progress");
@@ -1225,6 +1563,11 @@
             body.append(r.wrap, info);
             card.append(body);
 
+            const stages = make("div", null, "stages");
+            STAGES.forEach(st => stages.append(make("div", st.label)));
+            const stageText = make("p", "", "stage-text");
+            card.append(stages, stageText);
+
             const alertBox = make("div");
             card.append(alertBox);
 
@@ -1239,7 +1582,7 @@
             details.append(timeline);
             card.append(details);
 
-            live.set(b.id, { batch: b, ring: r, alertBox, shown: null });
+            live.set(b.id, { batch: b, ring: r, alertBox, stages, stageText, shown: null });
             return card;
         }
 
@@ -1333,6 +1676,11 @@
             const start = new Date(b.started_at);
             const end = new Date(b.expected_completion_at);
             const left = end - now;
+            const stage = stageFor((now - start) / (end - start || 1));
+            [...item.stages.children].forEach((el, i) => {
+                el.className = i < stage.index ? "past" : i === stage.index ? "now" : "";
+            });
+            item.stageText.textContent = stage.description;
             if (left > 0) {
                 r.big.textContent = clockText(left);
                 r.small.textContent = "remaining";
@@ -1429,6 +1777,132 @@
         } catch (err) {
             alert(err.message);
         }
+        loadStock();
+    }
+
+    // acid stock
+
+    let stock = null;
+
+    function drawStock() {
+        const has = stock && stock.stock_mL !== null;
+        const full = stock?.average_batch_acid_mL ? stock.average_batch_acid_mL * 5 : 1000;
+        const jar = $("stockJar");
+        jar.classList.toggle("low", Boolean(stock?.low_stock));
+        jar.firstChild.style.height = has ? `${Math.min(stock.stock_mL / full, 1) * 100}%` : "0";
+        $("stockNow").textContent = has ? `${stock.stock_mL.toFixed(0)} mL` : "Not entered";
+        $("stockLeft").textContent = stock?.batches_left ?? "—";
+        $("stockAvg").textContent = stock?.average_batch_acid_mL ? `${stock.average_batch_acid_mL.toFixed(0)} mL` : "—";
+        $("stockMessage").textContent = stock ? stock.message : "Acid stock could not be loaded.";
+        $("stockMessage").className = "notice" + (stock?.low_stock || !stock ? " low" : "");
+    }
+
+    async function loadStock() {
+        try {
+            stock = await call(API + "/acid-stock");
+        } catch {
+            stock = null;
+        }
+        drawStock();
+        drawBatches();
+    }
+
+    async function saveStock(path, method, body, input) {
+        try {
+            stock = await call(API + path, method, body);
+            $(input).value = "";
+            $("addPreview").textContent = "";
+            drawStock();
+            drawBatches();
+        } catch (err) {
+            $("stockMessage").textContent = err.message;
+            $("stockMessage").className = "notice low";
+        }
+    }
+
+    // shows the new total before the farmer saves
+    $("addInput").addEventListener("input", () => {
+        const added = Number($("addInput").value);
+        const now = stock?.stock_mL ?? 0;
+        $("addPreview").textContent = added > 0 ? `${now.toFixed(0)} + ${added.toFixed(0)} = ${(now + added).toFixed(0)} mL` : "";
+    });
+
+    $("addForm").addEventListener("submit", e => {
+        e.preventDefault();
+        saveStock("/acid-stock/add", "POST", { added_mL: Number($("addInput").value) }, "addInput");
+    });
+
+    $("stockForm").addEventListener("submit", e => {
+        e.preventDefault();
+        saveStock("/acid-stock", "PUT", { stock_mL: Number($("stockInput").value) }, "stockInput");
+    });
+
+    // what-if
+
+    let wiBase = null;
+    let wiRequest = 0;
+    let wiTimer = null;
+
+    function wiChange(now, base, text) {
+        const diff = now - base;
+        if (Math.abs(diff) < 0.0001) return "same as where you started";
+        return `${diff > 0 ? "▲" : "▼"} ${text(Math.abs(diff))} from where you started`;
+    }
+
+    async function runWhatIf() {
+        const volume = Number($("wiVolume").value);
+        $("wiVolumeText").textContent = `${volume.toFixed(1)} L`;
+        if (!$("wiDrc").value) {
+            $("wiAnswer").replaceChildren(make("p", "Choose the location on the map in part 1 first.", "hint"));
+            return;
+        }
+        const drc = Number($("wiDrc").value);
+        $("wiDrcText").textContent = `${drc.toFixed(1)} %`;
+        const request = ++wiRequest;
+        try {
+            const data = await call(API + "/predict-preview", "POST", {
+                drc, latex_volume_L: volume, outputs: ["water_acid", "coagulation_time"],
+            });
+            if (request !== wiRequest) return;
+            wiBase = wiBase || data;
+            const water = data.water_acid.water_amount_L;
+            const acid = data.water_acid.prepared_1pct_formic_acid_solution_mL;
+            const hours = data.coagulation_time_hours;
+            const box = $("wiAnswer");
+            const tiles = make("div", null, "tiles");
+            tiles.append(
+                tile("water", "Water", water.toFixed(1) + " L"),
+                tile("acid", "1% formic acid solution", acid.toFixed(0) + " mL"),
+                tile("time", "Coagulation time", hoursText(hours)),
+            );
+            const list = make("ul", null, "compare");
+            list.append(
+                make("li", "Water " + wiChange(water, wiBase.water_acid.water_amount_L, v => v.toFixed(1) + " L")),
+                make("li", "Acid " + wiChange(acid, wiBase.water_acid.prepared_1pct_formic_acid_solution_mL, v => v.toFixed(0) + " mL")),
+                make("li", "Time " + wiChange(hours, wiBase.coagulation_time_hours, shortHours)),
+            );
+            box.replaceChildren(tiles, list, make("p", "More latex needs more water and acid, and takes longer to coagulate.", "hint"));
+        } catch (err) {
+            if (request === wiRequest) showError($("wiAnswer"), err.message);
+        }
+    }
+
+    // wait until the slider stops before asking the models
+    $("wiVolume").addEventListener("input", () => {
+        clearTimeout(wiTimer);
+        wiTimer = setTimeout(runWhatIf, 300);
+    });
+
+    // the what-if starts from the chosen point's DRC and the batch volume
+    function whatIfFrom(drc, volume) {
+        $("wiDrc").value = drc.toFixed(1);
+        if (volume) $("wiVolume").value = Math.min(Math.max(volume, 1), 2).toFixed(1);
+        wiBase = null;
+        runWhatIf();
+    }
+
+    function whatIfFromPin() {
+        if (pin) whatIfFrom(pin.drc);
     }
 
     // bring back batches that are waiting or running after a page reload
@@ -1452,6 +1926,8 @@
     initMap();
     loadBatches();
     loadHistory();
+    loadStock();
+    runWhatIf();
 </script>
 </body>
 </html>
