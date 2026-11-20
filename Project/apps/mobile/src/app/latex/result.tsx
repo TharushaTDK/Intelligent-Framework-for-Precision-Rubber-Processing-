@@ -1,19 +1,20 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { SecondaryButton } from '../../components/SecondaryButton';
-import { colors, radii, spacing, typography } from '../../constants/theme';
-import { BatchSummaryCard } from '../../features/latex/BatchSummaryCard';
-import { addCoagulationTime, getRecommendation, toReadableMessage } from '../../services/latexApi';
-import type { CoagulationRecommendationResponse } from '../../types/latex';
+import { colors, spacing } from '../../constants/theme';
+import { BatchSummaryCard, formatAcid } from '../../features/latex/BatchSummaryCard';
+import { Banner, LatexScreen } from '../../features/latex/ui';
+import { addCoagulationTime, getAcidStock, getRecommendation, toReadableMessage } from '../../services/latexApi';
+import type { AcidStockResponse, CoagulationRecommendationResponse } from '../../types/latex';
 
 export default function BatchResult() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const [batch, setBatch] = useState<CoagulationRecommendationResponse | null>(null);
+  const [stock, setStock] = useState<AcidStockResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addingTime, setAddingTime] = useState(false);
@@ -23,6 +24,9 @@ export default function BatchResult() {
       .then(setBatch)
       .catch((err) => setError(toReadableMessage(err)))
       .finally(() => setLoading(false));
+    getAcidStock()
+      .then(setStock)
+      .catch(() => setStock(null));
   }, [id]);
 
   async function handleAddTime() {
@@ -38,96 +42,83 @@ export default function BatchResult() {
     }
   }
 
+  const needed = batch ? Math.round(batch.water_acid?.prepared_1pct_formic_acid_solution_mL ?? 0) : 0;
+  const shortOfAcid = stock?.stock_mL != null && needed > 0 && stock.stock_mL < needed;
+
   return (
-    <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
-      <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
-        <Text style={styles.backLabel}>{'‹ Back'}</Text>
-      </Pressable>
+    <LatexScreen
+      eyebrow="Step 2 of 3"
+      title="Recommendation"
+      subtitle="Saved as a batch. Follow the guide to prepare it and start the timer."
+      footer={
+        batch && batch.status === 'recommended' ? (
+          <PrimaryButton
+            label="Start Step-by-Step Guide  ›"
+            onPress={() => router.push({ pathname: '/latex/guide', params: { id: String(batch.id) } })}
+          />
+        ) : null
+      }
+    >
+      {loading ? (
+        <View style={styles.loadingRow}>
+          <ActivityIndicator color={colors.primary} />
+          <Text style={styles.loadingText}>Loading the batch...</Text>
+        </View>
+      ) : null}
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Recommendation</Text>
-        <Text style={styles.subtitle}>The batch is saved and can be found in the batch history.</Text>
+      {batch ? <BatchSummaryCard batch={batch} /> : null}
 
-        {loading ? (
+      {batch?.outside_training_range ? (
+        <Banner tone="warn" title="Outside the trained range" text={batch.notes.join(' ')} />
+      ) : null}
+
+      {shortOfAcid ? (
+        <Banner
+          tone="danger"
+          title="Not enough acid solution"
+          text={`This batch needs ${formatAcid(needed)} but the stock has ${formatAcid(stock.stock_mL ?? 0)}. Prepare more and update the stock.`}
+        />
+      ) : stock?.stock_mL != null && needed > 0 ? (
+        <Banner
+          tone="info"
+          title="Acid stock is enough"
+          text={`${formatAcid(stock.stock_mL)} in stock, ${formatAcid(stock.stock_mL - needed)} left after this batch.`}
+        />
+      ) : null}
+
+      {error ? <Banner tone="danger" text={error} /> : null}
+
+      {batch && batch.coagulation_time_hours === null ? (
+        addingTime ? (
           <View style={styles.loadingRow}>
             <ActivityIndicator color={colors.primary} />
-            <Text style={styles.loadingText}>Loading the batch...</Text>
+            <Text style={styles.loadingText}>Predicting the coagulation time...</Text>
           </View>
-        ) : null}
+        ) : (
+          <SecondaryButton label="Add Coagulation Time" onPress={handleAddTime} />
+        )
+      ) : null}
 
-        {batch ? <BatchSummaryCard batch={batch} /> : null}
-
-        {error ? (
-          <View style={styles.errorBox}>
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        ) : null}
-
-        {batch && batch.coagulation_time_hours === null ? (
-          addingTime ? (
-            <View style={styles.loadingRow}>
-              <ActivityIndicator color={colors.primary} />
-              <Text style={styles.loadingText}>Predicting the coagulation time...</Text>
-            </View>
-          ) : (
-            <PrimaryButton label="Add Coagulation Time" onPress={handleAddTime} />
-          )
-        ) : null}
-
-        {!loading ? (
-          <>
-            <SecondaryButton label="Batch History" onPress={() => router.push('/latex/history')} />
-            <SecondaryButton label="Done" onPress={() => router.dismissTo('/latex')} />
-          </>
-        ) : null}
-      </ScrollView>
-    </SafeAreaView>
+      {batch ? (
+        <>
+          {shortOfAcid ? <SecondaryButton label="Update Acid Stock" onPress={() => router.push('/latex/stock')} /> : null}
+          <SecondaryButton
+            label="Try Other Volumes (What-if)"
+            onPress={() =>
+              router.push({
+                pathname: '/latex/whatif',
+                params: { drc: String(batch.drc), volume: String(batch.latex_volume_L) },
+              })
+            }
+          />
+          <SecondaryButton label="Done" onPress={() => router.dismissTo('/latex')} />
+        </>
+      ) : null}
+    </LatexScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  backButton: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  backLabel: {
-    fontSize: typography.body.fontSize,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-    gap: spacing.md,
-  },
-  title: {
-    fontSize: typography.title.fontSize,
-    fontWeight: typography.title.fontWeight,
-    color: colors.textPrimary,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
-  errorBox: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.critical,
-    borderRadius: radii.md,
-    padding: spacing.md,
-  },
-  errorText: {
-    color: colors.critical,
-    fontSize: 13,
-    fontWeight: '600',
-  },
   loadingRow: {
     flexDirection: 'row',
     alignItems: 'center',

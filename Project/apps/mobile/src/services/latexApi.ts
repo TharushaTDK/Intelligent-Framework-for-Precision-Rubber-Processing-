@@ -1,8 +1,12 @@
 import type {
+  AcidStockResponse,
   CoagulationHistoryResponse,
+  CoagulationPreviewRequest,
+  CoagulationPreviewResponse,
   CoagulationRecommendationCreate,
   CoagulationRecommendationResponse,
   LocationDrcResponse,
+  RecommendationStatus,
 } from '../types/latex';
 
 // emulator reaches the backend through: adb reverse tcp:8000 tcp:8000
@@ -86,8 +90,51 @@ export function getRecommendation(id: number): Promise<CoagulationRecommendation
 }
 
 // batches from every location, newest first
-export function listRecommendations(limit = 50): Promise<CoagulationHistoryResponse> {
-  return request<CoagulationHistoryResponse>(`/recommendations?limit=${limit}`);
+export function listRecommendations(
+  limit = 50,
+  status?: RecommendationStatus,
+): Promise<CoagulationHistoryResponse> {
+  const filter = status ? `&status=${status}` : '';
+  return request<CoagulationHistoryResponse>(`/recommendations?limit=${limit}${filter}`);
+}
+
+// start, complete or cancel the batch timer
+export function updateBatchStatus(
+  id: number,
+  status: 'in_progress' | 'completed' | 'cancelled',
+): Promise<CoagulationRecommendationResponse> {
+  return request<CoagulationRecommendationResponse>(`/recommendations/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  });
+}
+
+export function getAcidStock(): Promise<AcidStockResponse> {
+  return request<AcidStockResponse>('/acid-stock');
+}
+
+// farmer prepared more solution, added on top of the stock
+export function addAcidStock(addedMl: number): Promise<AcidStockResponse> {
+  return request<AcidStockResponse>('/acid-stock/add', {
+    method: 'POST',
+    body: JSON.stringify({ added_mL: addedMl }),
+  });
+}
+
+// corrects the total, e.g. after a spill
+export function setAcidStock(stockMl: number): Promise<AcidStockResponse> {
+  return request<AcidStockResponse>('/acid-stock', {
+    method: 'PUT',
+    body: JSON.stringify({ stock_mL: stockMl }),
+  });
+}
+
+// what-if check, nothing is saved
+export function previewRecommendation(payload: CoagulationPreviewRequest): Promise<CoagulationPreviewResponse> {
+  return request<CoagulationPreviewResponse>('/predict-preview', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
 }
 
 // adds the time to a batch that was first asked only for water and acid

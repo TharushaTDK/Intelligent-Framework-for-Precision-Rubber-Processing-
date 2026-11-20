@@ -1,14 +1,14 @@
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { FormField } from '../../components/FormField';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { SecondaryButton } from '../../components/SecondaryButton';
-import { colors, radii, spacing, typography } from '../../constants/theme';
+import { colors, radii, spacing } from '../../constants/theme';
 import { formatDrc } from '../../features/latex/BatchSummaryCard';
+import { Banner, Card, LatexScreen } from '../../features/latex/ui';
 import { FieldMap } from '../../features/plantAdvisory/FieldMap';
 import { fromGps, fromMap, type FieldLocation } from '../../features/plantAdvisory/fieldLocation';
 import { createRecommendation, getLocationDrc, toReadableMessage } from '../../services/latexApi';
@@ -17,6 +17,19 @@ import type { CoagulationOutput, LocationDrcResponse } from '../../types/latex';
 // latex volume range of the Component 2 training data
 const VOLUME_MIN = 1.0;
 const VOLUME_MAX = 2.0;
+
+// Sri Lanka with a small margin, points outside it are not used
+const SRI_LANKA = { south: 5.7, west: 79.4, north: 10.0, east: 82.1 };
+const OUTSIDE_MESSAGE = 'This location is outside Sri Lanka. Choose a place in Sri Lanka.';
+
+function inSriLanka(latitude: number, longitude: number): boolean {
+  return (
+    latitude >= SRI_LANKA.south &&
+    latitude <= SRI_LANKA.north &&
+    longitude >= SRI_LANKA.west &&
+    longitude <= SRI_LANKA.east
+  );
+}
 
 // GPS can hang indoors or on a cold start, so give up after a while
 const GPS_TIMEOUT_MS = 20000;
@@ -68,6 +81,10 @@ export default function NewBatch() {
   }
 
   function onMapPick(lat: number, lng: number) {
+    if (!inSriLanka(lat, lng)) {
+      setGpsMessage(OUTSIDE_MESSAGE);
+      return;
+    }
     setGpsMessage(null);
     chooseLocation(fromMap(lat, lng));
   }
@@ -98,6 +115,10 @@ export default function NewBatch() {
 
       // the farmer tapped the map while GPS was searching, keep their pin
       if (pickVersion.current !== versionAtStart) {
+        return;
+      }
+      if (!inSriLanka(position.coords.latitude, position.coords.longitude)) {
+        setGpsMessage(OUTSIDE_MESSAGE);
         return;
       }
       chooseLocation(fromGps(position.coords.latitude, position.coords.longitude, position.coords.accuracy));
@@ -150,21 +171,16 @@ export default function NewBatch() {
   }
 
   return (
-    <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
-      <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
-        <Text style={styles.backLabel}>{'‹ Back'}</Text>
-      </Pressable>
-
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.title}>New Batch</Text>
-        <Text style={styles.subtitle}>Choose where the latex was collected, then enter the batch.</Text>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Location</Text>
+    <LatexScreen
+      eyebrow="Step 1 of 3"
+      title="New Batch"
+      subtitle="Choose where the latex was collected, then enter the batch."
+    >
+        <Card>
+          <View style={styles.cardHead}>
+            <Text style={styles.cardNumber}>1</Text>
+            <Text style={styles.cardTitle}>Location</Text>
+          </View>
           <Text style={styles.rangeText}>Tap the map where the latex was collected.</Text>
           <FieldMap
             pin={location}
@@ -189,18 +205,24 @@ export default function NewBatch() {
           ) : null}
           {locationDrc && !drcLoading ? (
             <View style={styles.drcBox}>
-              <Text style={styles.drcLabel}>Dry rubber content</Text>
-              <Text style={styles.drcValue}>{formatDrc(locationDrc.drc)}</Text>
-              <Text style={styles.rangeText}>Location {locationDrc.location}</Text>
+              <View>
+                <Text style={styles.drcLabel}>Dry rubber content</Text>
+                <Text style={styles.drcValue}>{formatDrc(locationDrc.drc)}</Text>
+              </View>
+              <Text style={styles.drcPlace}>📍 {locationDrc.location}</Text>
             </View>
           ) : null}
           {drcError ? <Text style={styles.errorText}>{drcError}</Text> : null}
           {errors.location && !locationDrc && !drcLoading ? (
             <Text style={styles.errorText}>{errors.location}</Text>
           ) : null}
-        </View>
+        </Card>
 
-        <View style={styles.card}>
+        <Card>
+          <View style={styles.cardHead}>
+            <Text style={styles.cardNumber}>2</Text>
+            <Text style={styles.cardTitle}>Latex volume</Text>
+          </View>
           <FormField
             label="Latex volume (L)"
             value={volume}
@@ -212,10 +234,13 @@ export default function NewBatch() {
           {!errors.volume ? (
             <Text style={styles.rangeText}>Range: {VOLUME_MIN.toFixed(1)} – {VOLUME_MAX.toFixed(1)} L</Text>
           ) : null}
-        </View>
+        </Card>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>What do you need?</Text>
+        <Card>
+          <View style={styles.cardHead}>
+            <Text style={styles.cardNumber}>3</Text>
+            <Text style={styles.cardTitle}>What do you need?</Text>
+          </View>
           {OUTPUT_OPTIONS.map((item) => {
             const selected = item.key === option;
             return (
@@ -236,13 +261,9 @@ export default function NewBatch() {
               </Pressable>
             );
           })}
-        </View>
+        </Card>
 
-        {submitError ? (
-          <View style={styles.submitErrorBox}>
-            <Text style={styles.submitErrorText}>{submitError}</Text>
-          </View>
-        ) : null}
+        {submitError ? <Banner tone="danger" text={submitError} /> : null}
 
         {loading ? (
           <View style={styles.loadingRow}>
@@ -259,58 +280,36 @@ export default function NewBatch() {
             }}
           />
         )}
-      </ScrollView>
-    </SafeAreaView>
+    </LatexScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  backButton: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-  },
-  backLabel: {
-    fontSize: typography.body.fontSize,
-    fontWeight: '600',
-    color: colors.primary,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-    gap: spacing.md,
-  },
-  title: {
-    fontSize: typography.title.fontSize,
-    fontWeight: typography.title.fontWeight,
-    color: colors.textPrimary,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: colors.textSecondary,
-    marginBottom: spacing.xs,
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
+  cardHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.sm,
   },
+  cardNumber: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: colors.primary,
+    color: colors.textOnPrimary,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    lineHeight: 26,
+    fontSize: 13,
+    fontWeight: '800',
+    overflow: 'hidden',
+  },
   rangeText: {
-    marginTop: -spacing.xs,
     fontSize: 12,
     color: colors.textSecondary,
   },
   cardTitle: {
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '800',
     color: colors.textPrimary,
   },
   drcRow: {
@@ -319,7 +318,11 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   drcBox: {
-    backgroundColor: colors.background,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: '#E4F2E8',
     borderRadius: radii.md,
     padding: spacing.md,
   },
@@ -329,9 +332,15 @@ const styles = StyleSheet.create({
   },
   drcValue: {
     marginTop: 2,
-    fontSize: 22,
-    fontWeight: '700',
+    fontSize: 26,
+    fontWeight: '800',
     color: colors.primary,
+  },
+  drcPlace: {
+    flexShrink: 1,
+    fontSize: 12,
+    color: colors.textSecondary,
+    textAlign: 'right',
   },
   errorText: {
     fontSize: 13,
@@ -343,7 +352,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     minHeight: 56,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: colors.border,
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
@@ -351,7 +360,7 @@ const styles = StyleSheet.create({
   },
   optionSelected: {
     borderColor: colors.primary,
-    backgroundColor: colors.background,
+    backgroundColor: '#E4F2E8',
   },
   radio: {
     width: 22,
@@ -383,18 +392,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontSize: 12,
     color: colors.textSecondary,
-  },
-  submitErrorBox: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.critical,
-    borderRadius: radii.md,
-    padding: spacing.md,
-  },
-  submitErrorText: {
-    color: colors.critical,
-    fontSize: 13,
-    fontWeight: '600',
   },
   loadingRow: {
     flexDirection: 'row',

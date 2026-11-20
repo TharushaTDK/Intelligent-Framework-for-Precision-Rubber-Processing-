@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { colors, radii, spacing } from '../../constants/theme';
+import { Card, Chip, StatTile } from './ui';
 import type { CoagulationRecommendationResponse } from '../../types/latex';
 
 // same wording as the backend, e.g. "7 hours 48 minutes"
@@ -41,46 +42,57 @@ type BatchSummaryCardProps = {
   batch: CoagulationRecommendationResponse;
 };
 
+export const STATUS_LABELS = {
+  recommended: { label: 'Not started', tint: 'warn' },
+  in_progress: { label: 'Coagulating', tint: 'water' },
+  completed: { label: 'Completed', tint: 'time' },
+  cancelled: { label: 'Cancelled', tint: 'danger' },
+} as const;
+
 export function BatchSummaryCard({ batch }: BatchSummaryCardProps) {
+  const status = STATUS_LABELS[batch.status];
   return (
     <View style={styles.wrap}>
-      <View style={styles.inputCard}>
-        <Text style={styles.batchTag}>Batch #{batch.id}</Text>
-        <Text style={styles.locationText}>Location {batch.estate_id}</Text>
+      <Card>
+        <View style={styles.headRow}>
+          <Text style={styles.batchTag}>Batch #{batch.id}</Text>
+          <Chip label={status.label} tint={status.tint} />
+        </View>
+        <Text style={styles.locationText}>📍 Location {batch.estate_id}</Text>
         <View style={styles.inputRow}>
           <View style={styles.inputItem}>
             <Text style={styles.inputLabel}>Dry rubber content</Text>
             <Text style={styles.inputValue}>{formatDrc(batch.drc)}</Text>
           </View>
+          <View style={styles.divider} />
           <View style={styles.inputItem}>
             <Text style={styles.inputLabel}>Latex volume</Text>
             <Text style={styles.inputValue}>{batch.latex_volume_L} L</Text>
           </View>
         </View>
-      </View>
+      </Card>
 
       {batch.water_acid ? (
-        <>
-          <View style={styles.resultCard}>
-            <Text style={styles.resultLabel}>Water to add</Text>
-            <Text style={styles.resultValue}>{formatWater(batch.water_acid.water_amount_L)}</Text>
-          </View>
-          <View style={styles.resultCard}>
-            <Text style={styles.resultLabel}>Prepared 1% formic acid solution</Text>
-            <Text style={styles.resultValue}>
-              {formatAcid(batch.water_acid.prepared_1pct_formic_acid_solution_mL)}
-            </Text>
-          </View>
-        </>
-      ) : null}
-
-      {batch.coagulation_time_hours !== null ? (
-        <View style={styles.resultCard}>
-          <Text style={styles.resultLabel}>Predicted coagulation time</Text>
-          <Text style={styles.resultValue}>{coagulationTimeText(batch.coagulation_time_hours)}</Text>
+        <View style={styles.tiles}>
+          <StatTile icon="💧" tint="water" label="Water to add" value={formatWater(batch.water_acid.water_amount_L)} />
+          <StatTile
+            icon="🧪"
+            tint="acid"
+            label="1% acid solution"
+            value={formatAcid(batch.water_acid.prepared_1pct_formic_acid_solution_mL)}
+          />
         </View>
       ) : null}
 
+      {batch.coagulation_time_hours !== null ? (
+        <View style={styles.timeCard}>
+          <Text style={styles.timeIcon}>⏱</Text>
+          <View style={styles.timeText}>
+            <Text style={styles.timeLabel}>Predicted coagulation time</Text>
+            <Text style={styles.timeValue}>{coagulationTimeText(batch.coagulation_time_hours)}</Text>
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -89,31 +101,36 @@ const styles = StyleSheet.create({
   wrap: {
     gap: spacing.md,
   },
-  inputCard: {
-    backgroundColor: colors.surface,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    gap: spacing.sm,
+  headRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   batchTag: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.background,
-    color: colors.primary,
+    fontSize: 18,
+    fontWeight: '800',
+    color: colors.textPrimary,
+  },
+  locationText: {
     fontSize: 13,
-    fontWeight: '700',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: radii.sm,
-    overflow: 'hidden',
+    color: colors.textSecondary,
   },
   inputRow: {
     flexDirection: 'row',
-    gap: spacing.md,
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    borderRadius: radii.md,
+    padding: spacing.md,
+    marginTop: spacing.xs,
   },
   inputItem: {
     flex: 1,
+    alignItems: 'center',
+  },
+  divider: {
+    width: 1,
+    alignSelf: 'stretch',
+    backgroundColor: colors.border,
   },
   inputLabel: {
     fontSize: 12,
@@ -121,29 +138,37 @@ const styles = StyleSheet.create({
   },
   inputValue: {
     marginTop: 2,
-    fontSize: 17,
-    fontWeight: '700',
+    fontSize: 20,
+    fontWeight: '800',
     color: colors.textPrimary,
   },
-  resultCard: {
+  tiles: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  timeCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
     backgroundColor: colors.primary,
     borderRadius: radii.lg,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
+    padding: spacing.md,
   },
-  resultLabel: {
+  timeIcon: {
+    fontSize: 30,
+  },
+  timeText: {
+    flex: 1,
+  },
+  timeLabel: {
     fontSize: 13,
     fontWeight: '600',
     color: colors.primaryLight,
   },
-  resultValue: {
-    marginTop: spacing.xs,
-    fontSize: 26,
-    fontWeight: '700',
+  timeValue: {
+    marginTop: 2,
+    fontSize: 24,
+    fontWeight: '800',
     color: colors.textOnPrimary,
-  },
-  locationText: {
-    fontSize: 13,
-    color: colors.textSecondary,
   },
 });
