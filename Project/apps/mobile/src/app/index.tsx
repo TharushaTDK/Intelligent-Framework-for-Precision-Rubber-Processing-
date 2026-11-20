@@ -5,6 +5,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BrandMark } from '../components/BrandMark';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { colors, radii, spacing, typography } from '../constants/theme';
+import { loadProfile } from '../features/profile/profileStorage';
+
+// first visit -> create account; returning user -> straight to Home
+async function handleGetStarted() {
+  const profile = await loadProfile();
+  router.push(profile ? '/home' : '/onboarding');
+}
 
 export default function Welcome() {
   return (
@@ -31,7 +38,7 @@ export default function Welcome() {
           <View style={styles.footer}>
             <PrimaryButton
               label="Get Started"
-              onPress={() => router.push('/home')}
+              onPress={() => void handleGetStarted()}
             />
             <Text style={styles.footerCaption}>
               Precision Rubber Intelligence

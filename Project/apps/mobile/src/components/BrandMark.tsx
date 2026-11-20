@@ -1,14 +1,14 @@
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { colors, shadows } from '../constants/theme';
+
+const logo = require('../../assets/brand-logo.png');
 
 type BrandMarkProps = {
   size?: number;
 };
 
 export function BrandMark({ size = 96 }: BrandMarkProps) {
-  const leafSize = size * 0.46;
-
   return (
     <View
       style={[
@@ -16,16 +16,11 @@ export function BrandMark({ size = 96 }: BrandMarkProps) {
         { width: size, height: size, borderRadius: size / 2 },
       ]}
     >
-      <View
-        style={[
-          styles.leaf,
-          {
-            width: leafSize,
-            height: leafSize,
-            borderTopLeftRadius: leafSize / 2,
-            borderBottomRightRadius: leafSize / 2,
-          },
-        ]}
+      <Image
+        source={logo}
+        style={{ width: size, height: size, borderRadius: size / 2 }}
+        resizeMode="cover"
+        accessibilityIgnoresInvertColors
       />
     </View>
   );
@@ -33,15 +28,9 @@ export function BrandMark({ size = 96 }: BrandMarkProps) {
 
 const styles = StyleSheet.create({
   badge: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadows.soft,
-  },
-  leaf: {
-    backgroundColor: colors.background,
-    borderTopRightRadius: 0,
-    borderBottomLeftRadius: 0,
-    transform: [{ rotate: '45deg' }],
   },
 });
